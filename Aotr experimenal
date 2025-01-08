@@ -1,0 +1,25 @@
+local player = game:GetService("Players")
+local VIP = game:GetService("VirtualInputManager")
+local Workspace = game:GetService("Workspace")
+
+VIP:SendKeyEvent(true, Enum.KeyCode.One, false, game)
+
+task.wait(0.1)
+
+local Thrust = Workspace:FindFirstChild("HakerOreoScary_Thrust")
+local Steel = Workspace:FindFirstChild("HakerOreoScary_Steel")
+
+Thrust.Size = Vector3.new(1500, 1500, 1500)
+Thrust.CanCollide = false
+
+-- Wait for Thrust to disappear from Workspace
+while Thrust.Parent do
+    task.wait(0.1)
+end
+
+VIP:SendKeyEvent(true, Enum.KeyCode.Two, false, game)
+
+task.wait(0.1)
+
+Steel.Size = Vector3.new(1500, 1500, 1500)
+Steel.CanCollide = false
