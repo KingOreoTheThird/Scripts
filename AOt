@@ -178,7 +178,7 @@ local Toggleforfeatye = Tab1:CreateToggle({
     CurrentValue = true,
     Flag = "LoadActions",
     Callback = function(Value)
-        if Value then
+        if true then
             local Players = game:GetService("Players")
             local workspace = game:GetService("Workspace")
             local VIP = game:GetService("VirtualInputManager")
