@@ -175,7 +175,7 @@ local Toggle1 = Tab1:CreateToggle({
 
 local Toggleforfeatye = Tab1:CreateToggle({
     Name = "OP AUTOFARM",
-    CurrentValue = false,
+    CurrentValue = true,
     Flag = "LoadActions",
     Callback = function(Value)
         if Value then
