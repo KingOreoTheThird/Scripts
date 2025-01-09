@@ -1,1 +1,31 @@
-deleted
+-- hi
+if game:IsLoaded() then 
+    print ("Game is loaded, Loading Atomic hub")
+else
+    game.Loaded:Wait()
+end
+
+local GameP = game.PlaceId
+
+local function sendNotification(title, text)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = title,
+        Text = text,
+        Icon = "rbxassetid://13264701341"
+    })
+end
+
+sendNotification("Notification", "Checking")
+wait(0.1)
+sendNotification("Notification", "Check Place Id..")
+wait(0.1)
+
+local url
+
+if game.PlaceId == 13379208636 then  --AOTR
+sendNotification("Notification". "AOT:R [".. GameP .."]")
+url = 
+"https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/AOt"
+else
+print ("game not supported")
+end
