@@ -1,0 +1,305 @@
+print("MADE BY ASH")
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+
+local function isFolderLoaded(folder)
+    for _, child in pairs(folder:GetChildren()) do
+        if not child:IsDescendantOf(Workspace) then
+            return false
+        end
+    end
+    return true
+end
+
+local function isPlayerLoaded(players)
+    for _, player in pairs(players:GetPlayers()) do
+        if not player:IsDescendantOf(Players) then
+            return false
+        end
+    end
+    return true
+end
+
+local function waitForLoad()
+    local titansFolder = Workspace:WaitForChild("Titans")
+    local loaded = false
+
+    while not loaded do
+        if isFolderLoaded(titansFolder) and isPlayerLoaded(Players) then
+            loaded = true
+            print("All Titans and players are loaded.")
+        else
+            task.wait(0.1)
+        end
+    end
+end
+
+waitForLoad()
+
+game:GetService("VirtualInputManager")
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Players = game:GetService("Players")
+local http = game:GetService("HttpService")
+local url = "https://discord.com/api/webhooks/1324618409853321216/ZAxnFcjuWo0i3DVeMuCmVIwtyCZHwH98lyTYqToryIau7nkcggdmKeZLkAcjzoPcds6e"
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
+
+function sendMessage(msg)
+    local data = {
+        ["content"] = msg
+    }
+    local actual = http:JSONEncode(data)
+    local success, response = pcall(function()
+        request({Url = url, Method = "POST", Body = actual, Headers = {["content-type"] = "application/json"}})
+    end)
+    if success then
+        print("Message sent successfully!")
+    else
+        print("Failed to send message: "..response)
+    end
+end
+
+local Window = Rayfield:CreateWindow({
+   Name = "AOT:R",
+   Icon = 0,
+   LoadingTitle = "Loading",
+   LoadingSubtitle = "by Ash",
+   Theme = "Default",
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false,
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "REWARDS TRACKER",
+      FileName = "Settings"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+   KeySystem = false,
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided",
+      FileName = "Key",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"Hello"}
+   }
+})
+
+local Tab1 = Window:CreateTab("Features", 4483362458) -- Title, Image
+local Tab2 = Window:CreateTab("Rewards Tracker", 4483362458) -- Title, Image
+
+local function extendNape()
+    while getgenv().Extend_Nape do
+        if not getgenv().Extend_Nape then return end
+        for i, titans in pairs(game:GetService("Workspace").Titans:GetChildren()) do
+            local stepone = titans:FindFirstChild("Hitboxes")
+            if stepone then
+                local steptwo = stepone:FindFirstChild("Hit")
+                if steptwo then
+                    local final = steptwo:FindFirstChild("Nape")
+                    if final then
+                        final.Size = Vector3.new(250,250,250)  -- Adjust the size as needed
+                        final.Transparency = 0.85          -- Adjust transparency as needed
+                        final.CanCollide = false           -- Disable collision if desired
+                        print("Extended Nape For:", titans.Name)
+                    end
+                end
+            end
+        end
+        wait(0.05)
+    end
+end
+
+local function extendNapeAimbot()
+    while getgenv().Extend_Nape_Aimbot do
+        if not getgenv().Extend_Nape_Aimbot then return end
+        for i, titans in pairs(game:GetService("Workspace").Titans:GetChildren()) do
+            local stepone = titans:FindFirstChild("Hitboxes")
+            if stepone then
+                local steptwo = stepone:FindFirstChild("Hit")
+                if steptwo then
+                    local final = steptwo:FindFirstChild("Nape")
+                    if final then
+                        final.Size = Vector3.new(10,10,10)  -- Initial size, you can adjust later
+                        final.Transparency = 1               -- Make it invisible
+                        final.CanCollide = false             -- Disable collision if desired
+                        print("Nape Aimbot for:", titans.Name)
+                    end
+                end
+            end
+        end
+        wait(0.05)
+    end
+end
+
+local Toggle = Tab1:CreateToggle({
+   Name = "Titan ESP",
+   CurrentValue = false,
+   Flag = "Titanespstuffq1",
+   Callback = function(Value)
+       local LocalPlayer = Players.LocalPlayer
+       local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:wait()
+       
+       
+       local titansFolder = game.Workspace:WaitForChild("Titans")
+       
+       for _, titan in pairs(titansFolder:GetChildren()) do
+           local highlight = Instance.new("Highlight")
+           highlight.Parent = titan
+           highlight.Archivable = true
+           highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+           highlight.Enabled = true
+           highlight.FillColor = Color3.fromRGB(255, 0, 4)
+           highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+           highlight.FillTransparency = 0.5
+           highlight.OutlineTransparency = 0
+       end
+   end,
+})
+
+local Toggle1 = Tab1:CreateToggle({
+   Name = "Nape Extender",
+   CurrentValue = false,
+   Flag = "ToggleNapeExtender",
+   Callback = function(Value)
+       getgenv().Extend_Nape = Value
+       if Value then
+           extendNape()
+       end
+   end
+})
+
+
+
+local Toggle3 = Tab1:CreateToggle({
+   Name = "Nape Aimbot",
+   CurrentValue = false,
+   Flag = "ToggleNapeAimbot",
+   Callback = function(Value)
+       getgenv().Extend_Nape_Aimbot = Value
+       if Value then
+           extendNapeAimbot()
+       end
+   end
+})
+
+
+local Toggleforfeatye = Tab1:CreateToggle({
+    Name = "OP AUTOFARM",
+    CurrentValue = false,
+    Flag = "LoadActions",
+    Callback = function(Value)
+        if Value then
+            local Players = game:GetService("Players")
+            local workspace = game:GetService("Workspace")
+            local VIP = game:GetService("VirtualInputManager")
+
+            local player = Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            local rootPart = character:WaitForChild("HumanoidRootPart")
+
+            local titans = workspace.Titans:GetChildren()
+
+            for _, titan in ipairs(titans) do
+                local Hitboxes = titan:FindFirstChild("Hitboxes")
+                if Hitboxes then
+                    local Hit = Hitboxes:FindFirstChild("Hit")
+                    if Hit then
+                        local Nape = Hit:FindFirstChild("Nape")
+                        if Nape then
+                            print("Found Nape")
+                            
+                            -- Resize the Nape hitbox
+                            Nape.Size = Vector3.new(250, 250, 250)
+                            
+                            -- Teleport Nape to 5 studs in front of the player's character
+                            local frontOffset = rootPart.CFrame.LookVector * 5
+                            Nape.Position = rootPart.Position + frontOffset
+                            
+                            -- Ensure Nape is anchored
+                            Nape.Anchored = true
+                        end
+                    end
+                end
+            end
+
+            -- Simulate key event for the first skill
+            VIP:SendKeyEvent(true, Enum.KeyCode.One, false, game)
+            task.wait(0.1)
+
+            -- Find Thrust and Steel parts and modify them
+            local Thrust = workspace:FindFirstChild("HakerOreoScary_Thrust")
+            local Steel = workspace:FindFirstChild("HakerOreoScary_Steel")
+
+            if Thrust then
+                Thrust.Size = Vector3.new(1999, 1999, 1999)
+                Thrust.CanCollide = false
+            end
+
+            task.wait(2)
+
+            -- Simulate key event for the second skill
+            VIP:SendKeyEvent(true, Enum.KeyCode.Two, false, game)
+            task.wait(0.1)
+
+            if Steel then
+                Steel.Size = Vector3.new(1999, 1999, 1999)
+                Steel.CanCollide = false
+            end
+        end
+    end
+})
+
+
+
+
+
+local Toggle2 = Tab2:CreateToggle({
+   Name = "Rewards Tracker",
+   CurrentValue = false,
+   Flag = "ToggleRewardsTracker",
+   Callback = function(Value)
+       if Value then
+           while true do
+               local LocalPlayer = Players.LocalPlayer
+               local startgui = LocalPlayer:WaitForChild("PlayerGui")
+               local interface = startgui:WaitForChild("Interface")
+               local stepone = interface:WaitForChild("Rewards")
+               local steptwo = stepone:WaitForChild("Main")
+               local stepthree = steptwo:WaitForChild("Info")
+               local stepfour = stepthree:WaitForChild("Main")
+               local stepfive = stepfour:WaitForChild("Items")
+               local slay = ReplicatedStorage:WaitForChild("Objectives"):WaitForChild("Slay")
+
+               if slay then
+                   local value = slay:GetAttribute("value")
+                   local requirement = slay:GetAttribute("requirement")
+
+                   if value and requirement and value >= requirement then
+                       print("Requirement met. Proceeding to rewards.")
+                       if stepfive then
+                           print("Contents of the Items folder:")
+                           for _, item in pairs(stepfive:GetChildren()) do
+                               sendMessage(item.Name)
+                           end
+                       else
+                           print("Items folder not found.")
+                       end
+                       break
+                   else
+                       print("Requirement not met yet.")
+                   end
+               else
+                   print("Slay or its attributes not found.")
+               end
+
+               wait(0.5)
+           end
+       end
+   end
+})
