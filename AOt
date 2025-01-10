@@ -1,3 +1,6 @@
+
+-- mf im so close jnqoqfn
+
 repeat wait() until game:IsLoaded()
 
 game:GetService("VirtualInputManager")
@@ -62,33 +65,12 @@ local function extendNape()
     end
 end
 
-local function extendNapeAimbot()
-    while getgenv().Extend_Nape_Aimbot do
-        if not getgenv().Extend_Nape_Aimbot then return end
-        for i, titans in pairs(game:GetService("Workspace").Titans:GetChildren()) do
-            local stepone = titans:FindFirstChild("Hitboxes")
-            if stepone then
-                local steptwo = stepone:FindFirstChild("Hit")
-                if steptwo then
-                    local final = steptwo:FindFirstChild("Nape")
-                    if final then
-                        final.Size = Vector3.new(10,10,10)  -- Initial size, you can adjust later
-                        final.Transparency = 1               -- Make it invisible
-                        final.CanCollide = false             -- Disable collision if desired
-                        print("Nape Aimbot for:", titans.Name)
-                    end
-                end
-            end
-        end
-        wait(0.05)
-    end
-end
 
 
 local Toggleoptimization = Tab1:CreateToggle({
    Name = "Optimize the game (Not undoable just a toggle so you can save it)",
    CurrentValue = false,
-   Flag = "Titanespstuffq1",
+   Flag = "Optimizegameun",
    Callback = function(Value)
     
        local decalsyeeted = true -- Leaving this on makes games look bad but the FPS goes up by at least 20.
@@ -174,9 +156,8 @@ local Toggle1 = Tab1:CreateToggle({
 })
 
 
-
-local Toggleforfeatye = Tab1:CreateToggle({
-    Name = "OP AUTOFARM",
+local Toggleautofarm = Tab1:CreateToggle({
+    Name = "OP autofarm",
     CurrentValue = true,
     Flag = "LoadActions",
     Callback = function(Value)
@@ -215,6 +196,8 @@ local Toggleforfeatye = Tab1:CreateToggle({
                 end
             end
 
+            
+         
             local RunService = game:GetService("RunService")
 
             -- The fixed position you want to lock the player to
@@ -281,8 +264,7 @@ local Toggleforfeatye = Tab1:CreateToggle({
     end
 })
 
-
-
+Toggleautofarm:Set(true)
 
 local Toggle2 = Tab2:CreateToggle({
    Name = "Rewards Tracker",
