@@ -24,4 +24,6 @@ elseif AttackRaid then
     executeScript("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Attack")
 elseif Missions then
     executeScript("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/whatsuphomies")
+else
+    error("FUCK YOU GNG TURN SOMETHING ON")
 end
