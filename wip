@@ -1,11 +1,3 @@
-local ArmoredRaid = false
-local AttackRaid = false
-local Missions = false
-RetryDelay = 10 -- in seconds right now 10
-speed = 10 -- choose speed
-Webhook = "" -- obvious
-discordID = "" -- very obvious
-
 while not game:IsLoaded() do
     task.wait(1)
 end
