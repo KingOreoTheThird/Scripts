@@ -19,10 +19,8 @@ local function executeScript(url)
         end)
 
         if success then
-            print("[Loader] Script executed successfully.")
             break
         else
-            warn("[Loader] Failed to execute script. Retrying in 1 second...\nDetails:", err)
             task.wait(1)
         end
     end
@@ -33,5 +31,5 @@ if ArmoredRaid then
 elseif AttackRaid then
     executeScript("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Attack")
 elseif Missions then
-    executeScript("https://raw.githubusercontent.com/Ashkinglomao/Fluent-Renewed-skibid-edition/refs/heads/main/.github/onskibidsploitnotmalware")
+    executeScript("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/whatsuphomies")
 end
