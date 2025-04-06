@@ -3,6 +3,7 @@ while not game:IsLoaded() do
 end
 
 
+
 local function executeScript(url)
     while true do
         local success, err = pcall(function()
@@ -26,4 +27,28 @@ elseif Missions then
     executeScript("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/whatsuphomies")
 else
     error("FUCK YOU GNG TURN SOMETHING ON")
+end
+
+repeat task.wait(0.1) until game:IsLoaded()
+
+task.wait(RetryDelay)
+
+local args = {
+    [1] = "Functions",
+    [2] = "Retry",
+    [3] = "Add"
+}
+
+local success, result = pcall(function()
+    local remotes = game:GetService("ReplicatedStorage"):WaitForChild("Assets")
+        :WaitForChild("Remotes")
+        :WaitForChild("GET")
+    return remotes:InvokeServer(unpack(args))
+end)
+
+if success then
+    print("e")
+else
+    print("poop")
+    warn("touch")
 end
