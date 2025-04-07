@@ -1,1967 +1,336 @@
 local u1 = CFrame.new
 local u2 = CFrame.Angles
-local u3 = Vector3.new
-local u4 = Instance.new
-local u5 = TweenInfo.new
-local u6 = {
-    ["Max_Force"] = Vector3.new(5500, 5500, 5500),
-    ["Speed"] = u1(0, 0, 0),
-    ["Flip_Type"] = nil,
-    ["Moving_Magnitude"] = u1(0, 0, 0),
-    ["Gas_SFX"] = nil,
-    ["Mega_Boost_Speed"] = 0,
-    ["Escaped"] = {
-        ["State"] = false,
-        ["Gained"] = false
+local u28 = {
+    ["Stored_Origins"] = {},
+    ["Grabbing"] = {},
+    ["Keys"] = {},
+    ["Device_Keys"] = {
+        ["Computer"] = {
+            "W",
+            "A",
+            "S",
+            "D"
+        },
+        ["Console"] = {
+            "DPadUp",
+            "DPadDown",
+            "DPadLeft",
+            "DPadRight"
+        },
+        ["Mobile"] = {}
     },
-    ["Usage"] = {
-        ["Flip"] = 10,
-        ["Mega_Boost"] = 25,
-        ["Hook_1"] = 2,
-        ["Hook_1_Boost"] = 3,
-        ["Hook_2"] = 3,
-        ["Hook_2_Boost"] = 5
+    ["Grabs"] = {
+        ["Easy"] = 2,
+        ["Normal"] = 3,
+        ["Hard"] = 4,
+        ["Severe"] = 5,
+        ["Aberrant"] = 5
     },
-    ["Last_Gas"] = tick(),
-    ["Last_Flip"] = {
-        ["Type"] = "",
-        ["Amount"] = 0,
-        ["Cooldown"] = false
-    },
-    ["Tips"] = {},
-    ["Off_Ground"] = false,
-    ["Grounded"] = false,
-    ["Gear_Speed"] = 150,
-    ["Last_Hook"] = tick(),
-    ["M1_Frames"] = {
-        ["Floor_Hit_1"] = { 13, 30 },
-        ["Floor_Hit_2"] = { 10, 30 },
-        ["Floor_Hit_3"] = { 5, 30 },
-        ["Air_Hit_1"] = { 11, 30 },
-        ["Air_Hit_2"] = { 5, 30 },
-        ["Air_Hit_3"] = { 5, 30 },
-        ["Spear_Hit_1"] = { 35, 60, 43 },
-        ["Spear_Hit_2"] = { 35, 60, 43 }
-    },
-    ["Events"] = {}
-}
-math.randomseed(tick())
-local u7 = u5(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-function u6.Rig(p8, p9) --[[Anonymous function at line 65]]
-    local _ = p8.Services.W
-    if p9 == nil then
-        p9 = p8.Cache.Player.Character
-    end
-    if p9 ~= nil then
-        return p9:FindFirstChild("Rig_" .. p9.Name)
-    end
-end
-function u6.Blade_Check(p10, p11, p12) --[[Anonymous function at line 85]]
-    --[[
-    Upvalues:
-        [1] = u6
-    --]]
-    local v13 = u6.Rig(p10, p11)
-    if v13 ~= nil and (p10.Weapon == "Blades" or p12 == true) then
-        local v14 = v13:FindFirstChild("LeftHand")
-        local v15 = v13:FindFirstChild("RightHand")
-        if v14 ~= nil and v15 ~= nil then
-            for v16 = 7, 1, -1 do
-                local v17 = v14:FindFirstChild("Blade_" .. v16)
-                local v18 = v15:FindFirstChild("Blade_" .. v16)
-                if v17 ~= nil and (v18 ~= nil and v17:GetAttribute("Broken") == nil) then
-                    return true, v13, v17, v18
-                end
-            end
+    ["Tracking"] = {},
+    ["Last"] = tick(),
+    ["Constraints"] = function(p3, p4, p5, p6) --[[Function name: Constraints, line 36]]
+        --[[
+        Upvalues:
+            [1] = u28
+            [2] = u1
+            [3] = u2
+        --]]
+        local v7 = u28.Stored_Origins[p3]
+        if v7 == nil then
+            v7 = {
+                ["Waist"] = p3:GetAttribute("Waist_Origin"),
+                ["Neck"] = p3:GetAttribute("Neck_Origin")
+            }
+            u28.Stored_Origins[p3] = v7
         end
-    end
-    return nil, v13
-end
-function u6.Spear_Check(p19, p20, p21, p22, p23, u24) --[[Anonymous function at line 105]]
-    --[[
-    Upvalues:
-        [1] = u6
-    --]]
-    local v25 = u6.Rig(p19, p20)
-    local v26 = nil
-    local v27 = nil
-    if v25 ~= nil and (p19.Weapon == "Spears" or p22 ~= nil) then
-        task.desynchronize()
-        local v28 = tick()
-        local v29 = {}
-        for _, v30 in pairs(p21) do
-            if p22 ~= nil or v28 - p19.Sides[v30] >= 1 then
-                if v30 == "Left" then
-                    for _, v31 in pairs({
-                        1,
-                        3,
-                        5,
-                        7,
-                        9,
-                        11,
-                        13,
-                        15,
-                        17
-                    }) do
-                        table.insert(v29, v31)
-                    end
-                elseif v30 == "Right" then
-                    for _, v32 in pairs({
-                        2,
-                        4,
-                        6,
-                        8,
-                        10,
-                        12,
-                        14,
-                        16,
-                        18
-                    }) do
-                        table.insert(v29, v32)
-                    end
-                end
-            end
-        end
-        table.sort(v29, function(p33, p34) --[[Anonymous function at line 128]]
-            --[[
-            Upvalues:
-                [1] = u24
-            --]]
-            if u24 == true then
-                return p33 < p34
+        local v8 = v7.Waist
+        local v9 = v7.Neck
+        if p4:FindFirstChild("UpperTorso") ~= nil then
+            local v10 = p4.UpperTorso:FindFirstChild("Waist")
+            local v11 = p4.Head:FindFirstChild("Neck")
+            local v12 = p3.PrimaryPart
+            local v13 = v12.Position
+            local v14 = p6.Position
+            local v15 = v13.Y - v14.Y
+            local v16, v17
+            if p3:GetAttribute("Attack") == nil and (p3:GetAttribute("Injured") == nil and p3:GetAttribute("Grabbing") == nil) then
+                v16 = (v13 - v14).Unit:Cross(v12.CFrame.LookVector).Y
+                local v18 = v15 / p5
+                v17 = math.atan(v18)
             else
-                return p34 < p33
+                v17 = 0
+                v16 = 0
             end
-        end)
-        if p22 == nil then
-            p22 = p19.Spear_Count
+            task.synchronize()
+            local v19 = u1()
+            local v20 = u1()
+            v10.Transform = v19
+            v11.Transform = v20
+            v10.C0 = v10.C0:Lerp(v8 * u2(v17 * 0.15, math.clamp(v16, -0.5, 0.5), 0), 0.2)
+            v11.C0 = v11.C0:Lerp(v9 * u2(v17 * 0.25, math.clamp(v16, -0.25, 0.25), 0), 0.15)
         end
-        local v35 = u24 == true and 8 or p22
-        if p23 ~= nil then
-            local v36 = table.find(v29, p23)
-            if v36 ~= nil then
-                table.remove(v29, v36)
-            end
-        end
-        for _, v37 in pairs(v29) do
-            if v37 <= v35 then
-                local v38 = v37 % 2 == 0 and "Right" or "Left"
-                local v39 = v25[v38 .. "LowerArm"].Spears[v37]
-                if v39:GetAttribute("Used") == nil then
-                    v27 = v38
-                    v26 = v39
-                    break
-                end
-            end
-        end
-        if v26 == nil and (v27 == nil and u24 == true) then
-            for _, v40 in pairs(v29) do
-                if v40 <= v35 then
-                    v27 = v40 % 2 == 0 and "Right" or "Left"
-                    v26 = v25[v27 .. "LowerArm"].Spears[v40]
-                    break
-                end
+    end,
+    ["Update"] = function(p21, _, p22) --[[Function name: Update, line 75]]
+        --[[
+        Upvalues:
+            [1] = u28
+        --]]
+        task.desynchronize()
+        local v23 = p21.Services
+        local v24 = v23.W
+        local _ = v23.P
+        local _ = v24.Titans
+        for _, v25 in pairs(u28.Tracking) do
+            local v26 = v25:GetAttribute("Distance")
+            local v27 = v25:FindFirstChild("Fake")
+            if v26 ~= nil and v27 ~= nil then
+                u28.Constraints(v25, v27, v26, p22)
             end
         end
-        task.synchronize()
+        task.desynchronize()
     end
-    return v26, v27, v25
-end
-function u6.Get_Reload(p41) --[[Anonymous function at line 166]]
-    if p41 ~= nil then
-        for v42 = 1, 3 do
-            local v43 = p41:FindFirstChild("Left_" .. v42, true)
-            local v44 = p41:FindFirstChild("Right_" .. v42, true)
-            if v43 ~= nil and (v44 ~= nil and v43:GetAttribute("Used") == nil) then
-                return v43, v44
-            end
-        end
-    end
-end
-function u6.Reduced_Gas(p45, p46, p47) --[[Anonymous function at line 178]]
-    local v48 = p45.Modules
-    local v49 = p45.Stats
-    local v50 = v48.Effects
-    local v51 = v48.HUD
-    if p46 < v49.ODM_Gas then
-        v49.ODM_Gas = v49.ODM_Gas - p46
-        local v52 = v51.Update
-        if p47 == nil or not v50 then
-            v50 = nil
-        end
-        v52(p45, v50, "Gas", v49.ODM_Gas, v49.Maximum_ODM_Gas)
-        return true
-    end
-end
-function u6.Tasks(u53, u54, u55, u56, p57) --[[Anonymous function at line 190]]
+}
+local u29 = false
+function u28.Create(u30, p31, p32, p33) --[[Anonymous function at line 99]]
     --[[
     Upvalues:
-        [1] = u6
+        [1] = u28
     --]]
-    local u58 = u53.Modules
-    local u59 = u53.Cache
-    local u60 = u53.Stats
-    local u61 = u58.Effects
-    local u62 = u58.Zones
-    local u63 = u59.Character
-    local u64 = u59.Variables
-    local u65 = 1
-    for _, v66 in pairs(u6.Events) do
-        task.cancel(v66)
+    local v34 = u30.Services.TS
+    local v35 = u30:Get("Asset", { "Objects", "Button" }):Clone()
+    local v36 = math.random(30, 70) / 100
+    local v37 = math.random(30, 70) / 100
+    if p32 ~= nil then
+        local v38 = string.gsub(p32, "DPad", "")
+        local v39 = v38 == "Up" and "\226\134\145" or (v38 == "Down" and "\226\134\147" or (v38 == "Left" and "\226\134\144" or (v38 == "Right" and "\226\134\146" or p32)))
+        local v40 = v35.Main.Key
+        v35.Name = p32
+        v40.Text = v39
     end
-    u6.Events = {}
-    if u55 == "Full_Reload" then
-        local v67 = table.find(u60.Talents, "3") ~= nil and 1.35 or u65
-        for u68 = 1, 2 do
-            local v69 = u6.Events
-            local v70 = task.delay
-            local v71 = u54[u68] / 60 / v67
-            table.insert(v69, v70(v71, function() --[[Anonymous function at line 206]]
-                --[[
-                Upvalues:
-                    [1] = u64
-                    [2] = u55
-                    [3] = u53
-                    [4] = u68
-                    [5] = u62
-                    [6] = u60
-                    [7] = u58
-                    [8] = u61
-                --]]
-                if u64[u55] == true then
-                    u53:Send(u53.Weapon, u55, u68 == 1 and "Left" or "Right", u62.Refill_Station)
-                    local v72 = u60
-                    local v73 = u60.ODM_Gas + u60.Maximum_ODM_Gas / 2
-                    local v74 = u60.Maximum_ODM_Gas
-                    v72.ODM_Gas = math.clamp(v73, 0, v74)
-                    u58.HUD.Update(u53, u61, "Gas", u60.ODM_Gas, u60.Maximum_ODM_Gas)
-                end
-            end))
-        end
-        task.delay(u54[3] / 60 / v67, function() --[[Anonymous function at line 217]]
+    v35.Position = UDim2.new(v36, 0, v37, 0)
+    if p33.Computer == nil and (p33.Console == nil and p33.Mobile == true) then
+        v35.Size = UDim2.new(0.09, 0, 0.09, 0)
+        local v41 = v35.Main.Key
+        local v42 = v35.Main.Icon
+        v41.Visible = false
+        v42.Visible = true
+        v35.Interact.MouseButton1Click:Connect(function() --[[Anonymous function at line 127]]
             --[[
             Upvalues:
-                [1] = u64
-                [2] = u55
+                [1] = u28
+                [2] = u30
             --]]
-            u64[u55] = false
+            u28.Grab_Event(u30, nil, true, true)
         end)
-    elseif u55 == "Reload" then
-        local v75 = u6.Events
-        local v76 = task.delay
-        local v77 = u54[1] / 60 / u65
-        table.insert(v75, v76(v77, function() --[[Anonymous function at line 221]]
-            --[[
-            Upvalues:
-                [1] = u64
-                [2] = u55
-                [3] = u53
-                [4] = u61
-                [5] = u56
-            --]]
-            task.delay(0.1, function() --[[Anonymous function at line 222]]
+    end
+    v35.Parent = p31
+    v34:Create(v35, TweenInfo.new(0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+        ["GroupTransparency"] = 0
+    }):Play()
+end
+function u28.Destroy(p43, p44, p45) --[[Anonymous function at line 139]]
+    local v46 = p43.Services.TS
+    for _, u47 in pairs(p44:GetChildren()) do
+        if u47:IsA("CanvasGroup") == true then
+            v46:Create(u47, TweenInfo.new(0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+                ["GroupTransparency"] = 1
+            }):Play()
+            local v48 = v46:Create(u47.Main, TweenInfo.new(0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+                ["Size"] = UDim2.new(0.5, 0, 0.5, 0)
+            })
+            v48:Play()
+            local v49
+            if p45 == nil or not p45 then
+                v49 = u47.Main.Key.TextColor3
+            else
+                v49 = p45
+            end
+            u47.Main.Key.TextColor3 = v49
+            v48.Completed:Connect(function() --[[Anonymous function at line 158]]
                 --[[
                 Upvalues:
-                    [1] = u64
-                    [2] = u55
-                    [3] = u53
-                    [4] = u61
-                    [5] = u56
+                    [1] = u47
                 --]]
-                if u64[u55] == true then
-                    u53:Invoke("Blades", "Reload")
-                    u61.Reload(u53)
-                    u61.Sound(u53, "Refill", u56)
-                end
+                u47:Destroy()
             end)
-        end))
-        task.delay(u54[2] / 60 / u65, function() --[[Anonymous function at line 225]]
-            --[[
-            Upvalues:
-                [1] = u64
-                [2] = u55
-            --]]
-            u64[u55] = false
-        end)
-    elseif u55:find("Hit") ~= nil then
-        local u78 = u64.Slash
-        if u55:find("Spear") == nil then
-            u65 = u78.Speed
-        end
-        local function u93() --[[Anonymous function at line 232]]
-            --[[
-            Upvalues:
-                [1] = u6
-                [2] = u54
-                [3] = u65
-                [4] = u78
-                [5] = u59
-                [6] = u55
-                [7] = u53
-                [8] = u61
-                [9] = u58
-                [10] = u63
-                [11] = u56
-            --]]
-            local v79 = u6.Events
-            local v80 = task.delay
-            local v81 = (u54[2] - u54[1]) / 60 / u65
-            local function v84() --[[Anonymous function at line 234]]
-                --[[
-                Upvalues:
-                    [1] = u78
-                    [2] = u59
-                    [3] = u55
-                    [4] = u53
-                    [5] = u61
-                --]]
-                if u78.Slashing == true then
-                    local v82 = u78
-                    local v83 = u78
-                    u78.Slashing = false
-                    v82.Holding = false
-                    v83.Released = false
-                    u59.Animations[u55]:Stop(1)
-                    if u55:find("Spear") ~= nil then
-                        u53.Current_Spear = nil
-                        return
-                    end
-                    u61.Slash(u53, false, true)
-                end
-            end
-            table.insert(v79, v80(v81, v84))
-            if u55:find("Spear") ~= nil then
-                local v85 = u6.Events
-                local v86 = task.delay
-                local v87 = (u54[3] - u54[1]) / 60
-                local function v92() --[[Anonymous function at line 246]]
-                    --[[
-                    Upvalues:
-                        [1] = u53
-                        [2] = u58
-                        [3] = u6
-                        [4] = u63
-                        [5] = u56
-                    --]]
-                    local v88 = u53.Current_Spear
-                    if v88 ~= nil then
-                        u53.Sides[v88.Side] = tick() + 1
-                        local v89, v90, v91 = u58.Spears.Fire(u53, u6.Rig(u53, u63), u56, v88)
-                        if v89 ~= nil then
-                            u58.Spears.Event(u53, v89, v90, v91)
-                        end
-                    end
-                end
-                table.insert(v85, v86(v87, v92))
-            end
-        end
-        u78.Wait = nil
-        if p57 == nil then
-            local v94 = u6.Events
-            local v95 = task.delay
-            local v96 = u54[1] / 60 / u65
-            table.insert(v94, v95(v96, function() --[[Anonymous function at line 262]]
-                --[[
-                Upvalues:
-                    [1] = u78
-                    [2] = u93
-                --]]
-                if u78.Released == true then
-                    u93()
-                else
-                    u78.Wait = true
-                end
-            end))
-        else
-            u93()
         end
     end
 end
-function u6.Blade_Drops(p97) --[[Anonymous function at line 268]]
-    local v98 = p97.Modules.Effects
-    local v99 = p97:Invoke("Blades", "Drop")
-    if v99 ~= nil and #v99 > 0 then
-        for _, v100 in pairs(v99) do
-            v98.Sound(p97, "Drop", v100, nil, nil)
-        end
-    end
-end
-function u6.Reload(p101, p102) --[[Anonymous function at line 282]]
+function u28.Grab_Event(p50, p51, p52, p53, p54) --[[Anonymous function at line 165]]
     --[[
     Upvalues:
-        [1] = u6
+        [1] = u29
+        [2] = u28
     --]]
-    local v103 = p101.Modules
-    local v104 = p101.Cache
-    local v105 = p101.Weapon
-    local v106 = v103.Effects
-    local v107 = v103.Zones
-    local v108 = v104.Player
-    local v109 = v104.Character
-    local v110 = v104.Variables
-    local v111 = v109.PrimaryPart
-    local v112, v113 = u6.Blade_Check(p101)
-    if (p101.Invoked == false and p101.Skill == nil or p102 == true) and (v111 ~= nil and (v110.Reload == false and v110.Full_Reload == false)) then
-        if v107.Refill_Station == nil or (p102 ~= nil or u6.Last_Flip.Type ~= "") then
-            if v105 == "Blades" and v112 == nil or p102 == true then
-                local v114, v115 = u6.Get_Reload(v113)
-                if v114 ~= nil and v115 ~= nil then
-                    v110.Reload = true
-                    u6.Tasks(p101, { 45, 80 }, "Reload", v111)
-                    return
-                end
-            elseif v105 == "Blades" and v112 == true then
-                u6.Blade_Drops(p101)
+    local v55 = p50.Services
+    local v56 = p50.Modules
+    local v57 = p50.Cache
+    local v58 = v55.W
+    local v59 = v56.Effects
+    local v60 = v56.ODMG
+    local v61 = v57.Data
+    local v62 = v57.Slot_Data
+    local v63 = v57.Devices
+    local v64 = v57.Interface
+    local v65 = v57.Player
+    local v66 = v57.Character
+    local v67 = v64.Buttons
+    local v68 = v60.Blade_Check(p50, v66)
+    if p52 == true and v68 == true then
+        if u29 == false then
+            local v69 = p53 == true and u28.Grabbing.Done + 1 or u28.Grabbing.Done
+            local v70 = p53 == true and u28.Grabbing.Total
+            if not v70 then
+                local v71 = u28.Grabbing.Total + 1
+                v70 = math.clamp(v71, 5, 25)
             end
-        else
-            local v116 = v107.Refill_Station.Parent:GetAttribute("Refills")
-            if (v116 ~= nil and v116 > 0 or v116 == nil and v108:GetAttribute("Refills") > 0) and (v110.Poses[1]:find("Injury") ~= nil or (v110.Poses[1]:find("Idle") ~= nil or (v110.Poses[1] == "Walk" or v110.Poses[1] == "Run"))) then
-                v110.Full_Reload = true
-                u6.Tasks(p101, v105 == "Spears" and ({ 160, 260, 400 } or { 150, 270, 330 }) or { 150, 270, 330 }, "Full_Reload")
-                v111.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-                v111.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-                v104.Objects.BV.Velocity = Vector3.new(0, 0, 0)
-                if v105 == "Blades" and v112 == true then
-                    u6.Blade_Drops(p101)
-                elseif v105 == "Spears" and p101.Spear_State ~= nil then
-                    p101.Detonate = true
-                end
-                local v117 = v106.Sound
-                local v118 = "Refill_" .. v105
-                v117(p101, tostring(v118), v109)
-                u6.Hook(p101, "Left", "Passive")
-                u6.Hook(p101, "Right", "Passive")
+            local v72
+            if #u28.Keys > 0 then
+                v72 = u28.Keys[math.random(1, #u28.Keys)]
+            else
+                v72 = nil
+            end
+            u28.Grabbing = {
+                ["Key"] = v72,
+                ["Done"] = v69,
+                ["Total"] = v70,
+                ["Last_Create"] = tick()
+            }
+            local v73 = p53 == true and Color3.fromRGB(127, 255, 80) or Color3.fromRGB(255, 80, 80)
+            if p53 == false then
+                v59.Sound(p50, "Grab_Fail", v64, 1.25)
+            else
+                v59.Sound(p50, "Grab_Success", v64, 1.25)
+            end
+            if u28.Grabbing.Done >= u28.Grabbing.Total then
+                u29 = true
+                u28.Grabbing = {}
+                u28.Destroy(p50, v67, v73)
+                u28.Grab_Event(p50, false)
+                p50:Send("Attacks", "Slash_Escape")
+                return
+            end
+            u28.Destroy(p50, v67, v73)
+            task.wait(0.05)
+            if v67.Visible == true then
+                u28.Create(p50, v67, u28.Grabbing.Key, v63)
                 return
             end
         end
-    end
-end
-function u6.Achievement(p119) --[[Anonymous function at line 328]]
-    --[[
-    Upvalues:
-        [1] = u6
-    --]]
-    if u6.Off_Ground == true and u6.Grounded == false then
-        u6.Grounded = true
-        p119:Send("S_Achievements", "Landed")
-    end
-end
-function u6.Hook(u120, u121, p122, p123) --[[Anonymous function at line 334]]
-    --[[
-    Upvalues:
-        [1] = u6
-        [2] = u1
-        [3] = u7
-        [4] = u2
-        [5] = u4
-    --]]
-    local u124 = u120.Prefix
-    local v125 = u120.Services
-    local v126 = u120.Modules
-    local u127 = u120.Artifacts
-    local v128 = u120.Cache
-    local u129 = v125.RS
-    local u130 = v125.TS
-    local v131 = v125.W
-    local u132 = v126.Camera
-    local u133 = v126.Char
-    local u134 = v126.Effects
-    local u135 = v126.Runtime
-    local _ = v128.Slot_Data
-    local u136 = v128.Variables
-    local v137 = v128.Character
-    local v138 = v128.Objects
-    local v139 = u121 .. "_Hook"
-    local v140 = tostring(v139)
-    local v141 = v131.Hooks
-    local v142 = v131.Titans
-    local u143 = u136[v140]
-    local u144 = u136.Left_Hook
-    local u145 = u136.Right_Hook
-    local _ = u136.Left_Swerve
-    local _ = u136.Right_Swerve
-    local _ = u136.Up_Swerve
-    local _ = u136.Down_Swerve
-    local u146 = u136.Hook_Break
-    local u147 = v137.PrimaryPart
-    local u148 = v137:FindFirstChild("Humanoid")
-    if u148 then
-        local _ = v138.BV
-        local v149 = u6.Rig(u120)
-        if v149 ~= nil then
-            local u150 = v149:FindFirstChild(v140, true)
-            local u151 = v149:FindFirstChild(u121 .. "_Rope", true)
-            if u150 ~= nil and u151 ~= nil then
-                local v152 = p122 == "Active" and u120.Injuries.Arm == u121 and "Passive" or p122
-                local function v156() --[[Anonymous function at line 369]]
-                    --[[
-                    Upvalues:
-                        [1] = u144
-                        [2] = u145
-                        [3] = u1
-                        [4] = u130
-                        [5] = u132
-                        [6] = u7
-                    --]]
-                    local v153
-                    if u144.State == true then
-                        v153 = u144.Destroying == false
-                    else
-                        v153 = false
-                    end
-                    local v154
-                    if u145.State == true then
-                        v154 = u145.Destroying == false
-                    else
-                        v154 = false
-                    end
-                    local v155 = u1(0, 0, 0)
-                    if v153 == true and v154 == true then
-                        v155 = u1(0, 1, 0)
-                    elseif v153 == true then
-                        v155 = u1(-2, 0, 0)
-                    elseif v154 == true then
-                        v155 = u1(2, 0, 0)
-                    end
-                    u130:Create(u132.Offset, u7, {
-                        ["Value"] = v155
-                    }):Play()
-                end
-                if v152 == "Passive" and (u143.State == true and u143.Destroying == false) then
-                    local u157 = tick() - u143.Last
-                    local v158 = tick()
-                    u143.Destroying = true
-                    u143.Last = v158
-                    u143.Nape = nil
-                    v156()
-                    u134.Sound(u120, "Unhook", u147, nil, nil)
-                    local u159 = u143.Indicator
-                    if u159 ~= nil then
-                        if u159:FindFirstChild("WC") ~= nil then
-                            u159.WC:Destroy()
-                        end
-                        u130:Create(u159.Main.Main.Indicator, u7, {
-                            ["ImageTransparency"] = 1
-                        }):Play()
-                        u143.Indicator = nil
-                        u151.Attachment1 = u159.Main.A
-                    end
-                    task.defer(function() --[[Anonymous function at line 414]]
-                        --[[
-                        Upvalues:
-                            [1] = u144
-                            [2] = u145
-                            [3] = u135
-                            [4] = u136
-                            [5] = u157
-                            [6] = u148
-                            [7] = u121
-                            [8] = u146
-                            [9] = u147
-                            [10] = u133
-                            [11] = u6
-                            [12] = u120
-                            [13] = u134
-                            [14] = u127
-                            [15] = u151
-                            [16] = u159
-                            [17] = u1
-                            [18] = u150
-                            [19] = u2
-                            [20] = u129
-                            [21] = u143
-                        --]]
-                        local v160
-                        if u144.State == true and u144.Destroying == false then
-                            v160 = u144.Physics == true
-                        else
-                            v160 = false
-                        end
-                        local v161
-                        if u145.State == true and u145.Destroying == false then
-                            v161 = u145.Physics == true
-                        else
-                            v161 = false
-                        end
-                        if v160 == false and (v161 == false and u135.Ragdolled == nil) then
-                            if u136.Unhook_Type == "" and (u157 >= 1.5 and (u136.Land == false and (u136.Sliding.State == false and (u136.Rolling.State == false and (u136.Near_Floor == false and (u148.FloorMaterial == Enum.Material.Air and (u136.Flipping == false and (u136.Flip.State == false and u136.Mega_Boosting.State == false)))))))) then
-                                local v162 = (1 / 0)
-                                local v163 = ""
-                                for _, v164 in pairs({
-                                    "Left",
-                                    "Right",
-                                    "Up",
-                                    "Down"
-                                }) do
-                                    local v165 = u136[v164 .. "_Swerve"]
-                                    local v166 = tick() - v165.Last
-                                    if v166 < v162 and v166 <= 0.25 or v165.State == true then
-                                        v163 = v164
-                                        v162 = v166
-                                    end
-                                end
-                                local v167 = u121 == "Left" and u145 or u144
-                                local v168 = tick() - v167.Last <= 0.5 and true or false
-                                local v169
-                                if v163 == "" then
-                                    v169 = u146.Hooking == true and "Backwards_Unhook" or "Normal_Unhook"
-                                else
-                                    local v170 = v163 .. "_Unswerve"
-                                    v169 = tostring(v170)
-                                end
-                                if v168 == true then
-                                    local v171 = math.random(1, 10)
-                                    if u147.Velocity.Magnitude >= 50 then
-                                        v169 = v171 <= 2 and "Double_Unhook_2" or (v171 <= 4 and "Double_Unhook_3" or v169)
-                                    end
-                                end
-                                u136.Unhook_Type = v169
+    else
+        if p51 == true and v68 == true then
+            u29 = false
+            for _, v74 in pairs(v67:GetChildren()) do
+                v74:Destroy()
+            end
+            v67.Visible = p51
+            if #u28.Keys == 0 then
+                local v75 = v63.Console
+                for v76, v77 in pairs(v63) do
+                    if v77 == true then
+                        if v76 ~= "Computer" or v75 ~= true then
+                            local v78 = u28.Device_Keys[v76]
+                            local v79 = v76 == "Computer" and v61.Settings.Gameplay.Escape_Keys == "On" and {
+                                "Up",
+                                "Down",
+                                "Left",
+                                "Right"
+                            } or v78
+                            for _, v80 in pairs(v79) do
+                                local v81 = u28.Keys
+                                table.insert(v81, v80)
                             end
-                            u133.Last_Fall_State = tick()
-                            u146.Hooking = false
-                            if u6.Gas_SFX ~= nil and u136.Boosting == false then
-                                u6.Gas_SFX:Destroy()
-                                u6.Gas_SFX = nil
-                            end
-                            u6.Swerve(u120, "Up", "Passive")
-                            u6.Swerve(u120, "Down", "Passive")
                         end
-                        u134.Gas(u120, v160 == true and true or v161 == true)
-                        local v172 = u134.Boosting
-                        local v173 = u120
-                        local v174
-                        if u136.Boosting == true and v160 == false then
-                            v174 = v161 == false
-                        else
-                            v174 = false
-                        end
-                        v172(v173, v174)
-                        local v175 = 0.04
-                        if table.find(u127.Equipped, "Scarf") ~= nil then
-                            v175 = v175 * 1.4
-                        end
-                        for v176 = 0, 1, v175 do
-                            u151.CurveSize0 = math.random(-5, 5) * (1 - v176)
-                            u151.CurveSize1 = math.random(-5, 5) * (1 - v176)
-                            if u159 ~= nil then
-                                u159.Main.CFrame = u159.Main.CFrame:Lerp(u1(u150.WorldPosition) * u1(0, 0.3, 0) * u2(0, 0, 0.7853981633974483), v176)
-                            end
-                            u129.RenderStepped:Wait()
-                        end
-                        u151.Attachment0 = nil
-                        u151.Attachment1 = nil
-                        u143.Real_Attachment:Destroy()
-                        local v177 = u143
-                        local v178 = u143
-                        local v179 = u143
-                        u143.Real_Attachment = nil
-                        v177.State = false
-                        v178.Destroying = false
-                        v179.Finished = false
-                        if u159 ~= nil then
-                            u159:Destroy()
-                        end
-                    end)
-                    return
-                end
-                if v152 == "Active" and (u136.Full_Reload == false and (u143.State == false and (u143.Attachment ~= nil and (u143.View == true and u6.Reduced_Gas(u120, u6.Usage.Hook_1) == true)))) then
-                    u134.Sound(u120, "Hook", u147, nil, nil)
-                    u6.End_Climb(u120)
-                    local v180 = u136.Sliding
-                    local v181 = u136.Rolling
-                    u136.Land = false
-                    v180.State = false
-                    v181.State = false
-                    u136.Flipping = false
-                    u136.Jump_Flip = false
-                    if p123 == nil then
-                        u136.Flip.State = false
-                        u146.State = false
-                        u146.Hooking = false
                     end
-                    local u182 = u143.Attachment.Parent
-                    local u183 = u120:Get("Asset", { "Objects", "Hook" }):Clone()
-                    local v184 = u4("Attachment")
-                    v184.Name = "Real_A"
-                    v184.Parent = u182
-                    v184.WorldPosition = u143.Attachment.WorldPosition
-                    u143.Real_Attachment = v184
-                    u151.Attachment0 = u150
-                    u151.Attachment1 = u183.Main.A
-                    local v185 = tick()
-                    u143.State = true
-                    u143.Finished = false
-                    u143.Physics = false
-                    u143.Last = v185
-                    v156()
-                    local u186, u187
-                    if u182 == nil or u182:IsDescendantOf(v142) ~= true then
-                        u186 = "Hook_Impact"
-                        u187 = 0.8
-                    elseif u120.Nape == nil then
-                        local v188 = u182.Parent.Parent:FindFirstChild("Hitboxes")
-                        if v188 == nil then
-                            u186 = "Hook_Titan"
-                            u187 = 1.5
-                        else
-                            u143.Nape = v188:FindFirstChild("Nape", true)
-                            u186 = "Hook_Titan"
-                            u187 = 1.5
-                        end
-                    elseif u120.Nape == nil or not u120.Nape.CanTouch then
-                        u186 = "Hook_Titan"
-                        u187 = 1.5
-                    else
-                        u143.Nape = u120.Nape
-                        u186 = "Hook_Titan"
-                        u187 = 1.5
-                    end
-                    u136.Movement = true
-                    local v189 = u1(u150.WorldPosition, u143.Real_Attachment.WorldPosition) * u2(-1.5707963267948966, 0, 0)
-                    local u190, u191, u192 = v189.Rotation:ToObjectSpace(u1(u143.Real_Attachment.WorldPosition).Rotation):ToOrientation()
-                    u183:SetPrimaryPartCFrame(v189)
-                    u183.Parent = v141
-                    u143.Indicator = u183
-                    u134.Dust(u120, false)
-                    u132.Last = tick()
-                    task.defer(function() --[[Anonymous function at line 586]]
-                        --[[
-                        Upvalues:
-                            [1] = u127
-                            [2] = u143
-                            [3] = u151
-                            [4] = u183
-                            [5] = u1
-                            [6] = u2
-                            [7] = u190
-                            [8] = u191
-                            [9] = u192
-                            [10] = u129
-                            [11] = u6
-                            [12] = u136
-                            [13] = u134
-                            [14] = u120
-                            [15] = u147
-                            [16] = u4
-                            [17] = u182
-                            [18] = u124
-                            [19] = u186
-                            [20] = u187
-                            [21] = u130
-                            [22] = u7
-                        --]]
-                        local v193 = 0.075
-                        if table.find(u127.Equipped, "Scarf") ~= nil then
-                            v193 = v193 * 1.4
-                        end
-                        for v194 = 0, 1, v193 do
-                            if u143.Destroying ~= false then
-                                break
-                            end
-                            u151.CurveSize0 = math.random(-5, 5) * (1 - v194)
-                            u151.CurveSize1 = math.random(-5, 5) * (1 - v194)
-                            u183.Main.CFrame = u183.Main.CFrame:Lerp(u1(u143.Real_Attachment.WorldPosition) * u2(u190, u191, u192), v194)
-                            u129.RenderStepped:Wait()
-                        end
-                        if u143.Destroying == false then
-                            u6.Off_Ground = true
-                            if u6.Gas_SFX == nil then
-                                local v195 = u136.Boosting == true and 1.5 or 1
-                                u6.Gas_SFX = u134.Sound(u120, "Gas", u147, v195, true)
-                            end
-                            u134.Gas(u120, true)
-                            u134.Boosting(u120, false)
-                            local v196 = u143
-                            u143.Physics = true
-                            v196.Finished = true
-                            u183.Main.Anchored = false
-                            local v197 = u4("WeldConstraint")
-                            local v198 = u182
-                            local v199 = u183.Main
-                            v197.Name = "WC"
-                            v197.Part0 = v198
-                            v197.Part1 = v199
-                            v197.Parent = u183
-                            local v200 = u4("Animation")
-                            local v201 = u124 .. 14993266232
-                            v200.AnimationId = tostring(v201)
-                            u183.AnimationController:LoadAnimation(v200):Play()
-                            u134.Sound(u120, u186, u183.Main, u187, nil)
-                            u130:Create(u183.Main.Main.Indicator, u7, {
-                                ["ImageTransparency"] = 0
-                            }):Play()
-                            u143.Real_Attachment.WorldPosition = u183.Main.A.WorldPosition
-                            u151.Attachment1 = u143.Real_Attachment
-                        end
-                    end)
-                    return true
                 end
             end
-        end
-    end
-end
-function u6.Swerve(p202, p203, p204) --[[Anonymous function at line 655]]
-    --[[
-    Upvalues:
-        [1] = u2
-    --]]
-    local v205 = p202.Modules
-    local v206 = p202.Cache
-    local v207 = v205.Effects
-    local v208 = v206.Variables
-    local v209 = v206.Character
-    local v210 = v208[p203 .. "_Swerve"]
-    local v211 = v209.PrimaryPart
-    local v212 = p204 == "Active"
-    local v213 = v208.Left_Hook
-    local v214 = v208.Right_Hook
-    local v215
-    if v213.State == true then
-        v215 = v213.Destroying == false
-    else
-        v215 = false
-    end
-    local v216
-    if v214.State == true then
-        v216 = v214.Destroying == false
-    else
-        v216 = false
-    end
-    if v212 == true and (v215 == true or v216 == true) and v208.Climbing.State == false then
-        if v208.Near_Floor == false then
-            v207.Burst(p202, u2(0, 3.141592653589793, 0))
-        end
-        v207.Sound(p202, "Swerve", v211, nil, nil)
-    end
-    local v217 = tick()
-    v210.Started = v212
-    v210.State = v212
-    v210.Last = v217
-    v210.Finished = v212
-    v210.Holding = v212
-end
-function u6.Cancel_Actions(p218, p219) --[[Anonymous function at line 686]]
-    --[[
-    Upvalues:
-        [1] = u6
-    --]]
-    local v220 = p218.Modules
-    local v221 = p218.Cache
-    local _ = v220.Effects
-    local v222 = v221.Variables
-    v222.Land = false
-    v222.Flipping = false
-    v222.Jump_Flip = false
-    for _, v223 in pairs(p219) do
-        v222[v223].State = false
-        v222[v223].Lose = true
-        if v223 == "Backflip" or (v223 == "Leftflip" or v223 == "Rightflip") then
-            u6.Flip_Type = nil
-        end
-    end
-end
-function u6.Boost(p224, p225) --[[Anonymous function at line 706]]
-    --[[
-    Upvalues:
-        [1] = u2
-        [2] = u6
-        [3] = u5
-    --]]
-    local v226 = p224.Services
-    local v227 = p224.Modules
-    local v228 = p224.Stats
-    local v229 = p224.Cache
-    local v230 = v226.TS
-    local u231 = v227.Effects
-    local v232 = v229.Variables
-    local v233 = v229.Character
-    local v234 = v232.Left_Hook
-    local v235 = v232.Right_Hook
-    local v236 = v233.PrimaryPart
-    local v237
-    if v234.State == true then
-        v237 = v234.Destroying == false
-    else
-        v237 = false
-    end
-    local v238
-    if v235.State == true then
-        v238 = v235.Destroying == false
-    else
-        v238 = false
-    end
-    local v239 = p225 == "Active" and v228.ODM_Gas > 0
-    v232.Speedlines.Boost = v239
-    v232.Boosting = v239
-    if v239 == true and (v237 == true or v238 == true) then
-        u231.Boost = true
-        u231.Burst(p224, u2(0, 1.5707963267948966, 0))
-        u231.Sound(p224, "Boost", v236, nil, nil)
-        task.delay(0.2, function() --[[Anonymous function at line 733]]
-            --[[
-            Upvalues:
-                [1] = u231
-            --]]
-            u231.Boost = false
-        end)
-    end
-    if u6.Gas_SFX == nil and v239 == true then
-        u6.Gas_SFX = u231.Sound(p224, "Gas", v236, nil, true)
-    elseif u6.Gas_SFX ~= nil then
-        if v237 == false and v238 == false then
-            u6.Gas_SFX:Destroy()
-            u6.Gas_SFX = nil
-        else
-            v230:Create(u6.Gas_SFX, u5(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-                ["Volume"] = v239 and 1.5 or 1
-            }):Play()
-        end
-    end
-    if v239 == true then
-        v232.Last_Space_Press = tick()
-    end
-    u231.Gas(p224, v237 == true and true or v238 == true)
-    local v240 = u231.Boosting
-    local v241
-    if v239 == true and v237 == false then
-        v241 = v238 == false
-    else
-        v241 = false
-    end
-    v240(p224, v241)
-end
-function u6.End_Climb(p242) --[[Anonymous function at line 767]]
-    local v243 = p242.Modules
-    local v244 = p242.Cache
-    local v245 = v243.Climb
-    if v244.Variables.Climbing.State == true then
-        v245.End(p242)
-    end
-end
-function u6.Enable_Flip(u246, u247, p248, p249, p250, p251, u252) --[[Anonymous function at line 779]]
-    --[[
-    Upvalues:
-        [1] = u6
-    --]]
-    local v253 = false
-    local u254 = u6.Last_Flip
-    if (u254.Type == "" or u254.Type == u247 and u254.Amount < p248) and u254.Cooldown == false then
-        local v255 = u246.Modules
-        local v256 = u246.Stats
-        local v257 = u246.Artifacts
-        local u258 = v255.Effects
-        local u259 = v255.HUD
-        if u6.Reduced_Gas(u246, p251, true) == true then
-            local v260 = u254.Amount + 1
-            u254.Type = u247
-            u254.Amount = v260
-            u254.Cooldown = true
-            if table.find(v257.Equipped, "Scarf") ~= nil then
-                if p249 ~= nil then
-                    p249 = p249 * 0.8
-                end
-                p250 = p250 * 0.8
-            end
-            if u254.Amount < p248 then
-                task.delay(p249, function() --[[Anonymous function at line 797]]
-                    --[[
-                    Upvalues:
-                        [1] = u254
-                        [2] = u259
-                        [3] = u246
-                    --]]
-                    u254.Cooldown = false
-                    u259.Boost(u246, "No_Cooldown")
-                end)
-                local u261 = u254.Amount
-                task.delay(p250, function() --[[Anonymous function at line 803]]
-                    --[[
-                    Upvalues:
-                        [1] = u254
-                        [2] = u247
-                        [3] = u261
-                        [4] = u6
-                    --]]
-                    if u254.Type == u247 and u254.Amount == u261 then
-                        local v262 = u254
-                        local v263 = u254
-                        u254.Type = ""
-                        v262.Amount = 0
-                        v263.Cooldown = false
-                        u6.Off_Ground = true
-                    end
-                end)
+            local v82 = v65:GetAttribute("Grabs")
+            local v83 = u28.Grabs[v58:GetAttribute("Difficulty")]
+            local v84 = v83 + (v82 - 1)
+            local v85 = math.clamp(v84, v83, 8)
+            local v86
+            if #u28.Keys > 0 then
+                v86 = u28.Keys[math.random(1, #u28.Keys)]
             else
-                task.delay(p250, function() --[[Anonymous function at line 810]]
-                    --[[
-                    Upvalues:
-                        [1] = u254
-                        [2] = u259
-                        [3] = u246
-                        [4] = u6
-                    --]]
-                    local v264 = u254
-                    local v265 = u254
-                    u254.Type = ""
-                    v264.Amount = 0
-                    v265.Cooldown = false
-                    u259.Boost(u246, "No_Cooldown")
-                    u6.Off_Ground = true
-                end)
+                v86 = nil
             end
-            v253 = true
-            u259.Boost(u246, "Cooldown")
-            if table.find(v256.Talents, "16") ~= nil then
-                task.defer(function() --[[Anonymous function at line 818]]
-                    --[[
-                    Upvalues:
-                        [1] = u246
-                        [2] = u252
-                        [3] = u258
-                    --]]
-                    if u246:Invoke("Talents", "Flashstep", u252) == true then
-                        u258.Flashstep(u246, u252)
-                    end
-                end)
+            if table.find(v62.Skills.Unlocked, "45") ~= nil then
+                v85 = v85 - 1
             end
-            if table.find(v256.Passive_Perks, "Black Flash") ~= nil then
-                u246:Send("S_Perks", "Black_Flash", u252)
-                return v253
+            if table.find(v62.Skills.Unlocked, "62") ~= nil then
+                v85 = v85 - 1
             end
+            local v87 = v85 - p54
+            u28.Grabbing = {
+                ["Key"] = v86,
+                ["Done"] = 0,
+                ["Total"] = math.clamp(v87, 0, 15),
+                ["Last_Create"] = tick()
+            }
+            u28.Create(p50, v67, u28.Grabbing.Key, v63)
+            u28.Last = tick()
+            return
         end
+        u29 = true
+        u28.Destroy(p50, v67)
+        task.wait(0.1)
+        v67.Visible = false
     end
-    return v253
 end
-function u6.Mega_Boost(p266) --[[Anonymous function at line 833]]
+function u28.Setup(p88, u89, p90) --[[Anonymous function at line 295]]
     --[[
     Upvalues:
-        [1] = u6
-        [2] = u2
+        [1] = u28
     --]]
-    local v267 = p266.Modules
-    local v268 = p266.Stats
-    local v269 = p266.Cache
-    local u270 = v267.Effects
-    local u271 = v269.Variables
-    local v272 = v269.Objects
-    local v273 = v269.Character
-    local u274 = u271.Mega_Boosting
-    local _ = v272.BV
-    local _ = v272.BG
-    local v275 = v273.PrimaryPart
-    local v276 = 1 + v268.Boost_Dashes
-    if u274.State == false and u6.Enable_Flip(p266, "Mega_Boost", v276, 0.5, 2.25, u6.Usage.Mega_Boost, 0.5) == true then
-        u6.End_Climb(p266)
-        u6.Hook(p266, "Left", "Passive")
-        u6.Hook(p266, "Right", "Passive")
-        local v277 = u271.Sliding
-        local v278 = u271.Rolling
-        v277.State = false
-        v278.State = false
-        local v279 = u271.Speedlines
-        u271.Unhook_Type = ""
-        v279.Mega_Boost = true
-        u271.Movement = true
-        local v280 = tick()
-        u274.State = true
-        u274.Last = v280
-        u274.Lose = false
-        u6.Cancel_Actions(p266, { "Flip" })
-        u270.Mega_Boost = true
-        u270.Burst(p266, u2(0, 1.5707963267948966, 0))
-        p266:Send("S_Objectives", "Boost")
-        u270.Sound(p266, "Mega_Boost", v275, nil, nil)
-        task.delay(0.45, function() --[[Anonymous function at line 873]]
-            --[[
-            Upvalues:
-                [1] = u270
-            --]]
-            u270.Mega_Boost = false
-        end)
-        task.delay(0.5, function() --[[Anonymous function at line 877]]
-            --[[
-            Upvalues:
-                [1] = u274
-                [2] = u271
-            --]]
-            u274.Lose = true
-            task.delay(0.175, function() --[[Anonymous function at line 880]]
-                --[[
-                Upvalues:
-                    [1] = u271
-                --]]
-                u271.Speedlines.Mega_Boost = false
-            end)
-        end)
+    local v91 = p88.Services
+    local u92 = p88.Events
+    local v93 = v91.W.Titans
+    local v94 = Instance.new("Highlight")
+    local v95 = Enum.HighlightDepthMode.AlwaysOnTop
+    local v96 = Color3.fromRGB(255, 255, 255)
+    v94.DepthMode = v95
+    v94.FillColor = v96
+    v94.FillTransparency = 0.65
+    v94.OutlineTransparency = 0.25
+    if p90 == true then
+        v94.Parent = v93
     end
-end
-local u281 = nil
-function u6.M1(u282, p283) --[[Anonymous function at line 893]]
-    --[[
-    Upvalues:
-        [1] = u6
-        [2] = u4
-        [3] = u1
-        [4] = u281
-    --]]
-    local v284 = u282.Modules
-    local v285 = u282.Stats
-    local v286 = u282.Cache
-    local v287 = u282.Events
-    local v288 = u282.Weapon
-    local u289 = v284.Effects
-    local v290 = v284.Shift
-    local v291 = v284.Zones
-    local u292 = v286.Character
-    local v293 = v286.Variables
-    local v294 = u292.Humanoid
-    local v295 = u292.PrimaryPart
-    local u296 = v293.Slash
-    local v297 = v293.Heavy
-    local v298 = u296.Combo + 1
-    if not u292:GetAttribute("ThrowStage") and (v287.Spear_Stepped == nil and v287.Spear_Stepped_2 == nil) then
-        if u282.Invoked == false and (u282.Skill == nil and (u296.Slashing == false or u296.Continue == true)) and (u296.Cooldown == false and (v297.Hitting == false or v297.Transition == true) and v290.Stunned == false) then
-            local v299 = p283 == true and 4 or 1
-            local v300 = p283 == true and 2 or 1
-            local v301 = v294.FloorMaterial == Enum.Material.Air and "Air" or "Floor"
-            local v302 = v301 == "Air" and p283 == true and "Floor" or v301
-            local v303 = nil
-            if p283 == false and v288 == "Spears" then
-                local v304
-                v303, v304 = u6.Spear_Check(u282, u292, { "Left", "Right" })
-                local v305 = v304
-                if v303 ~= nil and v305 ~= nil then
-                    v298 = v305 == "Right" and 2 or 1
-                    u282.Sides[v305] = tick() + 1
-                    u282.Current_Spear = {
-                        ["Spear"] = v303,
-                        ["Side"] = v305
-                    }
-                    u289.Sound(u282, "Spear_Cast_1", u292)
-                    v302 = "Spear"
-                end
-            elseif v299 <= tick() - u296.Last and u296.Continue == nil then
-                v298 = 1
-            else
-                v298 = v298 > 3 and 1 or v298
-                if v298 == 3 then
-                    u296.Combo = 0
-                    u296.Cooldown = true
-                    task.delay(v300, function() --[[Anonymous function at line 934]]
-                        --[[
-                        Upvalues:
-                            [1] = u296
-                        --]]
-                        u296.Cooldown = false
-                    end)
-                end
-            end
-            v297.Transition = nil
-            v291.Hit = {}
-            v291.Hit_Building = false
-            local v306 = tick()
-            u296.Combo = v298
-            u296.Last = v306
-            u296.Slashing = true
-            u296.Continue = nil
-            u296.Type = v302
-            u296.Released = false
-            u296.Transition = nil
-            if p283 == false then
-                if v288 == "Blades" then
-                    local v307 = v285.Swing_Duration
-                    local v308 = u292:GetAttribute("Founder_Will")
-                    if v308 ~= nil then
-                        local v309 = string.split
-                        local _, v310 = unpack(v309(v308, ","))
-                        if v310 ~= nil then
-                            v307 = v307 + v310
-                        end
-                    end
-                    u296.Speed = 0.65 / (v307 / 100)
-                end
-                local v311 = v302 .. "_Hit_" .. u296.Combo
-                local v312 = tostring(v311)
-                u6.Tasks(u282, u6.M1_Frames[v312], v312, v295)
-                if v288 == "Blades" and table.find(v285.Talents, "1") ~= nil or v288 == "Spears" and table.find(v285.Talents, "30") ~= nil then
-                    local u313 = {}
-                    if v288 == "Blades" then
-                        local _, _, v314, v315 = u6.Blade_Check(u282, u292)
-                        u313 = v314 ~= nil and v315 ~= nil and { v314, v315 } or u313
-                    elseif v303 ~= nil then
-                        local v316 = u4("Attachment")
-                        local v317 = u1(0, -1.9, 0)
-                        v316.Name = "A"
-                        v316.CFrame = v317
-                        v316.Parent = v303
-                        u313 = { v316 }
-                    end
-                    u6.Tips = {}
-                    if #u313 > 0 then
-                        local u318 = u282:Get("Asset", { "Particles", "Blitzblade" })
-                        task.synchronize()
-                        for _, v319 in pairs(u313) do
-                            local v320 = u318.Tip:Clone()
-                            v320.Parent = v319
-                            local v321 = u6.Tips
-                            table.insert(v321, v320)
-                        end
-                        if u281 ~= nil then
-                            task.cancel(u281)
-                        end
-                        u281 = task.delay(2.5, function() --[[Anonymous function at line 985]]
-                            --[[
-                            Upvalues:
-                                [1] = u296
-                                [2] = u289
-                                [3] = u282
-                                [4] = u6
-                                [5] = u292
-                                [6] = u313
-                                [7] = u318
-                            --]]
-                            if u296.Slashing == true and u296.Released == false then
-                                u289.Charge(u282, u6, u292, u313, u318)
-                            end
-                        end)
-                    end
-                end
-            else
-                v293.Block = false
-                task.synchronize()
-                u282:Send("Attacks", "Slash", true)
-                v290.Initiate_Hit(u282, u292, v295, v298)
-            end
-        end
-        return true
-    end
-end
-function u6.Flip(p322, p323, p324) --[[Anonymous function at line 997]]
-    --[[
-    Upvalues:
-        [1] = u6
-        [2] = u2
-    --]]
-    local v325 = p322.Modules
-    local v326 = p322.Cache
-    local u327 = v325.Effects
-    local v328 = v326.Character
-    local u329 = v326.Variables
-    local _ = v326.Objects
-    local v330 = v328.PrimaryPart
-    local v331 = u329.Left_Hook
-    local v332 = u329.Right_Hook
-    local u333 = u329.Flip
-    local v334
-    if v331.State == true then
-        v334 = v331.Destroying == false
-    else
-        v334 = false
-    end
-    local v335
-    if v332.State == true then
-        v335 = v332.Destroying == false
-    else
-        v335 = false
-    end
-    local v336 = p323 == "Backflip" and 0.125 or 0.3
-    if u333.State == false and (p324 == true or u6.Enable_Flip(p322, p323, 1, nil, 1.25, u6.Usage.Flip, 0.5) == true) then
-        if p323 == "Backflip" then
-            u6.End_Climb(p322)
-        end
-        local v337 = u329.Sliding
-        local v338 = u329.Rolling
-        v337.State = false
-        v338.State = false
-        local v339 = u329.Speedlines
-        u329.Unhook_Type = ""
-        v339.Flip = true
-        u329.Movement = true
-        u6.Cancel_Actions(p322, { "Mega_Boosting" })
-        u6.Flip_Type = p323
-        u333.State = true
-        local v340 = p323 == "Backflip" and u2(0, 1.5707963267948966, 0) or u2(0, 3.141592653589793, 0)
-        u327.Burst(p322, v340)
-        p322:Send("S_Objectives", "Boost")
-        u327.Sound(p322, "Swerve", v330, nil, nil)
-        if v334 == false and v335 == false then
-            u333.Lose = false
-            task.delay(0.3333333333333333, function() --[[Anonymous function at line 1041]]
-                --[[
-                Upvalues:
-                    [1] = u333
-                --]]
-                u333.Lose = true
-            end)
-        end
-        task.delay(v336 + 0.3333333333333333, function() --[[Anonymous function at line 1046]]
-            --[[
-            Upvalues:
-                [1] = u329
-            --]]
-            u329.Speedlines.Flip = false
-        end)
-        u327.Flip = true
-        task.delay(0.15 + (v336 - 0.05), function() --[[Anonymous function at line 1052]]
-            --[[
-            Upvalues:
-                [1] = u327
-            --]]
-            u327.Flip = false
-        end)
-        local v341 = p323 == "Backflip" and 0.6666666666666666 or 1.5
-        task.delay(v341, function() --[[Anonymous function at line 1060]]
-            --[[
-            Upvalues:
-                [1] = u333
-                [2] = u6
-            --]]
-            local v342 = u333
-            local v343 = u333
-            local v344 = u333
-            local v345 = tick()
-            v342.State = false
-            v343.Last = v345
-            v344.Adjusted = false
-            u6.Flip_Type = nil
-        end)
-        u327.Dust(p322, false)
-    end
-end
-function u6.Hook_Break(u346) --[[Anonymous function at line 1074]]
-    --[[
-    Upvalues:
-        [1] = u4
-        [2] = u6
-    --]]
-    local v347 = u346.Services
-    local v348 = u346.Stats
-    local v349 = u346.Cache
-    local u350 = v347.W
-    local v351 = v349.Character
-    local u352 = v349.Variables
-    local _ = v349.Object
-    local _ = u350.CurrentCamera
-    local u353 = v351.PrimaryPart
-    local v354 = u352.Left_Hook
-    local v355 = u352.Right_Hook
-    local u356 = u352.Hook_Break
-    local u357
-    if v354.State == true then
-        u357 = v354.Destroying == false
-    else
-        u357 = false
-    end
-    local u358
-    if v355.State == true then
-        u358 = v355.Destroying == false
-    else
-        u358 = false
-    end
-    local u359 = v348.ODM_Range
-    if u356.State == false and (tick() - u356.Last >= 1 and u356.Hooking == false) then
-        local u360 = false
-        local u361 = false
-        task.defer(function() --[[Anonymous function at line 1153]]
-            --[[
-            Upvalues:
-                [1] = u357
-                [2] = u6
-                [3] = u346
-                [4] = u356
-                [5] = u352
-                [6] = u350
-                [7] = u353
-                [8] = u359
-                [9] = u4
-                [10] = u360
-                [11] = u361
-            --]]
-            if u357 == true then
-                u6.Hook(u346, "Left", "Passive")
-                task.delay(0.43333333333333335, function() --[[Anonymous function at line 1157]]
-                    --[[
-                    Upvalues:
-                        [1] = u356
-                        [2] = u352
-                        [3] = u350
-                        [4] = u353
-                        [5] = u359
-                        [6] = u4
-                        [7] = u360
-                        [8] = u6
-                        [9] = u346
-                        [10] = u361
-                    --]]
-                    if u356.Holding == true and u356.Holding == true then
-                        local u362 = "Left"
-                        task.defer(function() --[[Anonymous function at line 1097]]
-                            --[[
-                            Upvalues:
-                                [1] = u352
-                                [2] = u362
-                                [3] = u350
-                                [4] = u353
-                                [5] = u359
-                                [6] = u4
-                                [7] = u356
-                                [8] = u360
-                                [9] = u6
-                                [10] = u346
-                                [11] = u361
-                            --]]
-                            local v363 = u352[u362 .. "_Hook"]
-                            if v363.State == false and v363.Destroying == false then
-                                local v364 = u352[u362 .. "_Hook"]
-                                local v365 = nil
-                                local v366 = 6
-                                while v365 == nil do
-                                    v365 = u350:Raycast(u353.Position, u353.CFrame.LookVector * -u359, u352.Params)
-                                    if v365 ~= nil then
-                                        if v364.Attachment == nil then
-                                            local v367 = u4("Attachment")
-                                            local v368 = v365.Instance
-                                            v367.Name = "A"
-                                            v367.Parent = v368
-                                            v367.WorldPosition = v365.Position
-                                            v364.Attachment = v367
-                                        else
-                                            v364.Attachment.Parent = v365.Instance
-                                            v364.Attachment.WorldPosition = v365.Position
-                                        end
-                                        if u356.Holding == true then
-                                            u360 = u6.Hook(u346, u362, "Active", true)
-                                        end
-                                        break
-                                    end
-                                    if v366 >= 102 then
-                                        break
-                                    end
-                                    v366 = v366 + 4
-                                end
-                            end
-                            if u360 == true and u361 == false then
-                                u361 = true
-                                u356.Hooking = true
-                                local v369 = u356
-                                local v370 = u356
-                                local v371 = tick()
-                                v369.State = true
-                                v370.Last = v371
-                            end
-                        end)
-                    end
-                end)
-            elseif u356.Holding == true then
-                local u372 = "Left"
-                task.defer(function() --[[Anonymous function at line 1097]]
-                    --[[
-                    Upvalues:
-                        [1] = u352
-                        [2] = u372
-                        [3] = u350
-                        [4] = u353
-                        [5] = u359
-                        [6] = u4
-                        [7] = u356
-                        [8] = u360
-                        [9] = u6
-                        [10] = u346
-                        [11] = u361
-                    --]]
-                    local v373 = u352[u372 .. "_Hook"]
-                    if v373.State == false and v373.Destroying == false then
-                        local v374 = u352[u372 .. "_Hook"]
-                        local v375 = nil
-                        local v376 = 6
-                        while v375 == nil do
-                            v375 = u350:Raycast(u353.Position, u353.CFrame.LookVector * -u359, u352.Params)
-                            if v375 ~= nil then
-                                if v374.Attachment == nil then
-                                    local v377 = u4("Attachment")
-                                    local v378 = v375.Instance
-                                    v377.Name = "A"
-                                    v377.Parent = v378
-                                    v377.WorldPosition = v375.Position
-                                    v374.Attachment = v377
-                                else
-                                    v374.Attachment.Parent = v375.Instance
-                                    v374.Attachment.WorldPosition = v375.Position
-                                end
-                                if u356.Holding == true then
-                                    u360 = u6.Hook(u346, u372, "Active", true)
-                                end
-                                break
-                            end
-                            if v376 >= 102 then
-                                break
-                            end
-                            v376 = v376 + 4
-                        end
-                    end
-                    if u360 == true and u361 == false then
-                        u361 = true
-                        u356.Hooking = true
-                        local v379 = u356
-                        local v380 = u356
-                        local v381 = tick()
-                        v379.State = true
-                        v380.Last = v381
-                    end
-                end)
-            end
-        end)
-        task.defer(function() --[[Anonymous function at line 1168]]
-            --[[
-            Upvalues:
-                [1] = u358
-                [2] = u6
-                [3] = u346
-                [4] = u356
-                [5] = u352
-                [6] = u350
-                [7] = u353
-                [8] = u359
-                [9] = u4
-                [10] = u360
-                [11] = u361
-            --]]
-            if u358 == true then
-                u6.Hook(u346, "Right", "Passive")
-                task.delay(0.43333333333333335, function() --[[Anonymous function at line 1172]]
-                    --[[
-                    Upvalues:
-                        [1] = u356
-                        [2] = u352
-                        [3] = u350
-                        [4] = u353
-                        [5] = u359
-                        [6] = u4
-                        [7] = u360
-                        [8] = u6
-                        [9] = u346
-                        [10] = u361
-                    --]]
-                    if u356.Holding == true and u356.Holding == true then
-                        local u382 = "Right"
-                        task.defer(function() --[[Anonymous function at line 1097]]
-                            --[[
-                            Upvalues:
-                                [1] = u352
-                                [2] = u382
-                                [3] = u350
-                                [4] = u353
-                                [5] = u359
-                                [6] = u4
-                                [7] = u356
-                                [8] = u360
-                                [9] = u6
-                                [10] = u346
-                                [11] = u361
-                            --]]
-                            local v383 = u352[u382 .. "_Hook"]
-                            if v383.State == false and v383.Destroying == false then
-                                local v384 = u352[u382 .. "_Hook"]
-                                local v385 = nil
-                                local v386 = 6
-                                while v385 == nil do
-                                    v385 = u350:Raycast(u353.Position, u353.CFrame.LookVector * -u359, u352.Params)
-                                    if v385 ~= nil then
-                                        if v384.Attachment == nil then
-                                            local v387 = u4("Attachment")
-                                            local v388 = v385.Instance
-                                            v387.Name = "A"
-                                            v387.Parent = v388
-                                            v387.WorldPosition = v385.Position
-                                            v384.Attachment = v387
-                                        else
-                                            v384.Attachment.Parent = v385.Instance
-                                            v384.Attachment.WorldPosition = v385.Position
-                                        end
-                                        if u356.Holding == true then
-                                            u360 = u6.Hook(u346, u382, "Active", true)
-                                        end
-                                        break
-                                    end
-                                    if v386 >= 102 then
-                                        break
-                                    end
-                                    v386 = v386 + 4
-                                end
-                            end
-                            if u360 == true and u361 == false then
-                                u361 = true
-                                u356.Hooking = true
-                                local v389 = u356
-                                local v390 = u356
-                                local v391 = tick()
-                                v389.State = true
-                                v390.Last = v391
-                            end
-                        end)
-                    end
-                end)
-            elseif u356.Holding == true then
-                local u392 = "Right"
-                task.defer(function() --[[Anonymous function at line 1097]]
-                    --[[
-                    Upvalues:
-                        [1] = u352
-                        [2] = u392
-                        [3] = u350
-                        [4] = u353
-                        [5] = u359
-                        [6] = u4
-                        [7] = u356
-                        [8] = u360
-                        [9] = u6
-                        [10] = u346
-                        [11] = u361
-                    --]]
-                    local v393 = u352[u392 .. "_Hook"]
-                    if v393.State == false and v393.Destroying == false then
-                        local v394 = u352[u392 .. "_Hook"]
-                        local v395 = nil
-                        local v396 = 6
-                        while v395 == nil do
-                            v395 = u350:Raycast(u353.Position, u353.CFrame.LookVector * -u359, u352.Params)
-                            if v395 ~= nil then
-                                if v394.Attachment == nil then
-                                    local v397 = u4("Attachment")
-                                    local v398 = v395.Instance
-                                    v397.Name = "A"
-                                    v397.Parent = v398
-                                    v397.WorldPosition = v395.Position
-                                    v394.Attachment = v397
-                                else
-                                    v394.Attachment.Parent = v395.Instance
-                                    v394.Attachment.WorldPosition = v395.Position
-                                end
-                                if u356.Holding == true then
-                                    u360 = u6.Hook(u346, u392, "Active", true)
-                                end
-                                break
-                            end
-                            if v396 >= 102 then
-                                break
-                            end
-                            v396 = v396 + 4
-                        end
-                    end
-                    if u360 == true and u361 == false then
-                        u361 = true
-                        u356.Hooking = true
-                        local v399 = u356
-                        local v400 = u356
-                        local v401 = tick()
-                        v399.State = true
-                        v400.Last = v401
-                    end
-                end)
-            end
-        end)
-    end
-end
-function u6.Slide(p402, p403) --[[Anonymous function at line 1185]]
-    --[[
-    Upvalues:
-        [1] = u6
-        [2] = u1
-        [3] = u3
-    --]]
-    local v404 = p402.Modules
-    local v405 = p402.Cache
-    local v406 = v404.Effects
-    local v407 = v405.Character
-    local v408 = v405.Variables
-    local v409 = v405.Objects
-    local v410 = v407.PrimaryPart
-    if v410 ~= nil then
-        local v411 = v409.BV
-        local v412 = v408.Sliding
-        local v413 = v408.Rolling
-        v408.Land = false
-        v412.State = true
-        v413.State = false
-        u6.Moving_Magnitude = u1(p403, 0, 0)
-        v411.MaxForce = u3(u6.Max_Force.X, 0, u6.Max_Force.Z)
-        v411.Velocity = v410.CFrame.LookVector * p403
-        v406.Dust(p402, false)
-    end
-end
-function u6.Roll(p414, p415) --[[Anonymous function at line 1209]]
-    --[[
-    Upvalues:
-        [1] = u6
-        [2] = u1
-        [3] = u3
-    --]]
-    local v416 = p414.Modules
-    local v417 = p414.Cache
-    local v418 = v416.Effects
-    local v419 = v417.Character
-    local v420 = v417.Variables
-    local v421 = v417.Objects
-    local v422 = v419.PrimaryPart
-    local v423 = v421.BV
-    local v424 = v420.Sliding
-    local v425 = v420.Rolling
-    v420.Land = false
-    v424.State = false
-    v425.State = true
-    u6.Moving_Magnitude = u1(p415, 0, 0)
-    v423.MaxForce = u3(u6.Max_Force.X, 0, u6.Max_Force.Z)
-    v423.Velocity = v422.CFrame.LookVector * p415
-    v418.Dust(p414, true)
-end
-function u6.Constants(_, p426, p427, p428, p429, p430, p431) --[[Anonymous function at line 1231]]
-    local v432 = 0
-    if p428 == true then
-        p430 = p430 * 1.1 or p430
-    end
-    local v433 = p426 == true and p427 == true and 2.5 or ((p426 == true or p427 == true) and 5 or v432)
-    local v434 = (p428 == true or p426 == true and p427 == true) and 1.75 or 2
-    return p430, v433, p426 == false and p427 == false and 0 or p429 / (p431 / 1.75) / v434
-end
-function u6.Lerp(p435, p436, p437, p438, p439) --[[Anonymous function at line 1252]]
-    local v440 = p435.Modules
-    local v441 = p435.Cache
-    local v442 = v440.Maths
-    local v443 = v441.Coordinates
-    local v444 = v441.Velocities
-    local v445 = v442.Lerp
-    local v446 = v444.Swerve
-    local v447 = p436 * p438
-    v444.Swerve = v445(v446, p437, (math.min(v447, 1)))
-    local v448 = v442.Lerp
-    local v449 = v443.Tilt
-    local v450 = p439 / 1.5 * 0.7
-    local v451 = p436 * 3
-    v443.Tilt = v448(v449, v450, (math.min(v451, 1)))
-end
-function u6.Physics(p452, _, p453, p454, p455, p456, p457, p458, p459) --[[Anonymous function at line 1264]]
-    --[[
-    Upvalues:
-        [1] = u6
-        [2] = u3
-    --]]
-    local v460 = p452.Modules
-    local v461 = p452.Cache
-    local v462 = v460.Climb
-    local v463 = v460.Hooked
-    local v464 = v460.Flip
-    local v465 = v460.Freefall
-    local v466 = v460.Momentum
-    local v467 = v461.Character
-    local v468 = v461.Variables
-    local v469 = v461.Coordinates
-    local v470 = v461.Velocities
-    local v471 = v467.PrimaryPart
-    local v472 = v467.Humanoid
-    local v473 = v468.Left_Hook
-    local v474 = v468.Right_Hook
-    local v475 = v468.Left_Swerve
-    local v476 = v468.Right_Swerve
-    local v477 = v468.Flip
-    local v478 = v468.Boosting
-    local v479 = v468.Mega_Boosting
-    local v480 = v468.Skill_Movement
-    local v481 = v468.Climbing
-    local v482
-    if v473.State == true and v473.Destroying == false then
-        v482 = v473.Physics == true
-    else
-        v482 = false
-    end
-    local v483
-    if v474.State == true and v474.Destroying == false then
-        v483 = v474.Physics == true
-    else
-        v483 = false
-    end
-    local v484 = p453 / 100
-    local v485 = 0.03 * v484 * p456
-    local v486 = v475.State == true and v476.State == false and -1 or (v476.State == true and v475.State == false and 1 or 0)
-    v470.Target_Swerve = p454 / 3 * v486
-    local v487, v488, v489 = u6.Constants(p452, v482, v483, v478, v470.Swerve, v470.Target_Swerve, p454)
-    u6.Lerp(p452, p455, v487, v488, v489)
-    local v490 = v478 == true and 1.2 or 1
-    local v491
-    if u6.Escaped.Gained == false and (v479.Lose == true and v480.Lose == true) then
-        v491 = v477.Lose == true
-    else
-        v491 = false
-    end
-    local v492 = false
-    if v472.Health > 0 then
-        if u6.Escaped.State == true and u6.Escaped.Gained == false then
-            u6.Escaped.Gained = true
-            task.synchronize()
-            local v493 = u6.Max_Force
-            local v494 = u3(0, p454 / u6.Escaped.Multiplier, 0)
-            p457.MaxForce = v493
-            p457.Velocity = v494
-            p457.Parent = v471
-            v492 = true
-        elseif v481.State == false then
-            if v482 == true or v483 == true then
-                v463.Main(p452, u6, p456, p457, p458, p459, v462, v468, v471, v472, v473, v474, v478, v482, v483, v484, p454, v485, v486, v490)
-                v492 = true
-            elseif v479.State == true and v479.Lose == false or v480.State == true and v480.Lose == false then
-                v466.Main(p452, u6, p456, p457, p458, v471, v479, v480, v484, p454)
-                v492 = true
-            elseif v477.State == true and v477.Adjusted == false then
-                v464.Main(p452, u6, p457, v477, v471, p454)
-                v492 = true
-            end
-        end
-    end
-    if v492 == false and v491 == true then
-        v465.Main(p452, u6, p456, p457, p458, p459, v468, v469.Lock, v471, v472, v478, v481, v484, p454, v485, v490)
-    end
-end
-function u6.Fling(p495, p496, p497, _) --[[Anonymous function at line 1326]]
-    --[[
-    Upvalues:
-        [1] = u1
-    --]]
-    local v498 = p495.Cache.Character
-    if v498 ~= nil then
-        local v499 = v498.PrimaryPart
-        if p496 ~= nil then
-            local v500 = p496.PrimaryPart
-            if v500 ~= nil then
-                local v501 = p496:GetScale()
-                for _, v502 in pairs(v498:GetChildren()) do
-                    if v502:IsA("BasePart") == true then
-                        v502.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-                        v502.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-                    end
-                end
-                if p497 == "Grab" then
-                    v499:ApplyImpulse(v500.CFrame.LookVector * (600 + (v501 - 3) * 37) + v500.CFrame.UpVector * (300 + (v501 - 3) * 8.25))
-                    return
-                end
-                if p497 == "Stomp" then
-                    v499:ApplyImpulse(v499.CFrame.LookVector * (200 + (v501 - 3) * 12.5) + v499.CFrame.UpVector * (550 + (v501 - 3) * 15))
-                    return
-                end
-                if p497 == "Kick" then
-                    v499:ApplyImpulse(v500.CFrame.LookVector * (750 + (v501 - 3) * 46) + v500.CFrame.UpVector * (200 + (v501 - 3) * 5.5))
-                    return
-                end
-                if p497 == "Dive" then
-                    v499:ApplyImpulse(v500.CFrame.LookVector * (650 + (v501 - 3) * 40) + v500.CFrame.UpVector * (275 + (v501 - 3) * 7.5))
-                    return
-                end
-                if p497 == "Punch" then
-                    v499:ApplyImpulse(v500.CFrame.LookVector * (575 + (v501 - 3) * 35) + v500.CFrame.UpVector * (275 + (v501 - 3) * 7.5))
-                    return
-                end
-                if p497 == "Roar" then
-                    v499:ApplyImpulse(u1(v499.Position, v500.Position).LookVector * -500 + Vector3.new(0, 1000, 0))
-                    return
-                end
-                if p497 == "Corkscrew" then
-                    v499:ApplyImpulse(v500.CFrame.LookVector * 1250 + v500.CFrame.UpVector * 725)
-                    return
-                end
-                if p497 == "Brutal" then
-                    v499:ApplyImpulse(v499.CFrame.LookVector * -625 + v500.CFrame.UpVector * 1125)
-                    return
-                end
-                if p497 == "Uppercut" then
-                    v499:ApplyImpulse(v500.CFrame.UpVector * 2000)
-                    return
-                end
-                if p497 == "Earth_Breaker" then
-                    v499:ApplyImpulse(u1(v499.Position, v500.Position).LookVector * -500 + Vector3.new(0, 1000, 0))
-                    return
-                end
-                if p497 == "Charge" then
-                    v499:ApplyImpulse(u1(v499.Position, v500.Position).LookVector * -500 + Vector3.new(0, 1000, 0))
-                end
-            end
-        end
-    end
-end
-function u6.Escaping(u503) --[[Anonymous function at line 1424]]
-    --[[
-    Upvalues:
-        [1] = u6
-    --]]
-    local v504 = u503.Services
-    local v505 = u503.Modules
-    local v506 = u503.Cache
-    local u507 = u503.Weapon
-    local _ = v504.RS
-    local _ = v504.W
-    local u508 = v505.Effects
-    local _ = v505.HUD
-    local v509 = v506.Slot_Data
-    local v510 = v506.Character
-    local v511 = v506.Variables
-    local v512 = v510.PrimaryPart
-    if u507 == "Blades" then
-        u508.Slash(u503, true)
-        local v513 = u508.Sound
-        local v514 = "Slash_" .. math.random(1, 6)
-        v513(u503, tostring(v514), v512)
-        if table.find(v509.Skills.Unlocked, "74") == nil then
-            v511.Reload = false
-            v511.Full_Reload = false
-        end
-    else
-        v511.Full_Reload = false
-    end
-    u6.Escaped = {
-        ["State"] = true,
-        ["Gained"] = false,
-        ["Multiplier"] = 1.5
-    }
-    local v515 = (u503.Skill == "3" or (u503.Skill == "59" or (u503.Skill == "115" or u503.Skill == "151"))) and 1 or 0.5
-    task.delay(v515, function() --[[Anonymous function at line 1448]]
+    local function u102(u97) --[[Anonymous function at line 310]]
         --[[
         Upvalues:
-            [1] = u6
-            [2] = u507
-            [3] = u508
-            [4] = u503
+            [1] = u92
+            [2] = u28
+            [3] = u89
         --]]
-        u6.Escaped = {
-            ["State"] = false,
-            ["Gained"] = false
-        }
-        if u507 == "Blades" then
-            u508.Slash(u503, false)
+        if u92[u97.Name] == nil and u97:GetAttribute("Type") ~= "Crawler" then
+            u92[u97.Name] = u97:GetAttributeChangedSignal("Tracking"):ConnectParallel(function() --[[Anonymous function at line 312]]
+                --[[
+                Upvalues:
+                    [1] = u97
+                    [2] = u28
+                    [3] = u89
+                --]]
+                local v98 = u97:GetAttribute("Tracking")
+                local v99 = table.find(u28.Tracking, u97)
+                if v98 == u89.Name and v99 == nil then
+                    local v100 = u28.Tracking
+                    local v101 = u97
+                    table.insert(v100, v101)
+                elseif v99 ~= nil then
+                    table.remove(u28.Tracking, v99)
+                end
+            end)
         end
+    end
+    for _, v103 in pairs(v93:GetChildren()) do
+        u102(v103)
+    end
+    u92.Titan_Added = v93.ChildAdded:Connect(function(p104) --[[Anonymous function at line 331]]
+        --[[
+        Upvalues:
+            [1] = u102
+        --]]
+        u102(p104)
     end)
 end
-function u6.Is_Stuck(u516, u517) --[[Anonymous function at line 1453]]
-    local u518 = u517:GetAttribute("Last_Position")
-    if u518 ~= nil then
-        task.delay(1, function() --[[Anonymous function at line 1457]]
-            --[[
-            Upvalues:
-                [1] = u516
-                [2] = u517
-                [3] = u518
-            --]]
-            local v519 = u516.Services.W
-            local v520 = u517.PrimaryPart
-            if v520 ~= nil then
-                local v521 = v520.Position
-                local v522 = (v521 - u518.Position).Unit
-                local v523 = (v521 - u518.Position).Magnitude
-                if v519:Raycast(u518.Position, v522 * v523, u516.Params_2) ~= nil then
-                    u517:SetPrimaryPartCFrame(u518)
-                    return
-                end
-                if v519:Raycast(v521, Vector3.new(0, 200, 0), u516.Params_2) ~= nil then
-                    u517:SetPrimaryPartCFrame(u518)
-                end
-            end
-        end)
-    end
-end
-return u6
+return u28
