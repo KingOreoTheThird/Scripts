@@ -1,300 +1,504 @@
-local u87 = {
-    ["Hit"] = {},
-    ["Refill_Station"] = nil,
-    ["Stats"] = {
-        ["Titans_Killed"] = 0,
-        ["Damage_Dealt"] = 0,
-        ["Critical_Hits"] = 0
+local u1 = UDim2.new
+local u2 = Vector2.new
+local u3 = Color3.fromRGB
+local u139 = {
+    ["Main"] = nil,
+    ["Device"] = nil,
+    ["Device_Keybinds"] = {},
+    ["State"] = "Out",
+    ["Colours"] = {
+        ["Ackerman"] = u3(255, 80, 80),
+        ["Shiki"] = u3(80, 80, 255),
+        ["Fritz"] = u3(135, 30, 255)
     },
-    ["Momentum"] = {
-        ["Cycle"] = 0,
-        ["Connection"] = nil
+    ["Blades_X"] = {
+        [0] = -0.15,
+        [1] = 0.02,
+        [2] = 0.17,
+        [3] = 0.34,
+        [4] = 0.5,
+        [5] = 0.675,
+        [6] = 0.765,
+        [7] = 1
     },
-    ["Time_Difference"] = 0,
-    ["Hit_Building"] = false,
-    ["Damage_Check"] = function(p1, p2, p3, p4, p5, p6, p7, p8) --[[Function name: Damage_Check, line 19]]
+    ["Spears_X"] = {
+        [0] = 0,
+        [1] = 0.23,
+        [2] = 0.33,
+        [3] = 0.43,
+        [4] = 0.53,
+        [5] = 0.63,
+        [6] = 0.73,
+        [7] = 0.83,
+        [8] = 0.93,
+        [9] = 0.93,
+        [10] = 0.93,
+        [11] = 0.93,
+        [12] = 0.93,
+        [13] = 0.93,
+        [14] = 0.93
+    },
+    ["Fade"] = function(u4, u5, p6) --[[Function name: Fade, line 50]]
         --[[
         Upvalues:
-            [1] = u87
+            [1] = u139
+            [2] = u1
         --]]
-        local v9 = p1.Modules
-        local u10 = p1.Base_Stats
-        local u11 = p1.Stats
-        local v12 = p1.Cache
-        local v13 = v9.Effects
-        local _ = v9.HUD
-        local v14 = v9.ODMG
-        local v15 = v12.Data
-        local v16 = v12.Slot_Data
-        if u10 ~= nil and (u11 ~= nil and (p2 ~= nil and (p2 > 0 and (v15 ~= nil and v16 ~= nil)))) then
-            local v17 = math.floor(p2)
-            u87.Stats.Damage_Dealt = u87.Stats.Damage_Dealt + v17
-            if p5 == true then
-                v13.Finisher(p1)
-            end
-            if p4 == true then
-                u87.Stats.Critical_Hits = u87.Stats.Critical_Hits + 1
-                if p1.Weapon == "Blades" and table.find(v16.Skills.Unlocked, "20") ~= nil then
-                    local u18 = u87.Momentum.Cycle + 1
-                    u87.Momentum.Cycle = u18
-                    if u87.Momentum.Connection == nil then
-                        u11.ODM_Speed = u11.ODM_Speed + u10.ODM_Speed * 0.05
-                    else
-                        task.cancel(u87.Momentum.Connection)
-                    end
-                    u87.Momentum.Connection = task.delay(5, function() --[[Anonymous function at line 48]]
-                        --[[
-                        Upvalues:
-                            [1] = u87
-                            [2] = u18
-                            [3] = u11
-                            [4] = u10
-                        --]]
-                        if u87.Momentum.Cycle == u18 then
-                            u11.ODM_Speed = u11.ODM_Speed - u10.ODM_Speed * 0.05
-                            u87.Momentum.Connection = nil
-                        end
-                    end)
-                end
-            end
-            if p6 == true then
-                u87.Stats.Titans_Killed = u87.Stats.Titans_Killed + 1
-                if v15.Settings.Gameplay.Hook_Detach == "On" then
-                    v14.Hook(p1, "Left", "Passive")
-                    v14.Hook(p1, "Right", "Passive")
-                end
-                if table.find(u11.Talents, "14") ~= nil then
-                    v13.Lifefeed(p1)
-                end
-            end
-            if p5 == true and (p6 == true and p7 ~= nil) then
-                v9["205"].Detect(p1, p7)
-            end
-            v13.Damage_Indicator(p1, v17, p3, p4, p8)
-        end
-    end,
-    ["Setup"] = function(u19, p20, p21) --[[Function name: Setup, line 74]]
-        --[[
-        Upvalues:
-            [1] = u87
-        --]]
-        local v22 = u19.Services
-        local v23 = u19.Modules
-        local u24 = u19.Stats
-        local v25 = u19.Cache
-        local v26 = u19.Events
-        local u27 = u19.Weapon
-        local v28 = p20:WaitForChild("Hitbox")
-        local v29 = v22.W
-        local u30 = v23.Effects
-        local u31 = v23.HUD
-        local u32 = v25.Player
-        local v33 = v25.Variables
-        local v34 = v25.Objects
-        local u35 = v25.Data
-        local u36 = v33.Slash
-        local u37 = v34.BV
-        local function u46(p38, p39) --[[Anonymous function at line 93]]
-            --[[
-            Upvalues:
-                [1] = u31
-                [2] = u35
-                [3] = u32
-            --]]
-            local v40 = u31.Device
-            local v41
-            if v40 == nil then
-                v41 = ""
-            else
-                local v42 = u35.Actions[v40].Reload
-                v41 = v42 == nil and "BTN" or string.gsub(v42, "Button", "")
-            end
-            local v43
-            if p39 == nil then
-                v43 = u32:GetAttribute("Refills")
-                p39 = u32:GetAttribute("Max_Refills")
-            else
-                v43 = p38.Parent:GetAttribute("Refills")
-            end
-            local v44 = p38.Display.Main.Top.Title
-            local v45 = "REFILLS: " .. v43 .. " / " .. p39 .. " [" .. v41 .. "]"
-            v44.Text = tostring(v45)
-        end
-        local u47 = nil
-        local function u49(p48) --[[Anonymous function at line 120]]
-            --[[
-            Upvalues:
-                [1] = u87
-                [2] = u30
-                [3] = u19
-                [4] = u47
-            --]]
-            u87.Refill_Station = nil
-            u30.Tween(u19, p48.Display.Main, "Title", {
-                ["GroupTransparency"] = 1
-            }, 0.25, nil, nil, nil, nil, nil, true)
-            if u47 ~= nil then
-                u47:Disconnect()
-                u47 = nil
-            end
-        end
-        v28.CanTouch = true
-        local u50 = u47
-        for v51, v52 in pairs(u87.Stats) do
-            local v53 = u32:GetAttribute(v51)
-            if v53 ~= nil then
-                u32:SetAttribute(v51, nil)
-                u87.Stats[v51] = v52 + v53
-            end
-        end
-        if p21 == false then
-            v26.Hitbox = v28.Touched:Connect(function(u54) --[[Anonymous function at line 139]]
+        local u7 = u4.Modules.Effects
+        u139.State = p6
+        if p6 == "In" then
+            u7.Tween(u4, u5.Objectives, "HUD_Objectives_In", {
+                ["Position"] = u1(-0.025, 0, 0.1, 0)
+            }, 0.55)
+            task.delay(0.15, function() --[[Anonymous function at line 60]]
                 --[[
                 Upvalues:
-                    [1] = u36
-                    [2] = u27
-                    [3] = u87
-                    [4] = u24
-                    [5] = u19
-                    [6] = u37
-                    [7] = u49
-                    [8] = u46
-                    [9] = u30
-                    [10] = u50
-                    [11] = u32
+                    [1] = u7
+                    [2] = u4
+                    [3] = u5
+                    [4] = u1
                 --]]
-                if u54.Parent.Name == "Hit" and (u36.Slashing == true and (u36.Holding == false and u36.Released == true)) then
-                    if u27 == "Blades" then
-                        local v55 = u54.Parent.Parent.Parent
-                        if v55 ~= nil and (v55.Parent ~= nil and (v55.Parent.Name == "Titans" and (#u87.Hit < u24.Strike and table.find(u87.Hit, u54) == nil))) then
-                            local v56 = u87.Hit
-                            table.insert(v56, u54)
-                            u19:Send("Hitboxes", "Register", u54, u37.Velocity.Magnitude, u87.Time_Difference)
-                            return
-                        end
-                    end
-                elseif u54.Name == "Refill" then
-                    if u87.Refill_Station ~= nil then
-                        u49(u87.Refill_Station)
-                    end
-                    local u57 = u54.Parent:GetAttribute("Max_Refills")
-                    u87.Refill_Station = u54
-                    u46(u54, u57)
-                    u30.Tween(u19, u54.Display.Main, "Title", {
-                        ["GroupTransparency"] = 0
-                    }, 0.5, nil, nil, nil, nil, nil, true)
-                    if u57 == nil then
-                        u50 = u32:GetAttributeChangedSignal("Refills"):Connect(function() --[[Anonymous function at line 165]]
-                            --[[
-                            Upvalues:
-                                [1] = u54
-                                [2] = u30
-                                [3] = u19
-                                [4] = u46
-                            --]]
-                            u54.Display.Main.Top.Title.TextTransparency = 1
-                            u30.Tween(u19, u54.Display.Main.Top.Title, "Title", {
-                                ["TextTransparency"] = 0
-                            }, 0.5, nil, nil, nil, nil, nil, true)
-                            u46(u54)
-                        end)
-                        return
-                    end
-                    u50 = u54.Parent:GetAttributeChangedSignal("Refills"):Connect(function() --[[Anonymous function at line 174]]
-                        --[[
-                        Upvalues:
-                            [1] = u54
-                            [2] = u30
-                            [3] = u19
-                            [4] = u46
-                            [5] = u57
-                        --]]
-                        u54.Display.Main.Top.Title.TextTransparency = 1
-                        u30.Tween(u19, u54.Display.Main.Top.Title, "Title", {
-                            ["TextTransparency"] = 0
-                        }, 0.5, nil, nil, nil, nil, nil, true)
-                        u46(u54, u57)
-                    end)
-                end
-            end)
-            v26.Hitbox_Ended = v28.TouchEnded:Connect(function(p58) --[[Anonymous function at line 187]]
-                --[[
-                Upvalues:
-                    [1] = u87
-                    [2] = u49
-                --]]
-                if u87.Refill_Station ~= nil and u87.Refill_Station == p58 then
-                    u49(p58)
-                end
+                u7.Tween(u4, u5.Main, "HUD_Main_In", {
+                    ["Position"] = u1(0, 0, 0, 0)
+                }, 0.5)
             end)
         else
-            local v59 = OverlapParams.new()
-            local v60 = Enum.RaycastFilterType.Include
-            local v61 = { v29.Titans }
-            v59.FilterType = v60
-            v59.FilterDescendantsInstances = v61
-            u87.Params = v59
-            local v62 = RaycastParams.new()
-            local v63 = Enum.RaycastFilterType.Include
-            local v64 = { v29.Climbable }
-            v62.FilterType = v63
-            v62.FilterDescendantsInstances = v64
-            u87.Titan_Params = v62
+            u7.Tween(u4, u5.Objectives, "HUD_Objectives_Out", {
+                ["Position"] = u1(-0.076, 0, 0.1, 0)
+            }, 0.3)
+            task.delay(0.1, function() --[[Anonymous function at line 67]]
+                --[[
+                Upvalues:
+                    [1] = u7
+                    [2] = u4
+                    [3] = u5
+                    [4] = u1
+                --]]
+                u7.Tween(u4, u5.Main, "HUD_Main_Out", {
+                    ["Position"] = u1(0, 0, 0.087, 0)
+                }, 0.5)
+            end)
         end
     end,
-    ["Bounds"] = function(p65, p66, p67) --[[Function name: Bounds, line 208]]
+    ["Update"] = function(p8, p9, p10, p11, p12, p13) --[[Function name: Update, line 73]]
         --[[
         Upvalues:
-            [1] = u87
+            [1] = u139
+            [2] = u2
         --]]
-        local v68 = p65.Services
-        local v69 = p65.Modules
-        local v70 = p65.Stats
-        local v71 = p65.Cache
-        local v72 = v68.W
-        local v73 = v69.Effects
-        local v74 = v71.Variables
-        if #u87.Hit < v70.Strike then
-            task.desynchronize()
-            local v75 = p66.Hitbox
-            if p66:GetAttribute("Type") == "Armored_Titan" then
-                v75 = p66.Heavy
+        local v14 = u139.Main.Top
+        local v15 = nil
+        local v16 = nil
+        if p10 == "XP" or p10 == "Transform" then
+            v15 = v14[p10].Backing.Bar.Gradient
+            v16 = p11 / p12
+        elseif p10 == "HP" then
+            v15 = v14[p10].Backing.Tweener.Bar.Gradient
+            v16 = p11 / p12
+        elseif p10 == "Blades" or p10 == "Spears" then
+            v15 = v14[p10].Inner.Bar.Gradient
+            v16 = u139[p10 .. "_X"][p11]
+            if p10 == "Spears" then
+                local v17 = v14[p10].Spears
+                local v18 = p11 .. " / " .. p12
+                v17.Text = tostring(v18)
             end
-            local v76 = v72:GetPartsInPart(v75, u87.Params)
-            task.synchronize()
-            for _, v77 in pairs(v76) do
-                if v77 ~= nil and (v77.Parent ~= nil and v77.Parent.Parent ~= nil) then
-                    local v78 = v77.Parent.Parent
-                    if #u87.Hit >= v70.Strike or v74.Slash.Combo ~= p67 and v74.Heavy.Combo ~= p67 then
-                        break
-                    end
-                    if v78 ~= nil and (v78.Parent ~= nil and (v78.Parent.Name == "Titans" and table.find(u87.Hit, v78) == nil)) then
-                        local v79 = u87.Hit
-                        table.insert(v79, v78)
-                        local v80 = v78:FindFirstChild("Nape", true)
-                        if v80 ~= nil then
-                            p65:Send("Hitboxes", "Register", v80, nil, nil, p67)
+        elseif p10 == "Gas" then
+            local v19 = p11 / p12
+            v15 = v14.Gas.Inner.Bar.Gradient
+            v16 = -v19
+            local v20 = v19 * 100 + 0.5
+            local v21 = math.floor(v20)
+            local v22 = v14.Gas.Percentage
+            local v23 = v21 .. "%"
+            v22.Text = tostring(v23)
+        end
+        if v15 ~= nil and v16 ~= nil then
+            if p13 == true and p9 == nil then
+                p9 = p8.Modules.Effects
+            end
+            if p9 ~= nil then
+                p9.Tween(p8, v15, "Gradient", {
+                    ["Offset"] = u2(v16, 0)
+                }, 0.25, nil, nil, nil, nil, nil, true)
+                return
+            end
+            v15.Offset = u2(v16, 0)
+        end
+    end,
+    ["Boost"] = function(p24, p25) --[[Function name: Boost, line 115]]
+        --[[
+        Upvalues:
+            [1] = u139
+        --]]
+        local v26 = p24.Modules.Effects
+        local v27 = u139.Main.Top.Gas.Inner.Bar
+        local v28 = p25 == "Cooldown" and Color3.fromRGB(175, 175, 175) or Color3.fromRGB(145, 130, 255)
+        local v29 = v26.Tween
+        local v30 = "Gas_Bar_" .. p25
+        v29(p24, v27, tostring(v30), {
+            ["GroupColor3"] = v28
+        }, 0.25, nil, nil, nil, nil, nil, true)
+    end,
+    ["Keybinds"] = function(p31, p32, p33) --[[Function name: Keybinds, line 127]]
+        --[[
+        Upvalues:
+            [1] = u139
+        --]]
+        if u139.Device ~= p33 then
+            u139.Device = p33
+            local v34 = u139.Main.Top
+            local v35 = u139.Main.Parent.Leaderboard
+            for _, v36 in pairs(v34.Hotbar:GetChildren()) do
+                if v36:IsA("Frame") == true then
+                    task.desynchronize()
+                    local v37 = v36.Name
+                    local v38 = u139.Device_Keybinds[v37 .. "_" .. p33]
+                    if v38 == nil then
+                        local v39 = p32.Actions[p33][v37]
+                        if p33 == "Console" and (v37:find("Skill") ~= nil and v37 ~= "Skill_1") then
+                            local v40 = v37 == "Skill_2" and "Leftflip" or (v37 == "Skill_3" and "Rightflip" or (v37 == "Skill_4" and "Backflip" or nil))
+                            local v41 = v40 == nil and "DPadUp" or p32.Actions[p33][v40]
+                            local v42 = v39 .. " + " .. string.gsub(v41, "DPad", "")
+                            v39 = tostring(v42)
                         end
-                        v73.Shake_Amount = v73.Shake_Amount + 3
+                        v38 = v39 == nil and "TAP" or string.gsub(v39, "Button", "")
+                        u139.Device_Keybinds[v37 .. "_" .. p33] = v38
+                    end
+                    task.synchronize()
+                    v36.Key.Key.Text = v38
+                end
+            end
+            v35.Visible = p33 == "Mobile"
+            if p33 == "Mobile" then
+                p31.Modules.Effects.Hover(p31, v35, v35, u139, "Leaderboard")
+            end
+        end
+    end,
+    ["Setup"] = function(u43, u44, p45, p46) --[[Function name: Setup, line 177]]
+        --[[
+        Upvalues:
+            [1] = u139
+            [2] = u1
+            [3] = u3
+        --]]
+        local v47 = u43.Prefix
+        local v48 = u43.Services
+        local v49 = u43.Modules
+        local v50 = u43.Cache
+        local v51 = u43.Stats
+        local v52 = u43.Events
+        local v53 = u43.Weapon
+        local u54 = v48.RS
+        local v55 = v48.W
+        local u56 = v49.Effects
+        local v57 = v49.Skill
+        local u58 = v49.Format
+        local u59 = v49.Skills
+        local u60 = v50.Player
+        local v61 = u60:WaitForChild("Boosts")
+        u139.Update(u43, nil, "XP", p45.Progression.XP, p45.Progression.Max_XP)
+        if p46 == false then
+            if v53 == "Spears" then
+                u139.Update(u43, nil, "Spears", u60:GetAttribute("Spears"), 8)
+            else
+                u139.Update(u43, nil, "Blades", 7, 7)
+            end
+            u139.Update(u43, nil, "Gas", v51.ODM_Gas, v51.Maximum_ODM_Gas)
+        end
+        local v62 = u44.Top[v53]
+        local v63 = u44.Top.Gas
+        v62.Visible = not p46
+        v63.Visible = not p46
+        if u60:GetAttribute("Bar") ~= nil then
+            local v64 = u44.Top.HP
+            local v65 = u44.Top.XP
+            local v66 = u44.Top.Transform
+            local v67 = u1(0.5, 0, -0.196, 0)
+            local v68 = u1(0.5, 0, 0.175, 0)
+            v64.Position = v67
+            v65.Position = v68
+            v66.Visible = true
+            local v69 = u139.Colours[p45.Avatar.Family]
+            local v70 = u44.Top.Transform.Backing.Bar
+            if v69 == nil or not v69 then
+                v69 = u3(255, 182, 80)
+            end
+            v70.ImageColor3 = v69
+            u139.Update(u43, nil, "Transform", u60:GetAttribute("Bar"), 100)
+            v52.Transform_Gain = u60:GetAttributeChangedSignal("Bar"):Connect(function() --[[Anonymous function at line 214]]
+                --[[
+                Upvalues:
+                    [1] = u139
+                    [2] = u43
+                    [3] = u60
+                --]]
+                u139.Update(u43, nil, "Transform", u60:GetAttribute("Bar"), 100, true)
+            end)
+        end
+        local v71 = v55:GetAttribute("No_Skills")
+        local v72 = p46 == true and p45.Skills.Shifter or p45.Skills.Hotbar
+        local v73 = table.find(v51.Passive_Perks, "Heavenly Restriction") ~= nil
+        for _, u74 in pairs(u44.Top.Hotbar:GetChildren()) do
+            if u74:IsA("Frame") == true then
+                task.desynchronize()
+                local v75 = u74.Inner.Icon
+                local u76 = u74.Inner.Backing
+                local u77 = u74.Name
+                local v78 = string.len(u77)
+                local v79 = string.len(u77)
+                local v80 = string.sub(u77, v78, v79)
+                local v81 = v72[tonumber(v80)]
+                local u82 = v71 == true and "" or v81
+                task.synchronize()
+                local v83 = u82 == "" and "" or v57[u82].Icon
+                local v84 = u74.Quantity
+                local v85 = u74.Cooldown
+                local v86 = v47 .. v83
+                v75.Image = tostring(v86)
+                v84.Visible = false
+                v85.Visible = false
+                if v73 == true then
+                    u74.Restricted.Visible = true
+                end
+                if u82 ~= "" and v52[u74.Name .. "_Hotbar_Click"] == nil then
+                    v52[u74.Name .. "_Hotbar_Enter"] = u74.MouseEnter:Connect(function() --[[Anonymous function at line 252]]
+                        --[[
+                        Upvalues:
+                            [1] = u56
+                            [2] = u43
+                            [3] = u76
+                            [4] = u77
+                        --]]
+                        local v87 = u56.Tween
+                        local v88 = u43
+                        local v89 = u76
+                        local v90 = u77 .. "_" .. u76.Name .. "_In"
+                        v87(v88, v89, tostring(v90), {
+                            ["BackgroundTransparency"] = 0.25
+                        }, 0.25)
+                    end)
+                    v52[u74.Name .. "_Hotbar_Leave"] = u74.MouseLeave:Connect(function() --[[Anonymous function at line 256]]
+                        --[[
+                        Upvalues:
+                            [1] = u56
+                            [2] = u43
+                            [3] = u76
+                            [4] = u77
+                        --]]
+                        local v91 = u56.Tween
+                        local v92 = u43
+                        local v93 = u76
+                        local v94 = u77 .. "_" .. u76.Name .. "_Out"
+                        v91(v92, v93, tostring(v94), {
+                            ["BackgroundTransparency"] = 1
+                        }, 0.25)
+                    end)
+                    v52[u74.Name .. "_Hotbar_Click"] = u76.State.MouseButton1Click:Connect(function() --[[Anonymous function at line 260]]
+                        --[[
+                        Upvalues:
+                            [1] = u43
+                            [2] = u82
+                            [3] = u56
+                            [4] = u76
+                            [5] = u59
+                            [6] = u60
+                        --]]
+                        if u43.Invoked == false and u82 ~= "" then
+                            u56.Interact(u43, u76.State, true)
+                            u59.Use(u43, u60, u82)
+                        end
+                    end)
+                    local u95 = nil
+                    v52[u74.Name .. "_Changed"] = u60:GetAttributeChangedSignal(u82):Connect(function() --[[Anonymous function at line 309]]
+                        --[[
+                        Upvalues:
+                            [1] = u60
+                            [2] = u82
+                            [3] = u95
+                            [4] = u74
+                            [5] = u54
+                        --]]
+                        local v96 = u60:GetAttribute(u82)
+                        if u95 ~= nil then
+                            u95:Disconnect()
+                            u95 = nil
+                        end
+                        if v96 == nil then
+                            u74.Cooldown.Visible = false
+                        else
+                            u74.Cooldown.Visible = true
+                            local u97 = v96
+                            local u98 = 1
+                            u95 = u54.RenderStepped:Connect(function(p99) --[[Anonymous function at line 275]]
+                                --[[
+                                Upvalues:
+                                    [1] = u98
+                                    [2] = u97
+                                    [3] = u74
+                                --]]
+                                if u98 >= 1 then
+                                    u98 = 0
+                                    u97 = u97 - 1
+                                    if u97 >= 0 then
+                                        local v100 = u74.Cooldown.Label
+                                        local v101 = u97 .. "s"
+                                        v100.Text = tostring(v101)
+                                    else
+                                        u74.Cooldown.Visible = false
+                                    end
+                                else
+                                    u98 = u98 + p99
+                                    return
+                                end
+                            end)
+                        end
+                    end)
+                    local v102 = u60:GetAttribute(u82)
+                    if u95 ~= nil then
+                        u95:Disconnect()
+                        u95 = nil
+                    end
+                    if v102 == nil then
+                        u74.Cooldown.Visible = false
+                    else
+                        u74.Cooldown.Visible = true
+                        local u103 = v102
+                        local u104 = 1
+                        u95 = u54.RenderStepped:Connect(function(p105) --[[Anonymous function at line 275]]
+                            --[[
+                            Upvalues:
+                                [1] = u104
+                                [2] = u103
+                                [3] = u74
+                            --]]
+                            if u104 >= 1 then
+                                u104 = 0
+                                u103 = u103 - 1
+                                if u103 >= 0 then
+                                    local v106 = u74.Cooldown.Label
+                                    local v107 = u103 .. "s"
+                                    v106.Text = tostring(v107)
+                                else
+                                    u74.Cooldown.Visible = false
+                                end
+                            else
+                                u104 = u104 + p105
+                                return
+                            end
+                        end)
+                    end
+                    local u108 = u82 == "72" and "Extra" or (u82 == "84" and "Supplies" or ((u82 == "999" or u82 == "998") and "Shifts" or nil))
+                    if u108 ~= nil then
+                        u74.Quantity.Visible = true
+                        u74.Quantity.Text = u60:GetAttribute(u108)
+                        v52[u74.Name .. "_Quantity"] = u60:GetAttributeChangedSignal(u108):Connect(function() --[[Anonymous function at line 328]]
+                            --[[
+                            Upvalues:
+                                [1] = u74
+                                [2] = u60
+                                [3] = u108
+                            --]]
+                            u74.Quantity.Text = u60:GetAttribute(u108)
+                        end)
                     end
                 end
             end
         end
-    end,
-    ["Building"] = function(p81, p82, p83, p84) --[[Function name: Building, line 247]]
-        --[[
-        Upvalues:
-            [1] = u87
-        --]]
-        local v85 = p81.Services.W
-        task.desynchronize()
-        local v86 = v85:Raycast(p83.Position, p83.CFrame.LookVector * p82.Hitbox.Size.Z, u87.Titan_Params)
-        if v86 ~= nil and (v86.Instance ~= nil and (v86.Instance.Parent ~= nil and (v86.Instance.Parent.Parent ~= nil and v86.Instance.Parent.Parent.Name == "Buildings"))) then
+        local u109 = {}
+        local function u112() --[[Anonymous function at line 340]]
+            --[[
+            Upvalues:
+                [1] = u109
+                [2] = u44
+            --]]
+            task.desynchronize()
+            local v110 = false
+            for _, v111 in pairs(u109) do
+                if v111 > 0 then
+                    v110 = true
+                    break
+                end
+            end
             task.synchronize()
-            u87.Hit_Building = true
-            p81:Send("Hitboxes", "Building", v86.Instance, p84)
+            u44.Boosts.Visible = v110
         end
-        task.synchronize()
+        for _, u113 in pairs(u44.Boosts:GetChildren()) do
+            if u113:IsA("Frame") == true then
+                local u114 = v61[u113.Name]
+                local u115 = u114:GetAttribute("Multiplier")
+                local function u122() --[[Anonymous function at line 364]]
+                    --[[
+                    Upvalues:
+                        [1] = u115
+                        [2] = u114
+                        [3] = u113
+                        [4] = u58
+                        [5] = u109
+                        [6] = u112
+                    --]]
+                    local v116 = u115
+                    local v117 = u114.Value
+                    if v117 > 0 then
+                        v116 = v116 * 2
+                    end
+                    u113.Visible = v116 > 1
+                    local v118 = string.format
+                    local v119 = tonumber(v118("%.3f", v116))
+                    local v120 = u113.Main.Multiplier
+                    local v121 = v119 .. "x"
+                    v120.Text = tostring(v121)
+                    u113.Time.Time.Text = u58.Conversion_2(v117)
+                    u113.Time.Visible = v117 > 0
+                    u109[u113.Name] = v119
+                    u112()
+                end
+                u122()
+                v52[u113.Name .. "_Timer"] = u114:GetPropertyChangedSignal("Value"):Connect(function() --[[Anonymous function at line 388]]
+                    --[[
+                    Upvalues:
+                        [1] = u122
+                    --]]
+                    u122()
+                end)
+                v52[u113.Name .. "_Timer"] = u114:GetAttributeChangedSignal("Multiplier"):Connect(function() --[[Anonymous function at line 392]]
+                    --[[
+                    Upvalues:
+                        [1] = u115
+                        [2] = u114
+                        [3] = u122
+                    --]]
+                    u115 = u114:GetAttribute("Multiplier")
+                    u122()
+                end)
+            end
+        end
+        if u44.Parent.Visible == false and (v55:GetAttribute("Rewarded") == nil and v55:GetAttribute("Force_End") == nil) then
+            u56.Fade(u43, u139, {}, "HUD")
+        end
+    end,
+    ["Warning"] = function(p123) --[[Function name: Warning, line 405]]
+        local v124 = p123.Services
+        local v125 = p123.Modules
+        local v126 = p123.Cache
+        local v127 = v124.W
+        local v128 = v125.Effects
+        local v129 = v126.Character
+        local v130 = v126.Interface
+        local v131 = v129:FindFirstChild("Humanoid")
+        if v131 ~= nil then
+            local v132 = (v131.Health <= 0 or (v131.Health >= v131.MaxHealth * 0.7 or (v127:GetAttribute("Rewarded") == true or v127:GetAttribute("Force_End") == true))) and "Out" or "In"
+            local v133 = v132 == "In" and 0 or 1
+            local v134 = v132 == "In" and 0.25 or 1
+            local v135 = v132 == "In" and 0.5 or 1
+            local v136 = v128.Tween
+            local v137 = v130.Warning
+            local v138 = "Warning_" .. v132
+            v136(p123, v137, tostring(v138), {
+                ["TextTransparency"] = v133,
+                ["TextStrokeTransparency"] = v134
+            }, v135, "Exponential")
+        end
     end
 }
-return u87
+return u139
