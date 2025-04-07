@@ -1,132 +1,1489 @@
-if game:IsLoaded() then
-	
-print "Loading Atomic Hub"
-
-  local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-
-local gameP = game.PlaceId
-
-if game.PlaceId == 662417684 then
-	
-Rayfield:Notify({
-   Title = "Lucky Block Battlegrounds",
-   Content = "Atomic Hub Has Been Booted",
-   Duration = 6.5,
-   Image = 4483362458,
-})
-
+local u1 = Instance.new
+local u2 = CFrame.new
+local u3 = CFrame.Angles
+local u4 = CFrame.lookAt
+local u5 = Vector2.new
+local _ = Vector3.new
+local _ = UDim2.new
+local u6 = Color3.fromRGB
+local u7 = nil
+local u421 = {
+    ["Calls"] = {
+        "Full_Reload",
+        "S_Fire",
+        "S_Explode",
+        "End"
+    },
+    ["Hitbox_Order"] = {
+        ["Nape"] = 1,
+        ["Eyes"] = 2,
+        ["LeftLeg"] = 3,
+        ["RightLeg"] = 4,
+        ["LeftArm"] = 5,
+        ["RightArm"] = 6
+    },
+    ["Full_Reload"] = function(p8, p9, p10, p11) --[[Function name: Full_Reload, line 26]]
+        local v12 = p8.Modules
+        local _ = p8.Services
+        local v13 = v12.S_Achievements
+        local v14 = v12.ODMG
+        local v15 = v12.Plr
+        local v16 = v12.S_Objectives
+        local u17 = p9.Character
+        local v18 = p9:GetAttribute("Refills")
+        local v19
+        if p11 == nil then
+            v19 = nil
+        else
+            v19 = p11.Parent:GetAttribute("Refills")
+        end
+        if u17 ~= nil and p9:GetAttribute("Weapon") == "Spears" and (v19 ~= nil and v19 > 0 or v19 == nil and v18 > 0) then
+            local v20 = v13.Cache[p9.Name]
+            local v21 = v14.Rig(p8, u17)
+            if v20 ~= nil and v21 ~= nil then
+                local v22 = p9:GetAttribute("Spears")
+                local v23 = p10 == "Left" and ({
+                    1,
+                    3,
+                    5,
+                    7,
+                    9,
+                    11,
+                    13,
+                    15,
+                    17
+                } or {
+                    2,
+                    4,
+                    6,
+                    8,
+                    10,
+                    12,
+                    14,
+                    16,
+                    18
+                }) or {
+                    2,
+                    4,
+                    6,
+                    8,
+                    10,
+                    12,
+                    14,
+                    16,
+                    18
+                }
+                task.synchronize()
+                for _, v24 in pairs(v23) do
+                    if v24 <= v22 then
+                        local v25 = v21[p10 .. "LowerArm"].Spears[v24]
+                        v25.Transparency = 0
+                        v25:SetAttribute("Used", nil)
+                        for _, v26 in pairs(v25:GetChildren()) do
+                            if v26:IsA("ParticleEmitter") == true then
+                                v26.Enabled = true
+                            end
+                        end
+                    end
+                end
+                if p10 == "Right" then
+                    u17:SetAttribute("IFrames", nil)
+                    local v27 = v15.Stats[p9.Name]
+                    if v27 ~= nil then
+                        v20.Refilled = true
+                        p9:SetAttribute("Quakestrike", nil)
+                        v16.Increase(p8, p9.Name .. "_Avoid_Refills")
+                        if table.find(v27.Talents, "12") ~= nil then
+                            local v28 = p9:GetAttribute("Extra")
+                            if v28 ~= nil then
+                                p9:SetAttribute("Extra", v28 + 1)
+                            end
+                        end
+                        if v19 == nil then
+                            p9:SetAttribute("Refills", v18 - 1)
+                        else
+                            p11.Parent:SetAttribute("Refills", v19 - 1)
+                        end
+                    end
+                elseif p10 == "Left" then
+                    u17:SetAttribute("IFrames", "Refill")
+                    task.delay(5, function() --[[Anonymous function at line 90]]
+                        --[[
+                        Upvalues:
+                            [1] = u17
+                        --]]
+                        if u17:GetAttribute("IFrames") == "Refill" then
+                            u17:SetAttribute("IFrames", nil)
+                        end
+                    end)
+                end
+            end
+        end
+    end,
+    ["Conserve"] = function(p29, p30, p31, p32) --[[Function name: Conserve, line 96]]
+        local v33 = p29.Conservation_Chance
+        if p32 ~= nil then
+            v33 = v33 + p32
+        end
+        local v34 = p30:GetAttribute("Command")
+        if v34 ~= nil then
+            local v35 = string.split
+            local _, _, _, v36 = unpack(v35(v34, ","))
+            v33 = v33 + v36 / 2
+        end
+        if v33 < math.random(1, 100) then
+            p31.Transparency = 1
+            p31:SetAttribute("Used", true)
+            for _, v37 in pairs(p31:GetChildren()) do
+                if v37:IsA("ParticleEmitter") == true then
+                    v37.Enabled = false
+                end
+            end
+        end
+    end,
+    ["Replicate"] = function(p38, p39, p40, p41, p42) --[[Function name: Replicate, line 108]]
+        local v43 = p38.Services
+        local v44 = p38.Cache
+        local v45 = v43.P
+        local v46 = v44.Files
+        for _, v47 in pairs(v45:GetPlayers()) do
+            if v47 ~= p39 or p42 == true then
+                local v48 = v46[v47.UserId]
+                if v48 ~= nil and (v48.Data.Settings.Display.Player_Effects == "On" or v47 == p39) then
+                    p38:Send(v47, "Spears", "Explosion", nil, p40, p41, nil, nil, v47 == p39 and true or nil)
+                end
+            end
+        end
+    end,
+    ["S_Fire"] = function(p49, p50, p51) --[[Function name: S_Fire, line 128]]
+        --[[
+        Upvalues:
+            [1] = u421
+        --]]
+        task.desynchronize()
+        local v52 = p49.Modules
+        local v53 = v52.ODMG
+        local v54 = v52.Plr
+        local v55 = p50.Character
+        if v55 ~= nil and (p50:GetAttribute("Weapon") == "Spears" and (p51 ~= nil and (type(p51) == "string" and (v55:GetAttribute("Shifter") == nil and v55:GetAttribute("Ragdolled") == nil)))) then
+            local v56 = tonumber(p51)
+            local v57 = v53.Rig(p49, v55)
+            local v58 = v54.Stats[p50.Name]
+            if v56 ~= nil and (v57 ~= nil and v58 ~= nil) then
+                local v59 = v57[(v56 % 2 == 0 and "Right" or "Left") .. "LowerArm"].Spears[v56]
+                if v59:GetAttribute("Used") == nil then
+                    task.synchronize()
+                    u421.Conserve(v58, v55, v59)
+                    p50:SetAttribute("Current_Spear", v59.Name)
+                    return true
+                end
+            end
+        end
+        task.synchronize()
+    end,
+    ["Damage"] = function(u60, u61, p62, u63, u64, u65, p66, u67, u68, p69, u70, p71, p72, p73) --[[Function name: Damage, line 166]]
+        --[[
+        Upvalues:
+            [1] = u2
+            [2] = u7
+            [3] = u421
+        --]]
+        local v74 = u60.Services
+        local u75 = u60.Modules
+        local v76 = v74.W
+        local u77 = u75.Attacks
+        local u78 = u75.Hitboxes
+        local u79 = u75.S_Perks
+        local v80 = u60:Get("Asset", { "Client", "Explosions", "Normal" }):Clone()
+        v80:ScaleTo(p66)
+        v80:SetPrimaryPartCFrame(u2(p62))
+        v80.Parent = v76.Debris
+        local u81 = (p71 == nil and 3 or p71) + u65.Strike
+        local u82 = {}
+        local u83 = (u70 == nil or not u70) and {} or u70
+        local u84 = false
+        local u85 = p69 == nil and 1 or p69
+        local u86 = u63.PrimaryPart
+        local function u100(p87, p88) --[[Anonymous function at line 193]]
+            --[[
+            Upvalues:
+                [1] = u82
+                [2] = u70
+                [3] = u77
+                [4] = u60
+                [5] = u65
+                [6] = u83
+                [7] = u81
+                [8] = u78
+                [9] = u85
+                [10] = u75
+                [11] = u61
+                [12] = u86
+                [13] = u64
+                [14] = u84
+                [15] = u63
+                [16] = u79
+            --]]
+            task.desynchronize()
+            if p87 ~= nil and p87.Parent ~= nil then
+                local v89 = p87.Anchored == true and p87.Parent.Parent or p87.Parent
+                if v89.Name == "Buildings" and u82[p87.Parent] == nil then
+                    if u70 == nil then
+                        u82[p87.Parent] = true
+                        task.synchronize()
+                        u77.Building(u60, p87.Parent, u65.ODM_Damage / 160)
+                        return
+                    end
+                elseif v89.Name == "Hit" and #u83 < u81 then
+                    local v90, v91 = u78.Get_Titan(u60, p87)
+                    if v90 ~= nil and (v91 ~= nil and table.find(u83, v90) == nil) then
+                        local v92 = u83
+                        table.insert(v92, v90)
+                        task.synchronize()
+                        if u85 == 0 then
+                            local v93 = v91.Model
+                            local v94 = v93.PrimaryPart
+                            if v94 ~= nil then
+                                u75["104"].Stun(u60, u61, v91, v93, v94, 4)
+                                return
+                            end
+                        else
+                            local v95, v96, v97, v98, v99 = u78.Hit(u60, u61, v91, u86, p87, 0, u85, p88)
+                            if table.find(u64.Skills.Unlocked, "132") ~= nil and (u84 == false and v97 == true) then
+                                u84 = true
+                                u63:SetAttribute("132", true)
+                            end
+                            if v95 > 0 and (v98 == false or v99 == false) and table.find(u65.Passive_Perks, "Everlasting Flame") ~= nil then
+                                u79.Burn_Damage(u60, u61, u78, u86, v91, v95, u65.Burn_Damage)
+                            end
+                            u60:Send(u61, "Zones", "Damage_Check", v95, v96, v97, v98, v99)
+                        end
+                    end
+                end
+            end
+        end
+        local v101 = v80.PrimaryPart.Touched:ConnectParallel(function() --[[Anonymous function at line 237]] end)
+        if u7 == nil then
+            u7 = OverlapParams.new()
+            local v102 = u7
+            local v103 = u7
+            local v104 = Enum.RaycastFilterType.Include
+            local v105 = { v76.Climbable, v76.Titans }
+            v102.FilterType = v104
+            v103.FilterDescendantsInstances = v105
+        end
+        task.desynchronize()
+        local u106 = v76:GetPartsInPart(v80.PrimaryPart, u7)
+        task.synchronize()
+        local u107 = v80.PrimaryPart:GetTouchingParts()
+        task.defer(function() --[[Anonymous function at line 253]]
+            --[[
+            Upvalues:
+                [1] = u67
+                [2] = u100
+                [3] = u68
+                [4] = u107
+                [5] = u60
+                [6] = u421
+                [7] = u106
+                [8] = u83
+                [9] = u81
+            --]]
+            task.desynchronize()
+            if u67 ~= nil then
+                u100(u67, u68)
+                return
+            end
+            local v108 = {}
+            for _, v109 in pairs(u107) do
+                if v109.Parent ~= nil and v109.Parent.Name == "Hit" then
+                    if u60.Vulnerable_Limb == nil or u60.Vulnerable_Limb ~= v109 then
+                        local v110 = {
+                            ["Index"] = u421.Hitbox_Order[v109.Name],
+                            ["Limb"] = v109
+                        }
+                        table.insert(v108, v110)
+                    else
+                        table.insert(v108, {
+                            ["Index"] = 0,
+                            ["Limb"] = v109
+                        })
+                    end
+                end
+            end
+            table.sort(v108, function(p111, p112) --[[Anonymous function at line 273]]
+                return p111.Index < p112.Index
+            end)
+            for _, v113 in pairs(u106) do
+                u100(v113)
+            end
+            for _, v114 in pairs(v108) do
+                if #u83 >= u81 then
+                    break
+                end
+                u100(v114.Limb)
+            end
+        end)
+        task.synchronize()
+        v101:Disconnect()
+        v80:Destroy()
+        if p73 == nil and table.find(u65.Talents, "32") ~= nil then
+            u75.Talents.Afterimages(u60, u61, p62, u63, u64, u65, p66, p72)
+        end
+        return u83
+    end,
+    ["Self_Damage"] = function(p115, p116, p117, u118, p119, p120, p121, p122, p123, p124, p125) --[[Function name: Self_Damage, line 289]]
+        local v126 = p115.Modules
+        local _ = p115.Cache
+        local v127 = p120.Talents
+        local v128 = 0.471 * p123 * 0.85
+        local v129 = v128 ^ 2 + v128 ^ 2 + v128 ^ 2
+        local v130 = math.sqrt(v129)
+        local v131 = (p122.Position - p117).Magnitude + (p122.Velocity.Magnitude - 32) / 2
+        local v132 = table.find(p120.Talents, "33") ~= nil
+        local v133 = 1
+        if table.find(p119.Skills.Unlocked, "144") ~= nil then
+            v133 = v133 - 0.15
+        end
+        if p125 == true then
+            v133 = v133 - 0.3
+        elseif p124 == true then
+            v133 = v133 - 0.3
+        end
+        if v132 == true then
+            local v134 = v133 - 0.25
+            v133 = u118:GetAttribute("Temp_IFrames") ~= nil and 0 or v134
+        end
+        local v135 = v126.S_Rewards.Cache[p116.Name]
+        local v136 = (v133 > 0 and u118:GetAttribute("IFrames") ~= nil or v135 ~= nil and v135.Claimed == true) and 0 or v133
+        local v137 = (v130 - v131) / v130 * v136
+        local v138 = math.clamp(v137, 0, 1) * 175
+        if v138 > 0 then
+            local v139 = p120.Damage_Reduction
+            if u118:GetAttribute("Last_Stand") ~= nil then
+                v139 = v139 + 30
+            end
+            local v140 = u118:GetAttribute("Command")
+            if v140 ~= nil then
+                local v141 = string.split
+                local _, _, v142 = unpack(v141(v140, ","))
+                v139 = v139 + v142
+            end
+            local v143 = v138 / (1 + v139 / 100)
+            v138 = math.ceil(v143)
+            if u118.Injuries:FindFirstChild("Ribcage") ~= nil then
+                local v144 = v138 * 1.2
+                v138 = math.floor(v144)
+            end
+            v126.S_Objectives.Increase(p115, p116.Name .. "_Minimal_Damage", v138)
+        end
+        local v145 = p121.Health - v138
+        local v146 = table.find(v127, "11")
+        if v145 <= 0 and v146 ~= nil then
+            v145 = 1
+            table.remove(v127, v146)
+            if table.find(v127, "23") ~= nil then
+                task.synchronize()
+                v126.Talents.Necromantic(p115, p116)
+                task.desynchronize()
+            end
+        end
+        task.synchronize()
+        if v132 == true and (v138 > 0 and v145 > 0) then
+            u118:SetAttribute("Temp_IFrames", true)
+            task.delay(5, function() --[[Anonymous function at line 346]]
+                --[[
+                Upvalues:
+                    [1] = u118
+                --]]
+                u118:SetAttribute("Temp_IFrames", nil)
+            end)
+        end
+        if v145 <= 0 then
+            v126.Attacks.Escape(p115, u118, nil, nil, nil, true)
+        end
+        p121.Health = v145
+        return true, v131
+    end,
+    ["S_Explode"] = function(p147, p148, p149, p150, p151) --[[Function name: S_Explode, line 355]]
+        --[[
+        Upvalues:
+            [1] = u421
+        --]]
+        task.desynchronize()
+        local v152 = p147.Modules
+        local _ = v152.Attacks
+        local v153 = v152.Data
+        local _ = v152.Hitboxes
+        local v154 = v152.Plr
+        local v155 = p148.Character
+        if v155 ~= nil and (p148:GetAttribute("Weapon") == "Spears" and (p148:GetAttribute("Current_Spear") ~= nil and (p149 ~= nil and (type(p149) == "vector" and v155:GetAttribute("Shifter") == nil)))) then
+            local _, v156 = v153.Get(p147, p148)
+            local v157 = v154.Stats[p148.Name]
+            local v158 = v155.Humanoid
+            if v156 ~= nil then
+                local v159 = v157.Blast_Radius
+                if v155:GetAttribute("132") == true then
+                    v159 = v159 * 1.05
+                    task.synchronize()
+                    v155:SetAttribute("132", nil)
+                    task.desynchronize()
+                end
+                local v160 = v155:GetAttribute("Founder_Will")
+                if v160 ~= nil then
+                    local v161 = string.split
+                    local _, v162 = unpack(v161(v160, ","))
+                    if v162 ~= nil then
+                        v159 = v159 * (1 + v162 / 100)
+                    end
+                end
+                if p150 ~= nil and table.find(v157.Talents, "30") ~= nil then
+                    v159 = v159 * (math.clamp(p150, 0, 2.5) * 0.04 + 1)
+                end
+                if v158.Health > 0 then
+                    local v163, v164 = u421.Self_Damage(p147, p148, p149, v155, v156, v157, v158, v155.PrimaryPart, v159)
+                    if v163 == true and v164 ~= nil then
+                        local v165
+                        if table.find(v157.Talents, "31") == nil then
+                            local v166 = (v157.ODM_Range - v164 * 1.5) / v157.ODM_Range + 0.05
+                            v165 = math.clamp(v166, 0.1, 1)
+                        else
+                            v165 = 1
+                        end
+                        u421.Damage(p147, p148, p149, v155, v156, v157, v159, nil, nil, v165, nil, nil, p151)
+                    end
+                else
+                    task.synchronize()
+                end
+                p148:SetAttribute("Current_Spear", nil)
+                u421.Replicate(p147, p148, p149, v159)
+            end
+        end
+    end,
+    ["End"] = function(_, p167) --[[Function name: End, line 397]]
+        task.desynchronize()
+        if p167:GetAttribute("Weapon") == "Spears" and p167:GetAttribute("Current_Spear") ~= nil then
+            task.synchronize()
+            p167:SetAttribute("Current_Spear", nil)
+        end
+        task.synchronize()
+    end,
+    ["Get_Location"] = function(p168) --[[Function name: Get_Location, line 409]]
+        --[[
+        Upvalues:
+            [1] = u5
+        --]]
+        local v169 = p168.Services
+        local v170 = p168.Cache
+        local v171 = p168.Stats
+        local v172 = v169.UIS
+        local v173 = v169.W
+        local v174 = v170.Interface
+        local v175 = v171.ODM_Range
+        local v176 = v170.Coordinates.Lock == true and u5(v174.AbsoluteSize.X / 2, v174.AbsoluteSize.Y / 2) or v172:GetMouseLocation()
+        local v177 = v173.CurrentCamera:ViewportPointToRay(v176.X, v176.Y)
+        local v178 = v173:Raycast(v177.Origin, v177.Direction * v175, v170.Variables.Camera_Params)
+        if v178 == nil then
+            return v177.Origin + v177.Direction.Unit * v175
+        else
+            return v178.Position + v177.Direction.Unit * 10
+        end
+    end,
+    ["Fire"] = function(p179, p180, p181, p182, p183, p184, p185, p186) --[[Function name: Fire, line 436]]
+        --[[
+        Upvalues:
+            [1] = u1
+            [2] = u2
+            [3] = u3
+            [4] = u421
+            [5] = u4
+        --]]
+        local v187 = p179.Services
+        local v188 = p179.Modules
+        local v189 = p179.Stats
+        local v190 = v187.W
+        local u191 = v188.Effects
+        local v192 = v188.ODMG
+        local v193 = v190.CurrentCamera
+        local v194 = v190.Unclimbable
+        local v195
+        if p183 == nil or not p183 then
+            v195 = p179:Invoke("Spears", "S_Fire", p182.Spear.Name)
+        else
+            v195 = p183
+        end
+        if v195 ~= nil and v195 == true then
+            if p183 == nil or p182.Twirl == true then
+                if p182.Twirl == true then
+                    p179.Cache.Variables.Slash.Combo = p182.Side == "Left" and 1 or 2
+                end
+                p179.Spear_State = "Idle"
+            end
+            p179.Detonate = nil
+            local v196 = p180[p182.Side .. "Hand"].Gun.Start
+            local v197 = u1("Model")
+            local v198 = p182.Spear.Name
+            local v199 = Enum.ModelStreamingMode.Persistent
+            v197.Name = v198
+            v197.ModelStreamingMode = v199
+            v197.Parent = v194.Spears
+            local v200 = p182.Spear:Clone()
+            v200.Name = "Spear"
+            v200.Transparency = 0
+            v200.Parent = v197
+            for _, v201 in pairs(v200:GetChildren()) do
+                if v201:IsA("ParticleEmitter") == true then
+                    v201.Enabled = true
+                end
+            end
+            local v202, v203, v204, v205 = p179:Get("Asset", {
+                "Objects",
+                "Beams",
+                "Burners",
+                "Launch",
+                "Rope"
+            })
+            local v206 = v202:Clone()
+            local v207 = v204:Clone()
+            local v208 = u1("Weld")
+            v208.Name = "W"
+            v208.Part0 = v200
+            v208.Part1 = v206
+            v208.C0 = u2(-0.005, -2.236, -0.03) * u3(-1.5707963267948966, 0, 0)
+            v208.Parent = v206
+            local v209 = u1("Weld")
+            v209.Name = "W"
+            v209.Part0 = v200
+            v209.Part1 = v207
+            v209.C0 = u2(-0.005, -2.046, 0.04) * u3(0, 3.141592653589793, -1.5707963267948966)
+            v209.Parent = v207
+            v206.Parent = v200
+            v207.Parent = v200
+            local v210
+            if p182.Charged == nil then
+                v210 = v203:Clone()
+                local v211 = u1("Weld")
+                v211.Name = "W"
+                v211.Part0 = v200
+                v211.Part1 = v210
+                v211.C0 = u2(0.011, 2.112, 0) * u3(0, 3.141592653589793, -1.5707963267948966)
+                v211.Parent = v210
+                v210.Parent = v200
+            else
+                v210 = nil
+            end
+            local v212 = u1("Attachment")
+            local v213 = u2(0, 2, 0)
+            v212.Name = "A"
+            v212.CFrame = v213
+            v212.Parent = v200
+            for _, v214 in pairs(v205:GetChildren()) do
+                local v215 = v214:Clone()
+                v215.Attachment0 = v196
+                v215.Attachment1 = v212
+                v215.Parent = v200
+            end
+            local v216 = v200:FindFirstChildOfClass("Weld")
+            if v216 ~= nil then
+                v216:Destroy()
+            end
+            local v217
+            if p185 == nil or not p185 then
+                v217 = u421.Get_Location(p179)
+            else
+                v217 = p185
+            end
+            local v218 = u4(v200.Position, v217) * u3(1.5707963267948966, 0, 0)
+            v200.CFrame = v218
+            local v219 = u1("BodyVelocity")
+            local v220 = 1.2
+            if p182.Charged == true then
+                v220 = v220 + 0.75
+            end
+            if v189.Spear_Speed ~= nil then
+                v220 = v220 + v189.Spear_Speed / 100
+            end
+            local v221 = v192.Gear_Speed * v220
+            local v222 = v200.CFrame.UpVector * -v221
+            v219.Name = "BV"
+            v219.MaxForce = Vector3.new(40000, 40000, 40000)
+            v219.Velocity = v222
+            v219.Parent = v200
+            local v223 = u1("BodyGyro")
+            v223.Name = "BG"
+            v223.MaxTorque = Vector3.new(40000, 40000, 40000)
+            v223.CFrame = v218
+            v223.Parent = v200
+            for _, v224 in pairs(v206:GetDescendants()) do
+                if v224:IsA("Beam") == true then
+                    v224.Enabled = true
+                end
+            end
+            if v210 ~= nil then
+                for _, v225 in pairs(v210:GetDescendants()) do
+                    if v225:IsA("ParticleEmitter") == true then
+                        v225.Enabled = true
+                    end
+                end
+            end
+            if p183 == nil then
+                for _, v226 in pairs(v207:GetDescendants()) do
+                    if v226:IsA("ParticleEmitter") == true then
+                        v226:Emit(v226:GetAttribute("EmitCount"))
+                    end
+                end
+            end
+            if p183 == nil then
+                u191.Shake_Amount = u191.Shake_Amount + 2
+                u191.Override = true
+                local v227 = u191.Tween
+                local v228 = {}
+                local v229 = v193.FieldOfView + 30
+                v228.FieldOfView = math.clamp(v229, 70, 120)
+                v227(p179, v193, "Spear_Tween", v228, 0.15, nil, nil, 0, true, 0, true)
+                task.delay(0.3, function() --[[Anonymous function at line 563]]
+                    --[[
+                    Upvalues:
+                        [1] = u191
+                    --]]
+                    u191.Override = false
+                end)
+            end
+            local v230 = p181.Velocity
+            if (p185 == nil or p186 ~= nil) and table.find(v189.Passive_Perks, "Maximum Firepower") == nil then
+                if p182.Barrage == true then
+                    p181.Velocity = v230 + v193.CFrame.LookVector * -(v192.Gear_Speed * 0.5)
+                else
+                    local v231 = v193.CFrame.LookVector
+                    local v232 = v192.Gear_Speed * 0.5
+                    local v233 = v230.X
+                    local v234 = math.abs(v233)
+                    local v235 = v230.Z
+                    p181.Velocity = v231 * -(v232 + (v234 + math.abs(v235)) / 4)
+                end
+            end
+            local v236, v237
+            if p184 == nil then
+                if p182.Multi == true then
+                    u191.Sound(p179, "Multi_Throw", p181)
+                else
+                    u191.Sound(p179, "Spear_Cast_2", p181)
+                end
+                v236 = u191.Sound(p179, "Spear_Trail", v200, nil, true, nil, 175, 250)
+                v237 = u191.Sound(p179, "Spear_Rope", p181)
+                if v236 ~= nil then
+                    v236:Play()
+                end
+            else
+                v236 = nil
+                v237 = nil
+            end
+            return v200, v236, v237, v221
+        end
+    end,
+    ["Homing"] = function(p238) --[[Function name: Homing, line 596]]
+        if p238.Active == true then
+            local v239 = p238.Modules["150"].Objects
+            for v240, v241 in pairs(v239) do
+                if v240 == "LV" or v240 == "AO" then
+                    v241:Destroy()
+                    v239[v240] = nil
+                else
+                    v241:Stop()
+                end
+            end
+            p238.Active = false
+        end
+    end,
+    ["Event"] = function(u242, u243, u244, u245, u246, u247, u248, u249, u250, u251) --[[Function name: Event, line 604]]
+        --[[
+        Upvalues:
+            [1] = u1
+            [2] = u421
+            [3] = u4
+            [4] = u3
+        --]]
+        local v252 = u242.Services
+        local v253 = u242.Modules
+        local v254 = u242.Cache
+        local u255 = u242.Events
+        local v256 = v252.RS
+        local u257 = v252.W
+        local u258 = v253.Effects
+        local u259 = v253["150"]
+        local u260 = v254.Variables
+        local u261 = v254.Interface
+        local u262 = 0
+        local u263 = u249 == "153" and 3 or 1
+        local u264 = {}
+        local u265 = u243.Position
+        local function u288(p266, p267, p268) --[[Anonymous function at line 617]]
+            --[[
+            Upvalues:
+                [1] = u243
+                [2] = u265
+                [3] = u262
+                [4] = u263
+                [5] = u250
+                [6] = u255
+                [7] = u249
+                [8] = u259
+                [9] = u242
+                [10] = u248
+                [11] = u244
+                [12] = u245
+                [13] = u1
+                [14] = u258
+                [15] = u261
+                [16] = u421
+                [17] = u246
+                [18] = u247
+            --]]
+            local v269 = (u243.Position - u265).Magnitude
+            if u263 <= u262 then
+                if p268 == true and (u250 == nil and u255.Spear_Stepped ~= nil) then
+                    u255.Spear_Stepped:Disconnect()
+                    u255.Spear_Stepped = nil
+                end
+                if u249 == "150" then
+                    local v270 = u259.Objects
+                    for v271, v272 in pairs(v270) do
+                        if v271 == "LV" or v271 == "AO" then
+                            v272:Destroy()
+                            v270[v271] = nil
+                        else
+                            v272:Stop()
+                        end
+                    end
+                    u242.Active = false
+                end
+                local v273 = { u243, u248 }
+                for _, v274 in pairs(v273) do
+                    if v274 ~= nil then
+                        local v275 = v274:FindFirstChild("BV")
+                        if v275 ~= nil then
+                            v275:Destroy()
+                        end
+                        local v276 = v274:FindFirstChild("BG")
+                        if v276 ~= nil then
+                            v276:Destroy()
+                        end
+                        local v277 = v274:FindFirstChild("Beams")
+                        if v277 ~= nil then
+                            for _, v278 in pairs(v277:GetDescendants()) do
+                                if v278:IsA("Beam") == true then
+                                    v278.Enabled = false
+                                end
+                            end
+                        end
+                        local v279 = v274:FindFirstChild("Burners")
+                        if v279 ~= nil then
+                            for _, v280 in pairs(v279:GetDescendants()) do
+                                if v280:IsA("ParticleEmitter") == true then
+                                    v280.Enabled = false
+                                end
+                            end
+                        end
+                    end
+                end
+                if u244 ~= nil then
+                    u244:Destroy()
+                end
+                if u245 ~= nil then
+                    u245:Destroy()
+                end
+                if p266 == nil or (p267 ~= nil or u249 ~= nil) then
+                    if u243:FindFirstChild("W") == nil then
+                        u243.Anchored = true
+                    end
+                    if u248 ~= nil and u248:FindFirstChild("W") == nil then
+                        u248.Anchored = true
+                    end
+                    u421.Explode(u242, u243, u246, u247, u248, v269, u249)
+                else
+                    local v281 = { u243, u248 }
+                    for _, v282 in pairs(v281) do
+                        if v282 ~= nil then
+                            v282.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                            v282.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+                            if p266.Anchored == false then
+                                local v283 = u1("Weld")
+                                v283.Name = "W"
+                                v283.Part0 = p266
+                                v283.Part1 = v282
+                                local v284 = p266.CFrame:Inverse()
+                                local v285 = v282.CFrame:Inverse()
+                                v283.C0 = v284
+                                v283.C1 = v285
+                                v283.Parent = v282
+                            else
+                                v282.Anchored = true
+                            end
+                        end
+                    end
+                    local v286 = u242:Get("Asset", { "Objects", "Display" }):Clone()
+                    v286.Parent = u243
+                    local v287 = u258.Tween(u242, v286.Marker, "Spear_Display", {
+                        ["ImageTransparency"] = 0
+                    }, 0.5, "Exponential", nil, nil, nil, nil, true)
+                    u258.Sound(u242, "Spear_Touch", u261)
+                    u421.Event_2(u242, u243, v286, v287, u246, u247, u248, v269)
+                end
+            else
+                u421.Explode(u242, nil, u246, u247, nil, v269, u249, u243.Position)
+                return
+            end
+        end
+        if u242.Detonate == true or u246 ~= nil then
+            local _ = u263
+            u288(nil, true)
+        else
+            if u255.Spear_Stepped ~= nil and u250 == nil then
+                u255.Spear_Stepped:Disconnect()
+                u255.Spear_Stepped = nil
+            end
+            local u289 = 0
+            local u290 = u249 == "153" and 3 or (u249 == "150" and 8 or 5)
+            local u291 = nil
+            local u292 = u243.Position
+            local function u298(p293) --[[Anonymous function at line 693]]
+                --[[
+                Upvalues:
+                    [1] = u242
+                    [2] = u289
+                    [3] = u290
+                    [4] = u262
+                    [5] = u263
+                    [6] = u250
+                    [7] = u291
+                    [8] = u288
+                    [9] = u292
+                    [10] = u243
+                    [11] = u257
+                    [12] = u260
+                    [13] = u264
+                --]]
+                local v294 = u242.Detonate
+                if u290 <= u289 or v294 == true then
+                    u262 = u263
+                    if u250 == true and (u291 ~= nil and u263 <= u262) then
+                        u291:Disconnect()
+                        u291 = nil
+                    end
+                    u288(nil, v294, true)
+                else
+                    local v295 = u292 + u243.Velocity * p293
+                    local v296 = u257:Raycast(u292, v295 - u292, u260.Cursor_Params)
+                    u292 = v295
+                    if v296 ~= nil then
+                        local v297 = v296.Instance
+                        if v297.Name ~= "Terrain" then
+                            if v297.Parent.Name == "Detect" then
+                                return
+                            end
+                            v297 = v297.Parent
+                        end
+                        if u264[v297] == nil then
+                            u264[v297] = true
+                            if v297.Name == "Terrain" or (v297.Name == "Wall" or v297.Name == "BrokenGate") then
+                                u262 = u263
+                            else
+                                u262 = u262 + 1
+                            end
+                            if u250 == true and (u291 ~= nil and u263 <= u262) then
+                                u291:Disconnect()
+                                u291 = nil
+                            end
+                            u288(v296.Instance, nil, true)
+                        end
+                    end
+                end
+            end
+            u298(0.016666666666666666)
+            if u262 < u263 then
+                u291 = v256.Heartbeat:Connect(function(p299) --[[Anonymous function at line 727]]
+                    --[[
+                    Upvalues:
+                        [1] = u289
+                        [2] = u249
+                        [3] = u259
+                        [4] = u243
+                        [5] = u4
+                        [6] = u421
+                        [7] = u242
+                        [8] = u3
+                        [9] = u251
+                        [10] = u298
+                    --]]
+                    u289 = u289 + p299
+                    if u249 == "150" then
+                        local v300 = u259.Objects.LV
+                        if v300 ~= nil then
+                            u243.BG.CFrame = u4(u243.Position, u421.Get_Location(u242)) * u3(1.5707963267948966, 0, 0)
+                            u243.BV.Velocity = u243.CFrame.UpVector * -u251
+                            v300.VectorVelocity = u243.BV.Velocity
+                        end
+                    end
+                    u298(p299)
+                end)
+                if u250 == nil then
+                    u255.Spear_Stepped = u291
+                end
+            end
+        end
+    end,
+    ["Event_2"] = function(u301, u302, u303, u304, u305, u306, u307, u308) --[[Function name: Event_2, line 748]]
+        --[[
+        Upvalues:
+            [1] = u421
+            [2] = u6
+        --]]
+        if u301.Detonate == true then
+            u421.Explode(u301, u302, u305, u306, u307, u308)
+        else
+            local v309 = u301.Services
+            local v310 = u301.Modules
+            local u311 = u301.Stats
+            local v312 = u301.Cache
+            local u313 = u301.Events
+            local v314 = v309.RS
+            local u315 = v310.Effects
+            local v316 = v312.Character
+            local v317 = v312.Data
+            local u318 = v312.Interface
+            local v319 = v312.Slot_Data
+            local u320 = v316.PrimaryPart
+            local u321
+            if v317.Settings.Gameplay.Automatic_Detonation == "On" then
+                u321 = table.find(v319.Skills.Unlocked, "154") ~= nil
+            else
+                u321 = false
+            end
+            if u313.Spear_Stepped_2 ~= nil then
+                u313.Spear_Stepped_2:Disconnect()
+                u313.Spear_Stepped_2 = nil
+            end
+            local u322 = 0
+            local v323 = u311.ODM_Range * 0.125
+            local u324 = math.floor(v323)
+            u318.Cursor.Distance2.Visible = true
+            u313.Spear_Stepped_2 = v314.RenderStepped:Connect(function(p325) --[[Anonymous function at line 775]]
+                --[[
+                Upvalues:
+                    [1] = u322
+                    [2] = u302
+                    [3] = u320
+                    [4] = u318
+                    [5] = u324
+                    [6] = u6
+                    [7] = u311
+                    [8] = u303
+                    [9] = u301
+                    [10] = u321
+                    [11] = u313
+                    [12] = u304
+                    [13] = u315
+                    [14] = u421
+                    [15] = u305
+                    [16] = u306
+                    [17] = u307
+                    [18] = u308
+                --]]
+                task.desynchronize()
+                u322 = u322 + p325
+                local v326 = (u302.Position - u320.Position).Magnitude
+                local v327 = math.floor(v326)
+                task.synchronize()
+                local v328 = u318.Cursor.Distance2
+                local v329 = v327 - u324
+                v328.Text = math.clamp(v329, 0, v327)
+                local v330 = u318.Cursor.Distance2
+                local v331 = u6(127, 255, 80)
+                local v332 = u6(255, 80, 80)
+                local v333 = (v327 - u324) / u311.ODM_Range
+                v330.TextColor3 = v331:Lerp(v332, (math.clamp(v333, 0, 1)))
+                if u303 ~= nil then
+                    u303.Marker.Rotation = u303.Marker.Rotation + 2
+                end
+                u301.Can_Detonate = v327 <= u324 and true or nil
+                if v327 <= u324 and u321 == true or (u311.ODM_Range <= v327 or (u322 >= 10 or u301.Detonate == true)) then
+                    if u313.Spear_Stepped_2 ~= nil then
+                        u313.Spear_Stepped_2:Disconnect()
+                        u313.Spear_Stepped_2 = nil
+                    end
+                    u318.Cursor.Distance2.Visible = false
+                    u304:Cancel()
+                    u315.Tween(u301, u303.Marker, "Spear_Display", {
+                        ["ImageTransparency"] = 1
+                    }, 0.5, "Exponential", nil, nil, nil, nil, true).Completed:Connect(function() --[[Anonymous function at line 801]]
+                        --[[
+                        Upvalues:
+                            [1] = u303
+                        --]]
+                        u303:Destroy()
+                        u303 = nil
+                    end)
+                    u301.Can_Detonate = nil
+                    u421.Explode(u301, u302, u305, u306, u307, u308)
+                end
+            end)
+        end
+    end,
+    ["Explode"] = function(u334, u335, u336, u337, u338, u339, u340, u341) --[[Function name: Explode, line 809]]
+        --[[
+        Upvalues:
+            [1] = u1
+            [2] = u6
+            [3] = u421
+            [4] = u2
+            [5] = u3
+        --]]
+        task.defer(function() --[[Anonymous function at line 810]]
+            --[[
+            Upvalues:
+                [1] = u334
+                [2] = u336
+                [3] = u341
+                [4] = u335
+                [5] = u338
+                [6] = u1
+                [7] = u6
+                [8] = u340
+                [9] = u339
+                [10] = u337
+                [11] = u421
+                [12] = u2
+                [13] = u3
+            --]]
+            local v342 = u334.Services
+            local u343 = u334.Modules
+            local u344 = u334.Cache
+            local u345 = v342.RS
+            local u346 = u343.Effects
+            local v347 = u343.Raids
+            local v348 = u343.Runtime
+            local v349 = u336 ~= nil and u336 or u344.Character
+            if u336 == nil and u334.Spear_State == "Idle" then
+                u334.Spear_State = "Twirl"
+                task.delay(1.3333333333333333, function() --[[Anonymous function at line 819]]
+                    --[[
+                    Upvalues:
+                        [1] = u334
+                    --]]
+                    u334.Spear_State = nil
+                end)
+            end
+            task.wait(0.21666666666666667)
+            local u350 = u341 ~= nil and u341 or u335.Position
+            local v351 = { u335, u338 }
+            local v352 = nil
+            for _, u353 in pairs(v351) do
+                if u353 ~= nil then
+                    local v354 = u353:FindFirstChild("H")
+                    if v354 ~= nil then
+                        v354:Destroy()
+                    end
+                    local v355 = u1("Highlight")
+                    local v356 = u6(255, 255, 255)
+                    v355.Name = "H"
+                    v355.FillColor = v356
+                    v355.FillTransparency = 1
+                    v355.OutlineTransparency = 1
+                    v355.Parent = u353
+                    local v357 = u346.Tween(u334, v355, "Spear_Cast", {
+                        ["FillTransparency"] = 0,
+                        ["OutlineTransparency"] = 0
+                    }, 1, nil, nil, nil, nil, nil, true)
+                    if v352 ~= nil then
+                        v357 = v352
+                    end
+                    task.defer(function() --[[Anonymous function at line 841]]
+                        --[[
+                        Upvalues:
+                            [1] = u353
+                            [2] = u345
+                        --]]
+                        local v358 = { u353:FindFirstChild("StrGlow"), u353:FindFirstChild("String"), u353:FindFirstChild("StringGlow") }
+                        for v359 = 0, 1, 0.011111111111111112 do
+                            local v360 = math.random(-5, 5)
+                            local v361 = math.random(-5, 5)
+                            for _, v362 in pairs(v358) do
+                                local v363 = v360 * (1 - v359)
+                                local v364 = v361 * (1 - v359)
+                                v362.CurveSize0 = v363
+                                v362.CurveSize1 = v364
+                                if v362.Name == "String" and (v362.Attachment0 ~= nil and v362.Attachment1 ~= nil) then
+                                    v362.Attachment1.WorldCFrame = v362.Attachment1.WorldCFrame:Lerp(v362.Attachment0.WorldCFrame, v359)
+                                end
+                            end
+                            u345.RenderStepped:Wait()
+                        end
+                        for _, v365 in pairs(v358) do
+                            v365:Destroy()
+                        end
+                    end)
+                    v352 = v357
+                end
+            end
+            if v347.Cutscene == nil and (v347.Loaded == true and v348.Cutscene == false) then
+                local function u367() --[[Anonymous function at line 866]]
+                    --[[
+                    Upvalues:
+                        [1] = u336
+                        [2] = u344
+                        [3] = u346
+                        [4] = u335
+                        [5] = u350
+                        [6] = u340
+                        [7] = u334
+                        [8] = u339
+                        [9] = u343
+                    --]]
+                    if u336 == nil or u336 == u344.Character then
+                        local v366 = u346
+                        u346.Shake_Amount = u346.Shake_Amount + 11
+                        v366.Intense = true
+                        task.delay(0.18333333333333332, function() --[[Anonymous function at line 868]]
+                            --[[
+                            Upvalues:
+                                [1] = u346
+                            --]]
+                            u346.Intense = false
+                        end)
+                        if u336 == nil then
+                            if u335 ~= nil then
+                                u350 = u335.Position
+                            end
+                            if u340 ~= nil then
+                                u334:Send(u340, "Damage", u350, u339)
+                                return
+                            end
+                            u334:Send("Spears", "S_Explode", u350, u343.Zones.Time_Difference, u339)
+                        end
+                    end
+                end
+                if v352 == nil then
+                    u367()
+                else
+                    v352.Completed:Connect(function() --[[Anonymous function at line 878]]
+                        --[[
+                        Upvalues:
+                            [1] = u367
+                        --]]
+                        u367()
+                    end)
+                    u346.Sound(u334, "Spear_Charge", u335, 1, nil, nil, 250, 350)
+                end
+                local u368 = u337 ~= nil and u337 or u334.Stats.Blast_Radius
+                if u337 == nil then
+                    if v349:GetAttribute("132") == true then
+                        u368 = u368 * 1.05
+                    end
+                    local v369 = v349:GetAttribute("Founder_Will")
+                    if v369 ~= nil then
+                        local v370 = string.split
+                        local _, v371 = unpack(v370(v369, ","))
+                        if v371 ~= nil then
+                            u368 = u368 * (1 + v371 / 100)
+                        end
+                    end
+                    if u340 ~= nil then
+                        if u340 == "119" or u340 == "152" then
+                            u368 = u368 * 1.1
+                        elseif u340 == "135" or (u340 == "147" or u340 == "153") then
+                            u368 = u368 * 1.2
+                        elseif u340 == "138" then
+                            u368 = u368 * 1.5
+                        end
+                    end
+                end
+                local u372 = u421.Explosion(u334, u335, u350, u368, u338, u340)
+                if u340 == "152" then
+                    task.delay(1.25, function() --[[Anonymous function at line 901]]
+                        --[[
+                        Upvalues:
+                            [1] = u368
+                            [2] = u372
+                            [3] = u2
+                            [4] = u3
+                            [5] = u334
+                            [6] = u340
+                            [7] = u339
+                            [8] = u421
+                            [9] = u338
+                        --]]
+                        local v373 = u368 / 2
+                        local _, v374 = u372.PrimaryPart.CFrame:ToEulerAnglesYXZ()
+                        local v375 = (u2(u372.PrimaryPart.Position) * u3(0, v374, 0) * u2(0, 0, v373 * 1.1)).Position
+                        u334:Send(u340, "Damage", v375, u339, true)
+                        u421.Explosion(u334, nil, v375, v373, u338, u340)
+                    end)
+                end
+            else
+                local v376 = { u335, u338 }
+                for _, v377 in pairs(v376) do
+                    if v377 ~= nil and v377.Parent ~= nil then
+                        v377.Parent:Destroy()
+                    end
+                end
+                if u340 == nil then
+                    u334:Send("Spears", "End")
+                end
+            end
+        end)
+    end,
+    ["Explosion"] = function(u378, u379, p380, p381, u382, p383, p384) --[[Function name: Explosion, line 920]]
+        --[[
+        Upvalues:
+            [1] = u2
+            [2] = u1
+        --]]
+        local v385 = u378.Services
+        local v386 = u378.Modules
+        local v387 = v385.W
+        local u388 = v386.Effects
+        local u389 = (p383 == "152" or p383 == "153") and "Blue" or ((p383 == "135" or p383 == "147") and "Lightning" or "Normal")
+        local u390 = u378:Get("Asset", { "Explosions", u389 }):Clone()
+        local v391 = 0.75
+        local v392 = 1
+        local v393 = 1.25
+        local v394 = u379 ~= nil and u379.CFrame or u2(p380)
+        u390:ScaleTo(p381)
+        u390:SetPrimaryPartCFrame(v394)
+        if u379 == nil then
+            v391 = 0
+            v392 = 0.25
+            v393 = 0.5
+            if p384 == true then
+                u388.Shake_Amount = u388.Shake_Amount + 11
+                u388.Intense = true
+                task.delay(0.18333333333333332, function() --[[Anonymous function at line 955]]
+                    --[[
+                    Upvalues:
+                        [1] = u388
+                    --]]
+                    u388.Intense = false
+                end)
+            end
+        else
+            u390.PrimaryPart.Anchored = false
+            for _, v395 in pairs({ u379, u382 }) do
+                if v395 ~= nil then
+                    local v396 = u1("Weld")
+                    local v397 = u390.PrimaryPart
+                    v396.Name = "W"
+                    v396.Part0 = v395
+                    v396.Part1 = v397
+                    local v398 = v395.CFrame:Inverse()
+                    local v399 = u390.PrimaryPart.CFrame:Inverse()
+                    v396.C0 = v398
+                    v396.C1 = v399
+                    v396.Parent = u390
+                end
+            end
+        end
+        u390.Parent = v387.Debris
+        task.delay(v391, function() --[[Anonymous function at line 960]]
+            --[[
+            Upvalues:
+                [1] = u388
+                [2] = u378
+                [3] = u389
+                [4] = u390
+            --]]
+            local v400 = u388.Sound
+            local v401 = u378
+            local v402 = "Spear_" .. u389 .. "_Explosion"
+            v400(v401, tostring(v402), u390.PrimaryPart, 1, nil, nil, 300, 450)
+        end)
+        for _, u403 in pairs(u390:GetDescendants()) do
+            if u403:IsA("ParticleEmitter") == true then
+                task.delay(v391, function() --[[Anonymous function at line 966]]
+                    --[[
+                    Upvalues:
+                        [1] = u403
+                    --]]
+                    local u404 = u403:GetAttribute("EmitCount")
+                    local v405 = u403:GetAttribute("EmitDelay")
+                    local u406 = u403:GetAttribute("EmitDuration")
+                    if u406 == nil or u406 <= 0 then
+                        if v405 == 0 then
+                            u403:Emit(u404)
+                        else
+                            task.delay(v405, function() --[[Anonymous function at line 982]]
+                                --[[
+                                Upvalues:
+                                    [1] = u403
+                                    [2] = u404
+                                --]]
+                                u403:Emit(u404)
+                            end)
+                        end
+                    elseif v405 == 0 then
+                        u403.Enabled = true
+                        task.delay(u406, function() --[[Anonymous function at line 971]]
+                            --[[
+                            Upvalues:
+                                [1] = u403
+                            --]]
+                            u403.Enabled = false
+                        end)
+                    else
+                        task.delay(v405, function() --[[Anonymous function at line 974]]
+                            --[[
+                            Upvalues:
+                                [1] = u403
+                                [2] = u406
+                            --]]
+                            u403.Enabled = true
+                            task.delay(u406, function() --[[Anonymous function at line 974]]
+                                --[[
+                                Upvalues:
+                                    [1] = u403
+                                --]]
+                                u403.Enabled = false
+                            end)
+                        end)
+                    end
+                end)
+            elseif u403:IsA("PointLight") == true then
+                u388.Tween(u378, u403, "Spear_Light_In", {
+                    ["Range"] = 60
+                }, v392, nil, nil, nil, nil, nil, true)
+                task.delay(v393, function() --[[Anonymous function at line 990]]
+                    --[[
+                    Upvalues:
+                        [1] = u403
+                        [2] = u390
+                        [3] = u379
+                        [4] = u382
+                    --]]
+                    u403:Destroy()
+                    u390.PrimaryPart.Anchored = true
+                    if u379 ~= nil and u379.Parent ~= nil then
+                        u379.Parent:Destroy()
+                    end
+                    if u382 ~= nil and u382.Parent ~= nil then
+                        u382.Parent:Destroy()
+                    end
+                end)
+            end
+        end
+        task.delay(4, function() --[[Anonymous function at line 996]]
+            --[[
+            Upvalues:
+                [1] = u390
+            --]]
+            u390:Destroy()
+        end)
+        return u390
+    end,
+    ["Update_Display"] = function(u407, _, p408) --[[Function name: Update_Display, line 1001]]
+        local v409 = u407.Modules
+        local v410 = u407.Events
+        local u411 = u407.Spear_Count
+        local u412 = v409.Effects
+        local u413 = v409.HUD
+        local u414 = {}
+        for v415 = 1, u411 do
+            local u416 = p408[(v415 % 2 == 0 and "Right" or "Left") .. "LowerArm"].Spears[v415]
+            u414[u416] = u416:GetAttribute("Used") == nil
+            v410[u416.Name .. "_Changed"] = u416:GetAttributeChangedSignal("Used"):Connect(function() --[[Anonymous function at line 1021]]
+                --[[
+                Upvalues:
+                    [1] = u414
+                    [2] = u416
+                    [3] = u413
+                    [4] = u407
+                    [5] = u412
+                    [6] = u411
+                --]]
+                u414[u416] = u416:GetAttribute("Used") == nil
+                local v417 = 0
+                for _, v418 in pairs(u414) do
+                    if v418 == true then
+                        v417 = v417 + 1
+                    end
+                end
+                u413.Update(u407, u412, "Spears", v417, u411)
+            end)
+        end
+        local v419 = 0
+        for _, v420 in pairs(u414) do
+            if v420 == true then
+                v419 = v419 + 1
+            end
+        end
+        u413.Update(u407, u412, "Spears", v419, u411)
+    end
+}
+local u422 = false
+function u421.Visual_Indicator(u423, p424, p425) --[[Anonymous function at line 1029]]
+    --[[
+    Upvalues:
+        [1] = u422
+        [2] = u1
+        [3] = u6
+    --]]
+    if u422 == false then
+        local v426 = u423.Modules
+        local v427 = u423.Cache
+        local u428 = v426.Effects
+        local v429 = v426[p425].Initiate(u423, p424, true)
+        if v429 ~= nil then
+            u422 = true
+            u428.Sound(u423, "No_Spears", v427.Interface)
+            local function u434(p430, p431, p432) --[[Anonymous function at line 1042]]
+                --[[
+                Upvalues:
+                    [1] = u428
+                    [2] = u423
+                --]]
+                local v433 = u428.Tween(u423, p430, "Spear_Visual", {
+                    ["Transparency"] = p432
+                }, 0.1, nil, nil, nil, nil, nil, true)
+                u428.Tween(u423, p431, "Highlight_Visual", {
+                    ["FillTransparency"] = p432,
+                    ["OutlineTransparency"] = p432
+                }, 0.1, nil, nil, nil, nil, nil, true)
+                return v433
+            end
+            for _, u435 in pairs(v429) do
+                if u435 ~= nil and u435:GetAttribute("Used") ~= nil then
+                    task.defer(function() --[[Anonymous function at line 1055]]
+                        --[[
+                        Upvalues:
+                            [1] = u1
+                            [2] = u6
+                            [3] = u435
+                            [4] = u434
+                        --]]
+                        local u436 = u1("Highlight")
+                        local v437 = u6(255, 0, 0)
+                        u436.Name = "H"
+                        u436.FillColor = v437
+                        u436.FillTransparency = 1
+                        u436.OutlineTransparency = 1
+                        u436.Parent = u435
+                        u434(u435, u436, 0)
+                        task.wait(0.1)
+                        u434(u435, u436, 1)
+                        task.wait(0.1)
+                        u434(u435, u436, 0)
+                        task.wait(0.1)
+                        u434(u435, u436, 1).Completed:Connect(function() --[[Anonymous function at line 1070]]
+                            --[[
+                            Upvalues:
+                                [1] = u436
+                            --]]
+                            u436:Destroy()
+                        end)
+                    end)
+                end
+            end
+            task.wait(0.4)
+            u422 = false
+        end
+    end
 end
-
-   local Window = Rayfield:CreateWindow({
-   Name = "Atomic Hub",
-   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "Rayfield Interface Suite",
-   LoadingSubtitle = "by Ash",
-   Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
-
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
-
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = KingKong, -- Create a custom folder for your hub/game
-      FileName = "Big Ass"
-   },
-
-   Discord = {
-      Enabled = true, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-   },
-
-   KeySystem = false,
-   KeySettings = {
-      Title = "Untitled",
-      Subtitle = "Key System",
-      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
-      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
-   }
-})
-
-local Tab = Window:CreateTab("Lucky Blocks", 4483362458) -- Title, Image
-
-
-local Button = Tab:CreateButton({
-   Name = "Spawn Lucky Block",
-   Callback = function()
-      game.ReplicatedStorage.SpawnLuckyBlock:FireServer()
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Diamond Block",
-   Callback = function()
-      game.ReplicatedStorage.SpawnDiamondBlock:FireServer()
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Rainbow Block",
-   Callback = function()
-      game.ReplicatedStorage.SpawnRainbowBlock:FireServer()
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Galaxy Block",
-   Callback = function()
-      game.ReplicatedStorage.SpawnGalaxyBlock:FireServer()
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Void Block",
-   Callback = function()
-      game.ReplicatedStorage.SpawnGalaxyBlock:FireServer()
-	  game.ReplicatedStorage.SpawnGalaxyBlock:FireServer()
-	  game.ReplicatedStorage.SpawnRainbowBlock:FireServer()
-	  game.ReplicatedStorage.SpawnRainbowBlock:FireServer()
-	  
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Hacker Block",
-   Callback = function()
-      game.ReplicatedStorage.SpawnGalaxyBlock:FireServer()
-	  game.ReplicatedStorage.SpawnGalaxyBlock:FireServer()
-	  game.ReplicatedStorage.SpawnGalaxyBlock:FireServer()
-	  game.ReplicatedStorage.SpawnGalaxyBlock:FireServer()
-	  game.ReplicatedStorage.SpawnGalaxyBlock:FireServer()
-	  game.ReplicatedStorage.SpawnGalaxyBlock:FireServer()
-	  game.ReplicatedStorage.SpawnGalaxyBlock:FireServer()
-	  game.ReplicatedStorage.SpawnGalaxyBlock:FireServer()
-	  
-   end,
-})
-
-
-
-
-local Tab = Window:CreateTab("Extras", 4483362458) -- Title, Image
-
-
-local Button = Tab:CreateButton({
-   Name = "Destroy Script",
-   Callback = function()
-     Rayfield.Destroy()
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Infinite Yield Admin",
-   Callback = function()
-     loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-   end,
-})
-
-
-end
+return u421
