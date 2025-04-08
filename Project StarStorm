@@ -1,1423 +1,482 @@
-local v1 = {}
-local v2 = {
-    ["ODM_Damage"] = {
-        ["Stat"] = "TS_Damage",
-        ["Ratio"] = 1
-    },
-    ["ODM_Control"] = {
-        ["Stat"] = "TS_Control",
-        ["Ratio"] = 1
-    },
-    ["ODM_Gas"] = {
-        ["Stat"] = "TS_Gas",
-        ["Ratio"] = 1
-    },
-    ["ODM_Speed"] = {
-        ["Stat"] = "TS_Speed",
-        ["Ratio"] = 1
-    },
-    ["ODM_Range"] = {
-        ["Stat"] = "TS_Range",
-        ["Ratio"] = 1
-    },
-    ["Blade_Durability"] = {
-        ["Stat"] = "Conservation_Chance",
-        ["Ratio"] = 0.5
-    },
-    ["Swing_Duration"] = {
-        ["Stat"] = "Blast_Radius",
-        ["Ratio"] = 1
-    }
+local u1 = UDim2.new
+return {
+    ["Category"] = function(u2, _, p3, _, p4, p5) --[[Function name: Category, line 4]]
+        local v6 = u2.Modules.Topbar
+        if p3.Name:find("Close") == nil then
+            if p4.Category ~= p3.Name and (v6.New_Type == "2D" and u2.Transition == nil) then
+                p4.Update(u2, p5, p3.Name)
+                u2.Transition = true
+                task.delay(0.75, function() --[[Anonymous function at line 15]]
+                    --[[
+                    Upvalues:
+                        [1] = u2
+                    --]]
+                    u2.Transition = nil
+                end)
+            end
+        else
+            p4.Close(u2)
+        end
+    end,
+    ["Mission"] = function(p7, _, p8, _, p9, p10) --[[Function name: Mission, line 19]]
+        if p8.Name == "Lobbies_Closing" then
+            p9.Switch(p7, p10, "Lobbies", false)
+        elseif p8.Name:find("Close") == nil then
+            if p8.Parent.Name == "Maps" then
+                p9.Icon(p7, p8, p10, true)
+                return
+            end
+            if p8.Parent.Name == "Difficulty" then
+                p9.Difficulty(p7, p8, p10)
+                return
+            end
+            if p8.Parent.Name == "Buttons" and p9.Map.Type ~= nil then
+                local v11 = string.gsub
+                local v12 = p8.Name
+                local v13 = "_" .. p9.Map.Type
+                p9["Create_" .. v11(v12, tostring(v13), "")](p7, p10)
+                return
+            end
+            if p8.Parent.Name:find("_Buttons") ~= nil then
+                p9["Info_" .. p8.Name](p7, p10)
+                return
+            end
+            local v14 = p8.Name == "Join" and "Lobbies" or p8.Name
+            if v14 ~= nil then
+                p9.Switch(p7, p10, v14, true)
+            end
+        elseif p9.Current_Frame == nil then
+            p9.Fade(p7, false)
+            return
+        end
+    end,
+    ["Objective"] = function(p15, _, p16, _, p17, p18) --[[Function name: Objective, line 51]]
+        p17.Objective(p15, p16, p18)
+    end,
+    ["Join"] = function(p19, _, _, _, p20, p21) --[[Function name: Join, line 55]]
+        if p20.Selected_Map.Name == nil then
+            p20.Join(p19, p21)
+        end
+    end,
+    ["Kick"] = function(p22, _, _, _, _, p23) --[[Function name: Kick, line 61]]
+        p22:Invoke("S_Missions", "Kick", (p23:GetAttribute("Username")))
+    end,
+    ["Party"] = function(p24, _, _, _, p25, _) --[[Function name: Party, line 67]]
+        local v26 = p24.Modules.Players
+        p25.Fade(p24, false)
+        v26.Fade(p24, true, "Invite")
+    end,
+    ["Start"] = function(p27, _, _, _, _, _) --[[Function name: Start, line 75]]
+        p27:Invoke("S_Missions", "Start")
+    end,
+    ["Quest"] = function(p28, _, p29, _, p30, p31) --[[Function name: Quest, line 79]]
+        local v32 = nil
+        for v33, v34 in pairs(p30.Category_Indexes) do
+            if v34 == p29.Name then
+                v32 = v33
+                break
+            end
+        end
+        p30.Update(p28, p31, v32)
+    end,
+    ["Leaderboard"] = function(p35, _, p36, _, p37, p38) --[[Function name: Leaderboard, line 93]]
+        local v39 = string.gsub(p36.Name, "LB_", "")
+        local v40 = p36.Parent.Name == "Leaderboards" and v39 and v39 or p37.Leaderboard
+        if p36.Parent.Name == "Leaderboards" then
+            v39 = p37.Option or v39
+        end
+        p37.Update(p35, p38, v40, v39)
+    end,
+    ["Regiment"] = function(p41, _, p42, _, p43, p44) --[[Function name: Regiment, line 102]]
+        if p43.Index.Object ~= p42 then
+            for v45, v46 in pairs(p43.Cache) do
+                local v47 = p42.Name
+                local v48 = v46.Id
+                if v47 == tostring(v48) then
+                    p43.Display(p41, p44, v45, v46, p42, true)
+                    return
+                end
+            end
+        end
+    end,
+    ["State"] = function(p49, _, _, _, p50, p51) --[[Function name: State, line 114]]
+        p50.State(p49, p51)
+    end,
+    ["Regiment_Interact"] = function(p52, _, p53, _, p54, p55) --[[Function name: Regiment_Interact, line 118]]
+        p54[p53.Name](p52, p55)
+    end,
+    ["Warn"] = function(p56, _, p57, _, p58, p59) --[[Function name: Warn, line 122]]
+        if p57.Name == "Yes" then
+            p58.Continue(p56, p59)
+        end
+        p58.Fade(p56, false)
+    end,
+    ["Notify"] = function(p60, _, _, _, p61, _) --[[Function name: Notify, line 130]]
+        p61.Fade(p60, false)
+    end,
+    ["Setting"] = function(p62, _, p63, _, p64, p65) --[[Function name: Setting, line 134]]
+        p64.Update(p62, p65, nil, p63.Name)
+    end,
+    ["Toggle"] = function(p66, _, p67, _, p68, _) --[[Function name: Toggle, line 138]]
+        p68.Toggle(p66, p67)
+    end,
+    ["Friend"] = function(p69, _, p70, _, p71, _) --[[Function name: Friend, line 142]]
+        p71.Friend(p69, p70)
+    end,
+    ["Claim"] = function(p72, _, p73, _, p74, _) --[[Function name: Claim, line 146]]
+        p74.Claim(p72, p73)
+    end,
+    ["Tier"] = function(p75, _, p76, _, p77, _) --[[Function name: Tier, line 150]]
+        p77.Tier(p75, p76)
+    end,
+    ["Paid"] = function(p78, _, _, _, p79, _) --[[Function name: Paid, line 154]]
+        p79.Paid(p78)
+    end,
+    ["Continue"] = function(p80, _, p81, _, p82, _) --[[Function name: Continue, line 158]]
+        p82.Continue(p80, p81)
+    end,
+    ["Claim_All"] = function(p83, _, _, _, p84, p85) --[[Function name: Claim_All, line 162]]
+        p84.Claim_All(p83, p85)
+    end,
+    ["Buy_Tiers"] = function(p86, _, _, _, _, _) --[[Function name: Buy_Tiers, line 166]]
+        p86.Modules.Tiers.Fade(p86, true)
+    end,
+    ["Buying"] = function(p87, _, p88, _, p89, _) --[[Function name: Buying, line 174]]
+        p89.Buying(p87, p88)
+    end,
+    ["Tab_Category"] = function(p90, _, p91, _, p92, _) --[[Function name: Tab_Category, line 178]]
+        p92.Category(p90, p91)
+    end,
+    ["Main_Menu"] = function(p93, _, _, _, p94, _) --[[Function name: Main_Menu, line 182]]
+        local v95 = p93.Modules
+        local v96 = p93.Cache
+        local v97 = v95.Teleport
+        local v98 = v96.Player
+        v97.Start(p93, p94, v98, "Menu")
+    end,
+    ["Players"] = function(p99, _, p100, _, p101, _) --[[Function name: Players, line 192]]
+        if p101.Type ~= nil then
+            local v102 = p99.Modules
+            local v103 = v102.Market
+            local v104 = v102.Notify
+            local v105 = v102.Update
+            if p100.Parent.Name == "Players" then
+                if p101.Type == "Gift" then
+                    local _, v106 = v105.Get_Data(p99, true)
+                    if v106 == nil or v106.Progression.Level < 30 and v106.Progression.Prestige <= 0 then
+                        v104.Fade(p99, true, "You are not LV. 30+!")
+                        return
+                    elseif v103.Gift(p99, true, p100.Name) == true then
+                        p101.Fade(p99, false)
+                    else
+                        v104.Fade(p99, true, "Player not LV. 30+!")
+                    end
+                end
+                if p101.Type == "Invite" then
+                    local v107 = p99:Invoke("S_Party", "Invite", p100.Name)
+                    if v107 ~= nil then
+                        v104.Fade(p99, true, v107)
+                        return
+                    end
+                end
+            else
+                p101.Fade(p99, false)
+            end
+        end
+    end,
+    ["Invitation"] = function(p108, _, p109, _, p110, p111) --[[Function name: Invitation, line 230]]
+        p110.State(p108, p111, p109)
+    end,
+    ["Cancel"] = function(p112, _, _, _, p113, _) --[[Function name: Cancel, line 234]]
+        p113.Gift(p112, false)
+    end,
+    ["Display"] = function(p114, _, p115, _, p116, p117) --[[Function name: Display, line 238]]
+        p116.Display(p114, p117, p115)
+    end,
+    ["Inventory_Interact"] = function(p118, _, p119, _, p120, _) --[[Function name: Inventory_Interact, line 242]]
+        if p118.Modules.Delete.State == false then
+            p120[p119.Name](p118, p119)
+        end
+    end,
+    ["Equipment"] = function(p121, _, p122, _, p123, p124) --[[Function name: Equipment, line 252]]
+        local v125 = p121.Modules.Artifact
+        local v126 = p121.Modules.Perk
+        if p123.Category ~= p122.Name and (v125.Category == nil and v126.Category == nil) then
+            p123[p122.Name](p121, p124, true)
+        end
+    end,
+    ["Upgrade"] = function(p127, _, p128, _, p129, p130) --[[Function name: Upgrade, line 260]]
+        if p129.Upgrade_Category ~= p128.Name then
+            local v131 = p129.Upgrade_Category
+            p129.Upgrade_Category = p128.Name
+            p129.Upgrades(p127, p130, nil, v131)
+        end
+    end,
+    ["Weapon"] = function(p132, _, p133, _, p134, p135) --[[Function name: Weapon, line 268]]
+        if p134.Current_Weapon ~= p133.Name then
+            p134.Weapon(p132, p135, p133.Name)
+        end
+    end,
+    ["Increase"] = function(p136, _, _, _, p137, p138) --[[Function name: Increase, line 274]]
+        p137.Increase(p136, p138)
+    end,
+    ["Skill"] = function(p139, _, p140, _, _, _) --[[Function name: Skill, line 278]]
+        p139.Modules.Skill.Fade(p139, true, p140)
+    end,
+    ["Unlock"] = function(p141, _, p142, _, p143, _) --[[Function name: Unlock, line 286]]
+        p143.State(p141, p142)
+    end,
+    ["Resonate"] = function(p144, _, _, _, p145, p146) --[[Function name: Resonate, line 290]]
+        p145.Unlock(p144, p146)
+    end,
+    ["Perk"] = function(p147, _, p148, _, p149, p150) --[[Function name: Perk, line 294]]
+        local v151 = p147.Modules
+        local v152 = v151.Details
+        local v153 = v151.Craft
+        if p149.State == "In" and v151.Perk.Category == nil then
+            if p148.Name == "Craft" then
+                v153.Fade(p147, p150, true)
+                return
+            end
+            if p148.Name == "Details" then
+                v152.Fade(p147, true, "Perks")
+            end
+        end
+    end,
+    ["Slot"] = function(p154, _, p155, _, p156, p157) --[[Function name: Slot, line 309]]
+        if p154.Modules.Delete.State == false then
+            p156.Update(p154, p157, nil, p155.Name, true)
+        end
+    end,
+    ["Perk_Update"] = function(p158, _, p159, _, p160, p161) --[[Function name: Perk_Update, line 317]]
+        local v162 = p158.Services
+        local v163 = p158.Modules
+        local v164 = v163.Delete
+        if v163.Enhance.Open == false then
+            local v165 = v162.W
+            local v166 = v165.CurrentCamera
+            local v167 = p159.Parent:GetAttribute("ID")
+            local v168 = p159.Parent:GetAttribute("Rarity")
+            if v164.State == true then
+                v164.Check_Item(p158, p159, v167)
+            end
+            p160.Explode(p158, v165, v166, v167, v168, 0, p161, p159.Parent, true)
+        end
+    end,
+    ["Perk_Selection"] = function(p169, _, p170, _, p171, _) --[[Function name: Perk_Selection, line 335]]
+        p171.Perk_Selection(p169, p170.Parent)
+    end,
+    ["Enhancement"] = function(p172, _, p173, _, p174, p175) --[[Function name: Enhancement, line 339]]
+        p174.Loadout(p172, p175, p173.Parent.Parent)
+    end,
+    ["Auto_Add"] = function(p176, _, p177, _, p178, p179) --[[Function name: Auto_Add, line 343]]
+        local v180 = p176.Modules.Auto_Add
+        v180.Current_Module = p178
+        if p177.Name:find("Dropdown") == nil then
+            v180.Auto_Add(p176)
+        else
+            v180.Type = "Perks"
+            v180.Auto_Add_Options(p176, p177, p179)
+        end
+    end,
+    ["Enhancing"] = function(p181, _, _, _, p182, _) --[[Function name: Enhancing, line 358]]
+        p182.Enhancement(p181)
+    end,
+    ["Infoing"] = function(p183, _, p184, _, p185, _) --[[Function name: Infoing, line 362]]
+        local v186 = p183.Modules
+        local v187 = v186.Crates
+        local v188 = v186.Descriptions
+        local v189 = v186.Notification
+        local v190 = v186.Rates
+        local v191 = p184:GetAttribute("Tag")
+        if v191 ~= nil and p185.State == "In" then
+            if v187[v191] ~= nil then
+                v190.Fade(p183, true, "Crate", v191)
+                return
+            end
+            local v192 = v188.Items[v191]:gsub("(%d+%.?%d*)", "<font color=\"rgb(218,176,97)\">%1</font>")
+            v189.Fade(p183, true, v192)
+        end
+    end,
+    ["Invite_Prompt"] = function(p193, _, _, _, p194, _) --[[Function name: Invite_Prompt, line 383]]
+        p194.Top(p193, false)
+        p194.Invites(p193, true)
+    end,
+    ["Lobby"] = function(p195, p196) --[[Function name: Lobby, line 387]]
+        p195.Modules.Lobby.Switch(p195, p196)
+    end,
+    ["Response"] = function(p197, _, p198, _, p199, _) --[[Function name: Response, line 395]]
+        p199.Response(p197, p198)
+    end,
+    ["Lobby_Close"] = function(p200, p201, p202, _, p203, _) --[[Function name: Lobby_Close, line 399]]
+        local v204 = p200.Services
+        local v205 = p200.Modules
+        local v206 = p200.Cache
+        local v207 = v204.TS
+        local v208 = v204.W
+        local u209 = v205.Dialogue
+        local v210 = v205.Topbar
+        local u211 = v205.Zones
+        local v212 = v206.Interface
+        local v213 = v208.CurrentCamera
+        local v214 = string.gsub(p202.Name, "_Close", "")
+        if v214 == "Injuries" and (v210.Category == "Gear_Up" and v210.New_Type == "2D") then
+            if v205.Injuries.State == "In" then
+                p201.Fade(p200, p203, { "Injuries" }, "Gear_Up")
+                return
+            end
+        elseif v210.Category == v214 then
+            v210.Fade(p200, v212.Topbar, p201, "Out")
+            v210.Update(p200, v212.Topbar, "Gear_Up")
+            u209.Tween = true
+            u209.Focus = nil
+            p202.Visible = false
+            local v215 = v207:Create(v213, u209.Info, {
+                ["CFrame"] = u209.cFrame
+            })
+            v215:Play()
+            for _, v216 in pairs(u209.Events) do
+                v216:Disconnect()
+            end
+            u209.Events = {}
+            local v217 = u209.Events
+            local v218 = v215.Completed
+            table.insert(v217, v218:Connect(function() --[[Anonymous function at line 431]]
+                --[[
+                Upvalues:
+                    [1] = u209
+                    [2] = u211
+                --]]
+                local v219 = u209.NPC
+                if v219 ~= nil then
+                    local v220 = u211.Interacts[v219.Name]
+                    if v220 ~= nil then
+                        v220.Enabled = true
+                    end
+                end
+                local v221 = u209
+                local v222 = u209
+                u209.NPC = nil
+                v221.Tween = false
+                v222.cFrame = nil
+            end))
+        end
+    end,
+    ["Crafting"] = function(p223, _, p224, _, p225, p226) --[[Function name: Crafting, line 444]]
+        if p225.Item ~= p224 then
+            p225.Display(p223, p226, p224, true)
+        end
+    end,
+    ["Forging"] = function(p227, _, _, _, p228, _) --[[Function name: Forging, line 450]]
+        p228.Forge(p227)
+    end,
+    ["Heal"] = function(p229, _, p230, _, p231, _) --[[Function name: Heal, line 454]]
+        p231.Heal(p229, p230)
+    end,
+    ["Prestige"] = function(p232, _, _, _, _, _) --[[Function name: Prestige, line 458]]
+        p232.Modules.Warning.Fade(p232, true, "Prestige", "Are you sure you want to prestige?")
+    end,
+    ["Injuries"] = function(p233, p234, _, _, p235, _) --[[Function name: Injuries, line 466]]
+        --[[
+        Upvalues:
+            [1] = u1
+        --]]
+        local v236 = p233.Modules
+        local v237 = p233.Cache
+        local v238 = v236.Topbar
+        local v239 = v237.Interface.Injuries
+        if v238.New_Type == "2D" and p235.State == "In" then
+            p234.Fade(p233, p235, { "Gear_Up" }, "Injuries")
+            local v240 = v239:FindFirstChild("Close")
+            if v240 == nil then
+                v240 = v239:FindFirstChild(v239.Name .. "_Close")
+            else
+                local v241 = v239.Name .. "_Close"
+                v240.Name = tostring(v241)
+                p234.Hover(p233, v240, v239, p235, "Lobby_Close", true, v240.Close)
+            end
+            if v240 ~= nil then
+                local v242 = u1(0.97, 0, 0.148, 0)
+                v240.Visible = true
+                v240.Position = v242
+            end
+        end
+    end,
+    ["Modify"] = function(p243, _, p244, _, p245, _) --[[Function name: Modify, line 493]]
+        p245.Modify(p243, p244)
+    end,
+    ["Layout"] = function(p246, _, p247, _, p248, _) --[[Function name: Layout, line 497]]
+        p248["Layout_" .. p247.Name](p246)
+    end,
+    ["Achievement"] = function(p249, _, p250, _, p251, p252) --[[Function name: Achievement, line 501]]
+        local _, v253 = p249.Modules.Update.Get_Data(p249, true)
+        if v253 ~= nil then
+            p251.Category = p250.Name
+            p251.Update(p249, p252, v253, true)
+        end
+    end,
+    ["Artifact_Update"] = function(p254, _, p255, _, p256, p257) --[[Function name: Artifact_Update, line 511]]
+        local v258 = p254.Services
+        local v259 = p254.Modules
+        local v260 = v258.W
+        local v261 = v259.Delete
+        local v262 = v260.CurrentCamera
+        local v263 = p255.Parent:GetAttribute("ID")
+        local v264 = p255.Parent:GetAttribute("Rarity")
+        if p256.Tag ~= nil then
+            p256.Artifact_Switch(p254, nil, true)
+            p256.Tag = nil
+        end
+        if v261.State == true then
+            v261.Check_Item(p254, p255, v263)
+        end
+        p256.Explode(p254, v260, v262, v263, v264, 0, p257, p255.Parent, true)
+    end,
+    ["Artifact"] = function(p265, _, _, _, _, _) --[[Function name: Artifact, line 529]]
+        local v266 = p265.Modules
+        if v266.Artifact.Category == nil then
+            v266.Details.Fade(p265, true, "Artifacts")
+        end
+    end,
+    ["Lock"] = function(p267, _, p268, _, p269, _) --[[Function name: Lock, line 539]]
+        if p267.Modules.Delete.State == false then
+            p269.Lock(p267, p268, p268.Parent)
+        end
+    end,
+    ["Delete"] = function(p270, _, p271, _, _, p272) --[[Function name: Delete, line 547]]
+        local v273 = p270.Modules
+        local v274 = v273.Delete
+        local v275 = v273.Enhance
+        if v274.Type ~= nil and v275.Open == false then
+            v274[p271.Name](p270, p271, p272)
+        end
+    end,
+    ["Mastery"] = function(p276, p277, p278, _, p279, p280) --[[Function name: Mastery, line 557]]
+        if p279.Category ~= p278.Name then
+            local v281 = p280.Mastery_Buttons[p279.Category]
+            p279.Category = p278.Name
+            p276.Modules.Tweens.Tween(p276, p277, v281, p279, v281.Main.Interact, nil, "Out")
+            p279[p278.Name](p276, p280)
+        end
+    end,
+    ["Chest"] = function(p282, _, p283, _, _, _) --[[Function name: Chest, line 565]]
+        local v284 = p282.Modules.Missions.Map
+        local v285 = string.split
+        local v286 = p283.Parent.Name
+        local _, _, v287 = unpack(v285(v286, "_"))
+        p282.Modules.Rates.Fade(p282, true, "Items", {
+            ["Chest"] = v287,
+            ["Difficulty"] = v284.Difficulty,
+            ["Map"] = v284.Name
+        })
+    end,
+    ["Option"] = function(p288, _, p289, _, p290, _) --[[Function name: Option, line 573]]
+        p290.Option(p288, p289)
+    end,
+    ["Storage"] = function(p291, _, p292, _, p293, p294) --[[Function name: Storage, line 577]]
+        p293.Storage(p291, p292, p294)
+    end,
+    ["Gamepass"] = function(p295, _, _, _, _, _) --[[Function name: Gamepass, line 581]]
+        p295.Modules.Shared.Prompt_Gamepass(p295, p295.Cache.Player, "Memory_Bag")
+    end
 }
-v1.Alternate_Stats = v2
-v1.Perk_Sell_Amount = {
-    ["Common"] = 1,
-    ["Uncommon"] = 3,
-    ["Rare"] = 10,
-    ["Epic"] = 40,
-    ["Legendary"] = 175,
-    ["Secret"] = 1500
-}
-v1.Rollable = {
-    {
-        ["Stat"] = "Blade_Durability",
-        ["Icon"] = 15200250279
-    },
-    {
-        ["Stat"] = "Crit_Chance",
-        ["Icon"] = 15200286399
-    },
-    {
-        ["Stat"] = "Crit_Damage",
-        ["Icon"] = 15200287267
-    },
-    {
-        ["Stat"] = "Damage_Reduction",
-        ["Icon"] = 15215397657
-    },
-    {
-        ["Stat"] = "Health",
-        ["Icon"] = 15215342865
-    },
-    {
-        ["Stat"] = "Health_Regen",
-        ["Icon"] = 15215854858
-    },
-    {
-        ["Stat"] = "Injury_Chance",
-        ["Icon"] = 15215390889
-    },
-    {
-        ["Stat"] = "ODM_Control",
-        ["Icon"] = 15200288175
-    },
-    {
-        ["Stat"] = "ODM_Damage",
-        ["Icon"] = 15214144184
-    },
-    {
-        ["Stat"] = "ODM_Gas",
-        ["Icon"] = 15200289026
-    },
-    {
-        ["Stat"] = "ODM_Range",
-        ["Icon"] = 15200369307
-    },
-    {
-        ["Stat"] = "ODM_Speed",
-        ["Icon"] = 15200247186
-    },
-    {
-        ["Stat"] = "Skill_Cooldown_Reduction",
-        ["Icon"] = 15215886654
-    },
-    {
-        ["Stat"] = "Swing_Duration",
-        ["Icon"] = 15214764570
-    },
-    {
-        ["Stat"] = "Shifter_Damage",
-        ["Icon"] = 18487448344
-    }
-}
-v1.Upgrade_Values = {
-    ["ODM_Damage"] = {
-        125,
-        175,
-        250,
-        410,
-        645,
-        1016,
-        1600,
-        2480,
-        3844,
-        5959,
-        9087,
-        13858,
-        21134,
-        31701,
-        47551,
-        71327
-    },
-    ["TS_Damage"] = {
-        187,
-        262,
-        375,
-        615,
-        967,
-        1524,
-        2400,
-        3720,
-        5766,
-        8938,
-        13630,
-        20787,
-        31701,
-        47551,
-        71327,
-        106990
-    },
-    ["ODM_Speed"] = {
-        210,
-        213,
-        216,
-        219,
-        222,
-        225,
-        228,
-        231,
-        234,
-        237,
-        240,
-        243,
-        246,
-        250,
-        254,
-        258
-    },
-    ["TS_Speed"] = {
-        210,
-        211,
-        212,
-        213,
-        215,
-        217,
-        219,
-        221,
-        223,
-        225,
-        228,
-        231,
-        234,
-        237,
-        240,
-        243
-    },
-    ["ODM_Control"] = {
-        105.5,
-        106,
-        106.5,
-        107,
-        107.5,
-        108,
-        108.5,
-        109,
-        109.5,
-        110,
-        111,
-        112,
-        113,
-        114,
-        115,
-        116
-    },
-    ["TS_Control"] = {
-        105.5,
-        106,
-        106.5,
-        107,
-        107.5,
-        108,
-        108.5,
-        109,
-        109.5,
-        110,
-        110.5,
-        111,
-        111.5,
-        112,
-        112.5,
-        113
-    },
-    ["ODM_Range"] = {
-        665,
-        680,
-        695,
-        710,
-        740,
-        770,
-        800,
-        850,
-        900,
-        950,
-        1000,
-        1050,
-        1100,
-        1175,
-        1250,
-        1325
-    },
-    ["TS_Range"] = {
-        665,
-        680,
-        695,
-        710,
-        740,
-        770,
-        800,
-        850,
-        900,
-        950,
-        1000,
-        1050,
-        1100,
-        1175,
-        1250,
-        1325
-    },
-    ["ODM_Gas"] = {
-        1080,
-        1100,
-        1120,
-        1140,
-        1165,
-        1190,
-        1215,
-        1250,
-        1285,
-        1320,
-        1370,
-        1420,
-        1470,
-        1555,
-        1630,
-        1705
-    },
-    ["TS_Gas"] = {
-        1000,
-        1020,
-        1040,
-        1060,
-        1085,
-        1110,
-        1135,
-        1165,
-        1195,
-        1225,
-        1265,
-        1305,
-        1345,
-        1395,
-        1445,
-        1495
-    },
-    ["Crit_Damage"] = {
-        20,
-        21,
-        22,
-        23,
-        24.5,
-        26,
-        27.5,
-        29.5,
-        31.5,
-        33.5,
-        36,
-        38.5,
-        41,
-        44,
-        47,
-        50
-    },
-    ["Crit_Chance"] = {
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15
-    },
-    ["Blade_Durability"] = {
-        5,
-        7,
-        9,
-        11,
-        13.5,
-        16,
-        18.5,
-        21.5,
-        24.5,
-        27.5,
-        31,
-        34.5,
-        38,
-        42,
-        46,
-        50
-    },
-    ["Blast_Radius"] = {
-        100,
-        105,
-        110,
-        115,
-        120,
-        125,
-        130,
-        135,
-        140,
-        145,
-        150,
-        155,
-        160,
-        165,
-        170,
-        175
-    }
-}
-local v3 = {
-    ["ODM_Damage"] = {
-        ["1"] = 2.5,
-        ["12"] = 5,
-        ["30"] = 7.5,
-        ["34"] = 10,
-        ["37"] = 12.5
-    },
-    ["TS_Damage"] = {
-        ["113"] = 2.5,
-        ["124"] = 5,
-        ["142"] = 7.5,
-        ["146"] = 10,
-        ["149"] = 12.5
-    },
-    ["Swing_Duration"] = {
-        ["2"] = 2,
-        ["5"] = 3,
-        ["27"] = 4,
-        ["31"] = 5,
-        ["36"] = 7
-    },
-    ["Blade_Durability"] = {
-        ["4"] = 1,
-        ["6"] = 2,
-        ["8"] = 3,
-        ["28"] = 4,
-        ["33"] = 6,
-        ["70"] = 2,
-        ["73"] = 3,
-        ["77"] = 5
-    },
-    ["Crit_Damage"] = {
-        ["10"] = 5,
-        ["16"] = 6,
-        ["19"] = 7,
-        ["22"] = 8,
-        ["25"] = 9,
-        ["122"] = 5,
-        ["128"] = 6,
-        ["131"] = 7,
-        ["134"] = 8,
-        ["137"] = 9
-    },
-    ["Crit_Chance"] = {
-        ["9"] = 1,
-        ["13"] = 2,
-        ["15"] = 2,
-        ["18"] = 3,
-        ["21"] = 4,
-        ["24"] = 6,
-        ["121"] = 1,
-        ["125"] = 2,
-        ["127"] = 2,
-        ["130"] = 3,
-        ["133"] = 4,
-        ["136"] = 6
-    },
-    ["Health"] = {
-        ["38"] = 5,
-        ["41"] = 5,
-        ["44"] = 7.5,
-        ["46"] = 7.5,
-        ["48"] = 7.5,
-        ["49"] = 10,
-        ["51"] = 10,
-        ["52"] = 10,
-        ["54"] = 12.5,
-        ["55"] = 12.5,
-        ["57"] = 17.5
-    },
-    ["Injury_Chance"] = {
-        ["39"] = 5,
-        ["42"] = 10,
-        ["92"] = 5,
-        ["94"] = 7.5,
-        ["98"] = 12.5
-    },
-    ["Damage_Reduction"] = {
-        ["58"] = 2,
-        ["60"] = 2,
-        ["61"] = 3,
-        ["63"] = 3,
-        ["64"] = 4,
-        ["66"] = 4,
-        ["67"] = 5,
-        ["69"] = 7
-    },
-    ["ODM_Control"] = {
-        ["71"] = 2.5,
-        ["79"] = 4
-    },
-    ["TS_Control"] = {
-        ["71"] = 2.5,
-        ["79"] = 4
-    },
-    ["Health_Regen"] = {
-        ["75"] = 1,
-        ["81"] = 1,
-        ["83"] = 1,
-        ["85"] = 1,
-        ["87"] = 1,
-        ["89"] = 2
-    },
-    ["Skill_Cooldown_Reduction"] = {
-        ["90"] = 15,
-        ["96"] = 20
-    },
-    ["Spear_Count"] = {
-        ["116"] = 2,
-        ["118"] = 2,
-        ["120"] = 2
-    },
-    ["Blast_Radius"] = {
-        ["114"] = 2,
-        ["117"] = 4,
-        ["139"] = 6,
-        ["143"] = 8,
-        ["148"] = 10
-    },
-    ["Conservation_Chance"] = {
-        ["70"] = 1,
-        ["73"] = 1.5,
-        ["77"] = 2.5,
-        ["140"] = 4,
-        ["145"] = 6
-    },
-    ["Extra"] = {
-        ["86"] = 1
-    },
-    ["Ignore"] = {
-        ["53"] = 2
-    }
-}
-v1.Skill_Values = v3
-local v4 = {
-    ["ODM_Damage"] = {
-        ["Smith"] = -5,
-        ["Azumabito"] = 5,
-        ["Leonhart"] = 10,
-        ["Ksaver"] = 10,
-        ["Ackerman"] = 20,
-        ["Shiki"] = 20,
-        ["Fritz"] = 10
-    },
-    ["TS_Damage"] = {
-        ["Smith"] = -5,
-        ["Azumabito"] = 5,
-        ["Leonhart"] = 10,
-        ["Ksaver"] = 10,
-        ["Ackerman"] = 20,
-        ["Shiki"] = 20,
-        ["Fritz"] = 10
-    },
-    ["ODM_Speed"] = {
-        ["Kirstein"] = -5,
-        ["Zoe"] = 10
-    },
-    ["TS_Speed"] = {
-        ["Kirstein"] = -5,
-        ["Zoe"] = 10
-    },
-    ["ODM_Control"] = {
-        ["Azumabito"] = 5,
-        ["Zoe"] = 10,
-        ["Ackerman"] = 10,
-        ["Shiki"] = 10
-    },
-    ["TS_Control"] = {
-        ["Azumabito"] = 5,
-        ["Zoe"] = 10,
-        ["Ackerman"] = 10,
-        ["Shiki"] = 10
-    },
-    ["ODM_Range"] = {
-        ["Ksaver"] = 10,
-        ["Ackerman"] = 10,
-        ["Shiki"] = 10
-    },
-    ["TS_Range"] = {
-        ["Ksaver"] = 10,
-        ["Ackerman"] = 10,
-        ["Shiki"] = 10
-    },
-    ["ODM_Gas"] = {
-        ["Grice"] = -5,
-        ["Finger"] = 10,
-        ["Ackerman"] = 10,
-        ["Shiki"] = 10
-    },
-    ["TS_Gas"] = {
-        ["Grice"] = -5,
-        ["Finger"] = 10,
-        ["Ackerman"] = 10,
-        ["Shiki"] = 10
-    },
-    ["Crit_Damage"] = {
-        ["Springer"] = 5,
-        ["Galliard"] = 10,
-        ["Ackerman"] = 15,
-        ["Shiki"] = 15,
-        ["Fritz"] = 15
-    },
-    ["Crit_Chance"] = {
-        ["Springer"] = -5,
-        ["Kruger"] = -5,
-        ["Arlert"] = 10,
-        ["Yeager"] = 15,
-        ["Ackerman"] = 15,
-        ["Shiki"] = 15,
-        ["Fritz"] = 15
-    },
-    ["Health"] = {
-        ["Springer"] = 5,
-        ["Braus"] = -5,
-        ["Braun"] = 10
-    },
-    ["Damage_Reduction"] = {
-        ["Braun"] = 10
-    },
-    ["Boost_Dashes"] = {
-        ["Ackerman"] = 1,
-        ["Shiki"] = 1
-    },
-    ["XP"] = {
-        ["Reiss"] = 5
-    },
-    ["Gold"] = {
-        ["Tybur"] = 10
-    },
-    ["Gold_Reduction_Cost"] = {
-        ["Zoe"] = 5,
-        ["Reiss"] = 10
-    },
-    ["Awakening_Bar"] = {
-        ["Fritz"] = 10
-    },
-    ["Skill_Cooldown_Reduction"] = {
-        ["Fritz"] = 10
-    }
-}
-v1.Family_Values = v4
-local v5 = {
-    ["Easy"] = {
-        ["Min"] = 15,
-        ["Max"] = 18,
-        ["Increment"] = 1,
-        ["Initial"] = 10,
-        ["Wave"] = 3
-    },
-    ["Normal"] = {
-        ["Min"] = 19,
-        ["Max"] = 23,
-        ["Increment"] = 1,
-        ["Initial"] = 11,
-        ["Wave"] = 4
-    },
-    ["Hard"] = {
-        ["Min"] = 24,
-        ["Max"] = 29,
-        ["Increment"] = 2,
-        ["Initial"] = 12,
-        ["Wave"] = 4
-    },
-    ["Severe"] = {
-        ["Min"] = 30,
-        ["Max"] = 36,
-        ["Increment"] = 3,
-        ["Initial"] = 13,
-        ["Wave"] = 5
-    },
-    ["Aberrant"] = {
-        ["Min"] = 37,
-        ["Max"] = 44,
-        ["Increment"] = 4,
-        ["Initial"] = 14,
-        ["Wave"] = 5
-    }
-}
-v1.Difficulty_Spawns = v5
-local v6 = {
-    ["Easy"] = {
-        ["Wave"] = 6
-    },
-    ["Normal"] = {
-        ["Wave"] = 7
-    },
-    ["Hard"] = {
-        ["Wave"] = 9
-    },
-    ["Severe"] = {
-        ["Wave"] = 11
-    },
-    ["Aberrant"] = {
-        ["Wave"] = 12
-    }
-}
-v1.Giant_Forest_Spawns = v6
-local v7 = {
-    ["Easy"] = {
-        ["Wave"] = 6
-    },
-    ["Normal"] = {
-        ["Wave"] = 6
-    },
-    ["Hard"] = {
-        ["Wave"] = 6
-    },
-    ["Severe"] = {
-        ["Wave"] = 6
-    },
-    ["Aberrant"] = {
-        ["Wave"] = 6
-    }
-}
-v1.Defend_Supplies_Spawns = v7
-local v8 = {
-    ["Hard"] = {
-        ["Spawn"] = 17,
-        ["Wave"] = 7
-    },
-    ["Severe"] = {
-        ["Spawn"] = 17,
-        ["Wave"] = 8
-    },
-    ["Aberrant"] = {
-        ["Spawn"] = 17,
-        ["Wave"] = 9
-    }
-}
-v1.Raid_Spawns = v8
-v1.Abnormal_Chances = {
-    ["Easy"] = 2,
-    ["Normal"] = 4,
-    ["Hard"] = 10,
-    ["Severe"] = 18,
-    ["Aberrant"] = 25
-}
-v1.Crawler_Chances = {
-    ["Easy"] = 0,
-    ["Normal"] = 2,
-    ["Hard"] = 7,
-    ["Severe"] = 13,
-    ["Aberrant"] = 20
-}
-v1.Abnormal_Chances_Modified = {
-    ["Easy"] = 100,
-    ["Normal"] = 75,
-    ["Hard"] = 65,
-    ["Severe"] = 60,
-    ["Aberrant"] = 50
-}
-v1.Crawler_Chances_Modified = {
-    ["Easy"] = 0,
-    ["Normal"] = 25,
-    ["Hard"] = 35,
-    ["Severe"] = 40,
-    ["Aberrant"] = 50
-}
-v1.Abnormal_Chances_Zero = {
-    ["Easy"] = 0,
-    ["Normal"] = 0,
-    ["Hard"] = 0,
-    ["Severe"] = 0,
-    ["Aberrant"] = 0
-}
-v1.Crawler_Chances_Zero = {
-    ["Easy"] = 0,
-    ["Normal"] = 0,
-    ["Hard"] = 0,
-    ["Severe"] = 0,
-    ["Aberrant"] = 0
-}
-v1.Injury_Chances = {
-    ["Easy"] = 0,
-    ["Normal"] = 2,
-    ["Hard"] = 5,
-    ["Severe"] = 60,
-    ["Aberrant"] = 95
-}
-v1.Burst_Titan_Reward = {
-    ["Hard"] = 35,
-    ["Severe"] = 55,
-    ["Aberrant"] = 100
-}
-local v9 = {
-    ["Easy"] = {
-        ["Defend"] = 800,
-        ["Wave"] = 1000,
-        ["Loss"] = 10,
-        ["Waves"] = 4,
-        ["Spawn"] = 8,
-        ["Increment"] = 4
-    },
-    ["Normal"] = {
-        ["Defend"] = 780,
-        ["Wave"] = 975,
-        ["Loss"] = 10,
-        ["Waves"] = 5,
-        ["Spawn"] = 8,
-        ["Increment"] = 4
-    },
-    ["Hard"] = {
-        ["Defend"] = 760,
-        ["Wave"] = 950,
-        ["Loss"] = 10,
-        ["Waves"] = 6,
-        ["Spawn"] = 9,
-        ["Increment"] = 5
-    },
-    ["Severe"] = {
-        ["Defend"] = 740,
-        ["Wave"] = 925,
-        ["Loss"] = 10,
-        ["Waves"] = 7,
-        ["Spawn"] = 9,
-        ["Increment"] = 5
-    },
-    ["Aberrant"] = {
-        ["Defend"] = 720,
-        ["Wave"] = 900,
-        ["Loss"] = 10,
-        ["Waves"] = 8,
-        ["Spawn"] = 10,
-        ["Increment"] = 5
-    }
-}
-v1.Payload = v9
-local v10 = {
-    ["Easy"] = {
-        ["Waves"] = 4,
-        ["Spawn"] = 8,
-        ["Increment"] = 4
-    },
-    ["Normal"] = {
-        ["Waves"] = 5,
-        ["Spawn"] = 9,
-        ["Increment"] = 5
-    },
-    ["Hard"] = {
-        ["Waves"] = 6,
-        ["Spawn"] = 10,
-        ["Increment"] = 6
-    },
-    ["Severe"] = {
-        ["Waves"] = 7,
-        ["Spawn"] = 11,
-        ["Increment"] = 7
-    },
-    ["Aberrant"] = {
-        ["Waves"] = 8,
-        ["Spawn"] = 12,
-        ["Increment"] = 8
-    }
-}
-v1.Shiganshina_Breach = v10
-v1.Refills = {
-    ["Easy"] = 10,
-    ["Normal"] = 8,
-    ["Hard"] = 6,
-    ["Severe"] = 4,
-    ["Aberrant"] = 3
-}
-v1.Difficulty_Potential = {
-    ["Easy"] = 0,
-    ["Normal"] = 2,
-    ["Hard"] = 5,
-    ["Severe"] = 9,
-    ["Aberrant"] = 12
-}
-local v11 = {
-    ["Easy"] = {
-        ["Kill"] = 44.199999999999996,
-        ["Complete"] = 884
-    },
-    ["Normal"] = {
-        ["Kill"] = 110.5,
-        ["Complete"] = 2635
-    },
-    ["Hard"] = {
-        ["Kill"] = 230.175,
-        ["Complete"] = 6909.125
-    },
-    ["Severe"] = {
-        ["Kill"] = 425.25,
-        ["Complete"] = 16608.375
-    },
-    ["Aberrant"] = {
-        ["Kill"] = 764.5000000000001,
-        ["Complete"] = 38615.5
-    }
-}
-v1.Difficulty_Gold_Gain = v11
-local v12 = {
-    ["Easy"] = {
-        ["Kill"] = 16.5,
-        ["Complete"] = 337.5
-    },
-    ["Normal"] = {
-        ["Kill"] = 42.25,
-        ["Complete"] = 1001
-    },
-    ["Hard"] = {
-        ["Kill"] = 70.325,
-        ["Complete"] = 2146
-    },
-    ["Severe"] = {
-        ["Kill"] = 98.4,
-        ["Complete"] = 3861.6000000000004
-    },
-    ["Aberrant"] = {
-        ["Kill"] = 139,
-        ["Complete"] = 7025
-    }
-}
-v1.Difficulty_XP_Gain = v12
-v1.Battlepass_XP_Gain = {
-    ["Easy"] = 10,
-    ["Normal"] = 20,
-    ["Hard"] = 35,
-    ["Severe"] = 60,
-    ["Aberrant"] = 100
-}
-v1.Difficulty_Kill_Chance = {
-    ["Easy"] = 0.3,
-    ["Normal"] = 0.5,
-    ["Hard"] = 0.8,
-    ["Severe"] = 1.1,
-    ["Aberrant"] = 1.5
-}
-local v13 = {
-    ["Easy"] = {
-        ["Common"] = 95.7,
-        ["Rare"] = 4,
-        ["Epic"] = 0.3,
-        ["Legendary"] = 0,
-        ["Secret"] = 0
-    },
-    ["Normal"] = {
-        ["Common"] = 91.4,
-        ["Rare"] = 8,
-        ["Epic"] = 0.6,
-        ["Legendary"] = 0,
-        ["Secret"] = 0
-    },
-    ["Hard"] = {
-        ["Common"] = 82.5,
-        ["Rare"] = 16,
-        ["Epic"] = 1.2,
-        ["Legendary"] = 0.3,
-        ["Secret"] = 0
-    },
-    ["Severe"] = {
-        ["Common"] = 65,
-        ["Rare"] = 32,
-        ["Epic"] = 2.4,
-        ["Legendary"] = 0.6,
-        ["Secret"] = 0
-    },
-    ["Aberrant"] = {
-        ["Common"] = 29.8,
-        ["Rare"] = 64,
-        ["Epic"] = 4.8,
-        ["Legendary"] = 1.3,
-        ["Secret"] = 0.1
-    }
-}
-v1.Difficulty_Perk_Rarity_Chance = v13
-local v14 = {
-    ["Easy"] = {
-        ["Common"] = 63,
-        ["Rare"] = 28.5,
-        ["Epic"] = 5.5,
-        ["Legendary"] = 3,
-        ["Secret"] = 0
-    },
-    ["Normal"] = {
-        ["Common"] = 10,
-        ["Rare"] = 53.8,
-        ["Epic"] = 30,
-        ["Legendary"] = 6,
-        ["Secret"] = 0.2
-    },
-    ["Hard"] = {
-        ["Common"] = 0,
-        ["Rare"] = 37.6,
-        ["Epic"] = 50,
-        ["Legendary"] = 12,
-        ["Secret"] = 0.4
-    },
-    ["Severe"] = {
-        ["Common"] = 0,
-        ["Rare"] = 0,
-        ["Epic"] = 75.2,
-        ["Legendary"] = 24,
-        ["Secret"] = 0.8
-    },
-    ["Aberrant"] = {
-        ["Common"] = 0,
-        ["Rare"] = 0,
-        ["Epic"] = 50.4,
-        ["Legendary"] = 48,
-        ["Secret"] = 1.6
-    }
-}
-v1.Side_Objective_Perk_Rarity_Chance = v14
-local v15 = {
-    ["Hard"] = {
-        ["Defend"] = 610,
-        ["Loss"] = 10
-    },
-    ["Severe"] = {
-        ["Defend"] = 510,
-        ["Loss"] = 10
-    },
-    ["Aberrant"] = {
-        ["Defend"] = 410,
-        ["Loss"] = 10
-    }
-}
-v1.Raid = v15
-local v16 = {}
-local v17 = {
-    ["Hard"] = {
-        ["Emperor\'s Key"] = 0.3,
-        ["Attack Serum"] = 0.015,
-        ["Attack Shard"] = 0.05,
-        ["Scarf"] = 0.02,
-        ["Cloak"] = 0.12,
-        ["Key"] = 0.48,
-        ["Lantern"] = 0.6,
-        ["Journal"] = 0.6,
-        ["Secret_Perk"] = 0,
-        ["Legendary_Perk"] = 0.3,
-        ["Epic_Perk"] = 1.2,
-        ["Rare_Perk"] = 30,
-        ["Common_Perk"] = 64.715,
-        ["Duality"] = 0.1,
-        ["Herbal Magic"] = 0.2,
-        ["Balance"] = 0.1,
-        ["Celestial"] = 0.2,
-        ["Hardened Blade"] = 1
-    },
-    ["Severe"] = {
-        ["Emperor\'s Key"] = 0.9,
-        ["Attack Serum"] = 0.045,
-        ["Attack Shard"] = 0.15,
-        ["Scarf"] = 0.05,
-        ["Cloak"] = 0.3,
-        ["Key"] = 1.2,
-        ["Lantern"] = 1.5,
-        ["Journal"] = 1.5,
-        ["Secret_Perk"] = 0.1,
-        ["Legendary_Perk"] = 0.6,
-        ["Epic_Perk"] = 2.4,
-        ["Rare_Perk"] = 40,
-        ["Common_Perk"] = 48.055,
-        ["Duality"] = 0.2,
-        ["Herbal Magic"] = 0.4,
-        ["Balance"] = 0.2,
-        ["Celestial"] = 0.4,
-        ["Hardened Blade"] = 2
-    },
-    ["Aberrant"] = {
-        ["Emperor\'s Key"] = 3,
-        ["Attack Serum"] = 0.15,
-        ["Attack Shard"] = 0.5,
-        ["Scarf"] = 0.1,
-        ["Cloak"] = 0.6,
-        ["Key"] = 2.4,
-        ["Lantern"] = 3,
-        ["Journal"] = 3,
-        ["Secret_Perk"] = 0.2,
-        ["Legendary_Perk"] = 1.2,
-        ["Epic_Perk"] = 4.8,
-        ["Rare_Perk"] = 50,
-        ["Common_Perk"] = 23.05,
-        ["Duality"] = 0.5,
-        ["Herbal Magic"] = 1,
-        ["Balance"] = 0.5,
-        ["Celestial"] = 1,
-        ["Hardened Blade"] = 5
-    }
-}
-v16.Free = v17
-local v18 = {
-    ["Hard"] = {
-        ["Attack Serum"] = 0.03,
-        ["Attack Shard"] = 0.1,
-        ["Scarf"] = 0.04,
-        ["Cloak"] = 0.24,
-        ["Key"] = 0.96,
-        ["Lantern"] = 1.2,
-        ["Journal"] = 1.2,
-        ["Secret_Perk"] = 0,
-        ["Legendary_Perk"] = 0.6,
-        ["Epic_Perk"] = 20.43,
-        ["Rare_Perk"] = 34,
-        ["Common_Perk"] = 38,
-        ["Duality"] = 0.2,
-        ["Herbal Magic"] = 0.4,
-        ["Balance"] = 0.2,
-        ["Celestial"] = 0.4,
-        ["Hardened Blade"] = 2
-    },
-    ["Severe"] = {
-        ["Attack Serum"] = 0.09,
-        ["Attack Shard"] = 0.3,
-        ["Scarf"] = 0.1,
-        ["Cloak"] = 0.6,
-        ["Key"] = 2.4,
-        ["Lantern"] = 3,
-        ["Journal"] = 3,
-        ["Secret_Perk"] = 0.2,
-        ["Legendary_Perk"] = 1.2,
-        ["Epic_Perk"] = 32.71,
-        ["Rare_Perk"] = 35,
-        ["Common_Perk"] = 15,
-        ["Duality"] = 0.4,
-        ["Herbal Magic"] = 0.8,
-        ["Balance"] = 0.4,
-        ["Celestial"] = 0.8,
-        ["Hardened Blade"] = 4
-    },
-    ["Aberrant"] = {
-        ["Attack Serum"] = 0.3,
-        ["Attack Shard"] = 1,
-        ["Scarf"] = 0.2,
-        ["Cloak"] = 1.2,
-        ["Key"] = 4.8,
-        ["Lantern"] = 6,
-        ["Journal"] = 6,
-        ["Secret_Perk"] = 0.4,
-        ["Legendary_Perk"] = 2.4,
-        ["Epic_Perk"] = 49.7,
-        ["Rare_Perk"] = 12,
-        ["Common_Perk"] = 0,
-        ["Duality"] = 1,
-        ["Herbal Magic"] = 2,
-        ["Balance"] = 1,
-        ["Celestial"] = 2,
-        ["Hardened Blade"] = 10
-    }
-}
-v16.Premium = v18
-v1.Trost_Raid_Drops = v16
-local v19 = {}
-local v20 = {
-    ["Hard"] = {
-        ["Emperor\'s Key"] = 0.3,
-        ["Armored Serum"] = 0.015,
-        ["Armored Shard"] = 0.05,
-        ["Scars"] = 0.02,
-        ["Rifle"] = 0.12,
-        ["Backpack"] = 0.48,
-        ["Secret_Perk"] = 0,
-        ["Legendary_Perk"] = 0.3,
-        ["Epic_Perk"] = 1.2,
-        ["Rare_Perk"] = 31.7,
-        ["Common_Perk"] = 64.415,
-        ["Young Reiner\'s Attire"] = 0.1,
-        ["Digital Fracture"] = 0.1,
-        ["Abyssion"] = 0.2,
-        ["Marleyan Patch"] = 1
-    },
-    ["Severe"] = {
-        ["Emperor\'s Key"] = 0.9,
-        ["Armored Serum"] = 0.045,
-        ["Armored Shard"] = 0.15,
-        ["Scars"] = 0.05,
-        ["Rifle"] = 0.3,
-        ["Backpack"] = 1.2,
-        ["Secret_Perk"] = 0.1,
-        ["Legendary_Perk"] = 0.6,
-        ["Epic_Perk"] = 2.4,
-        ["Rare_Perk"] = 42,
-        ["Common_Perk"] = 49.455,
-        ["Young Reiner\'s Attire"] = 0.2,
-        ["Digital Fracture"] = 0.2,
-        ["Abyssion"] = 0.4,
-        ["Marleyan Patch"] = 2
-    },
-    ["Aberrant"] = {
-        ["Emperor\'s Key"] = 3,
-        ["Armored Serum"] = 0.15,
-        ["Armored Shard"] = 0.5,
-        ["Scars"] = 0.1,
-        ["Rifle"] = 0.6,
-        ["Backpack"] = 2.4,
-        ["Secret_Perk"] = 0.2,
-        ["Legendary_Perk"] = 1.2,
-        ["Epic_Perk"] = 4.8,
-        ["Rare_Perk"] = 50,
-        ["Common_Perk"] = 30.05,
-        ["Young Reiner\'s Attire"] = 0.5,
-        ["Digital Fracture"] = 0.5,
-        ["Abyssion"] = 1,
-        ["Marleyan Patch"] = 5
-    }
-}
-v19.Free = v20
-local v21 = {
-    ["Hard"] = {
-        ["Armored Serum"] = 0.03,
-        ["Armored Shard"] = 0.1,
-        ["Scars"] = 0.04,
-        ["Rifle"] = 0.24,
-        ["Backpack"] = 0.96,
-        ["Secret_Perk"] = 0,
-        ["Legendary_Perk"] = 0.6,
-        ["Epic_Perk"] = 20.43,
-        ["Rare_Perk"] = 35,
-        ["Common_Perk"] = 39.8,
-        ["Young Reiner\'s Attire"] = 0.2,
-        ["Digital Fracture"] = 0.2,
-        ["Abyssion"] = 0.4,
-        ["Marleyan Patch"] = 2
-    },
-    ["Severe"] = {
-        ["Armored Serum"] = 0.09,
-        ["Armored Shard"] = 0.3,
-        ["Scars"] = 0.1,
-        ["Rifle"] = 0.6,
-        ["Backpack"] = 2.4,
-        ["Secret_Perk"] = 0.2,
-        ["Legendary_Perk"] = 1.2,
-        ["Epic_Perk"] = 32.71,
-        ["Rare_Perk"] = 34.6,
-        ["Common_Perk"] = 22.2,
-        ["Young Reiner\'s Attire"] = 0.4,
-        ["Digital Fracture"] = 0.4,
-        ["Abyssion"] = 0.8,
-        ["Marleyan Patch"] = 4
-    },
-    ["Aberrant"] = {
-        ["Armored Serum"] = 0.3,
-        ["Armored Shard"] = 1,
-        ["Scars"] = 0.2,
-        ["Rifle"] = 1.2,
-        ["Backpack"] = 4.8,
-        ["Secret_Perk"] = 0.4,
-        ["Legendary_Perk"] = 2.4,
-        ["Epic_Perk"] = 49.7,
-        ["Rare_Perk"] = 26,
-        ["Common_Perk"] = 0,
-        ["Young Reiner\'s Attire"] = 1,
-        ["Digital Fracture"] = 1,
-        ["Abyssion"] = 2,
-        ["Marleyan Patch"] = 10
-    }
-}
-v19.Premium = v21
-v1.Shiganshina_Raid_Drops = v19
-local v22 = {
-    ["Hard"] = {
-        ["Defend"] = 610,
-        ["Loss"] = 10
-    },
-    ["Severe"] = {
-        ["Defend"] = 510,
-        ["Loss"] = 10
-    },
-    ["Aberrant"] = {
-        ["Defend"] = 410,
-        ["Loss"] = 10
-    }
-}
-v1.Armored_Titan = v22
-v1.Gas_Loss = {
-    ["Easy"] = 0,
-    ["Normal"] = 3.5,
-    ["Hard"] = 7,
-    ["Severe"] = 10.5,
-    ["Aberrant"] = 14
-}
-v1.Injury_Percentage_Costs = {
-    ["Arm"] = 0.75,
-    ["Leg"] = 0.85,
-    ["Head"] = 0.45,
-    ["Eyes"] = 0.55,
-    ["Ribcage"] = 0.65
-}
-v1.Modifiers = {
-    ["No Perks"] = 5,
-    ["No Skills"] = 3,
-    ["No Talents"] = 2.5,
-    ["Nightmare"] = 20,
-    ["Oddball"] = 25,
-    ["Injury Prone"] = 10,
-    ["Chronic Injuries"] = 10,
-    ["Fog"] = 7.5,
-    ["Time Trial"] = 10,
-    ["Glass Cannon"] = 25,
-    ["Boring"] = 10,
-    ["Simple"] = 10
-}
-v1.Time_Trial_Times_Old = {
-    ["Outskirts"] = 160,
-    ["Trost"] = 180,
-    ["Forest"] = 205,
-    ["Shiganshina"] = 185,
-    ["Utgard"] = 140,
-    ["Docks"] = 185
-}
-local v23 = {}
-local v24 = {
-    ["Skirmish"] = {
-        195,
-        170,
-        155,
-        140,
-        125
-    },
-    ["Breach"] = {
-        400,
-        385,
-        370,
-        355,
-        340
-    },
-    ["Raid"] = {
-        400,
-        380,
-        360,
-        340,
-        340
-    }
-}
-v23.Shiganshina = v24
-local v25 = {
-    ["Skirmish"] = {
-        180,
-        165,
-        150,
-        135,
-        120
-    },
-    ["Escort"] = {
-        180,
-        165,
-        150,
-        150,
-        150
-    }
-}
-v23.Outskirts = v25
-local v26 = {
-    ["Skirmish"] = {
-        195,
-        170,
-        155,
-        140,
-        125
-    },
-    ["Protect"] = {
-        400,
-        380,
-        360,
-        340,
-        320
-    },
-    ["Raid"] = {
-        400,
-        380,
-        360,
-        340,
-        340
-    }
-}
-v23.Trost = v26
-local v27 = {
-    ["Skirmish"] = {
-        180,
-        165,
-        150,
-        135,
-        120
-    },
-    ["Guard"] = {
-        320,
-        300,
-        280,
-        260,
-        240
-    }
-}
-v23.Forest = v27
-local v28 = {
-    ["Skirmish"] = {
-        195,
-        170,
-        165,
-        150,
-        135
-    },
-    ["Stall"] = {
-        210,
-        210,
-        210,
-        210,
-        210
-    }
-}
-v23.Docks = v28
-local v29 = {
-    ["Skirmish"] = {
-        190,
-        175,
-        160,
-        145,
-        130
-    },
-    ["Defend"] = {
-        240,
-        220,
-        200,
-        180,
-        160
-    }
-}
-v23.Utgard = v29
-v1.Time_Trial_Times = v23
-v1.Level_XP = {
-    500,
-    1000,
-    1500,
-    2000,
-    2500,
-    3000,
-    3500,
-    4000,
-    4500,
-    5000,
-    5000,
-    5000,
-    5000
-}
-v1.Missing_Supplies_Chances = {
-    ["Easy"] = 0.5,
-    ["Normal"] = 0.75,
-    ["Hard"] = 1,
-    ["Severe"] = 1.5,
-    ["Aberrant"] = 2
-}
-local v30 = {
-    ["Hard"] = {
-        ["Chance"] = 1,
-        ["Spawn"] = 10
-    },
-    ["Severe"] = {
-        ["Chance"] = 1.5,
-        ["Spawn"] = 15
-    },
-    ["Aberrant"] = {
-        ["Chance"] = 2,
-        ["Spawn"] = 20
-    }
-}
-v1.Liberate_Encampment = v30
-v1.Stall_Times = {
-    ["Easy"] = 120,
-    ["Normal"] = 140,
-    ["Hard"] = 160,
-    ["Severe"] = 180,
-    ["Aberrant"] = 200
-}
-return v1
