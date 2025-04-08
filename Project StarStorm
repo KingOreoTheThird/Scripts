@@ -1,481 +1,482 @@
-local u1 = {
-    ["Convert_Stats"] = {
-        ["ODM_Damage"] = true,
-        ["ODM_Speed"] = true,
-        ["ODM_Range"] = true,
-        ["ODM_Gas"] = true,
-        ["Shifter_Damage"] = true,
-        ["TS_Damage"] = true,
-        ["TS_Speed"] = true,
-        ["TS_Range"] = true,
-        ["TS_Gas"] = true,
-        ["Blast_Radius"] = true
-    },
-    ["All_Stats"] = {
-        ["ODM_Damage"] = true,
-        ["Crit_Damage"] = true,
-        ["Crit_Chance"] = true,
-        ["ODM_Control"] = true,
-        ["ODM_Range"] = true,
-        ["ODM_Speed"] = true,
-        ["ODM_Gas"] = true,
-        ["Blade_Durability"] = true
-    },
-    ["Round"] = {
-        "Extra",
-        "Ignore",
-        "Shift",
-        "Strike",
-        "Spear_Count"
-    },
-    ["IDs"] = {
-        ["Skip_Roll"] = 268078317,
-        ["Advanced_Customisation"] = 268078688,
-        ["VIP_Server"] = 268078994,
-        ["Loadouts"] = 268079135,
-        ["Serum_Bag"] = 268079222,
-        ["Family_Bag"] = 268079397,
-        ["Dual_Cosmetic"] = 766879271,
-        ["Extra_Drop"] = 841188828,
-        ["Memory_Bag"] = 1019110431,
-        ["Auto_Sell"] = 1018742141
-    },
-    ["Original_Stats"] = {
-        ["TS_Damage"] = "ODM_Damage",
-        ["TS_Control"] = "ODM_Control",
-        ["TS_Gas"] = "ODM_Gas",
-        ["TS_Speed"] = "ODM_Speed",
-        ["TS_Range"] = "ODM_Range",
-        ["Conservation_Chance"] = "Blade_Durability",
-        ["Blast_Radius"] = "Swing_Duration"
-    }
-}
-local function u9(p2, p3, p4) --[[Anonymous function at line 32]]
-    if p4 == nil then
-        local v5 = p2.Services
-        local v6 = p2.Modules
-        if v5.RS:IsServer() == true then
-            local _, v7 = v6.Data.Get(p2, p3)
-            return v7
-        end
-        local v8
-        v8, p4 = v6.Update.Get_Data(p2, true)
-    end
-    return p4
-end
-function u1.Prompt_Gamepass(p10, p11, p12) --[[Anonymous function at line 59]]
-    --[[
-    Upvalues:
-        [1] = u1
-    --]]
-    p10.Services.MPS:PromptGamePassPurchase(p11, u1.IDs[p12])
-end
-function u1.Get_Potential(p13, p14, p15) --[[Anonymous function at line 69]]
-    --[[
-    Upvalues:
-        [1] = u9
-    --]]
-    task.desynchronize()
-    local v16 = u9(p13, p14, p15)
-    if v16 ~= nil then
-        local v17 = 0
-        local v18 = 0
-        for _, v19 in pairs(v16.Upgrades[v16.Weapon]) do
-            v17 = v17 + v19
-            v18 = v18 + 1
-        end
-        local v20 = v18 == 0 and 1 or v18
-        task.synchronize()
-        local v21 = v17 / v20
-        return math.floor(v21)
-    end
-    task.synchronize()
-end
-function u1.Get_Skill_Points(p22, p23, p24) --[[Anonymous function at line 91]]
-    --[[
-    Upvalues:
-        [1] = u9
-    --]]
-    task.desynchronize()
-    local v25 = p22.Modules
-    local v26 = v25.Skills
-    local _ = v25.Values
-    local v27 = u9(p22, p23, p24)
-    if v27 ~= nil then
-        local v28 = v27.Progression.Level
-        for _, v29 in pairs(v27.Skills.Unlocked) do
-            v28 = v28 - v26[v29].Skill_Cost
-        end
-        task.synchronize()
-        return v28
-    end
-    task.synchronize()
-end
-function u1.Get_Stat_Total(p30, p31, p32, p33, p34, p35, p36, p37) --[[Anonymous function at line 117]]
-    --[[
-    Upvalues:
-        [1] = u9
-        [2] = u1
-    --]]
-    task.desynchronize()
-    local v38 = p30.Modules
-    local v39 = v38.Equipment
-    local v40 = v38.Perks
-    local v41 = v38.Values
-    local v42 = u9(p30, p31, p32)
-    if v42 == nil then
-        task.synchronize()
-        return
-    end
-    if p34 == nil or not p34 then
-        p34 = nil
-    end
-    local v43 = v42.Weapon
-    local v44, v45
-    if p33 == "Shifter_Damage" then
-        v44 = v43 == "Spears" and "TS_Damage" or "ODM_Damage"
-        local v46 = v41.Upgrade_Values.ODM_Damage
-        local v47 = v42.Upgrades[v43][v44] + 1
-        local v48 = v39.Maximum_Upgrades + 1
-        v45 = v46[math.clamp(v47, 0, v48)]
-    else
-        local v49 = v42.Upgrades[v43][p33]
-        if p34 == nil and v49 ~= nil then
-            local v50 = v49 + 1
-            local v51 = v39.Maximum_Upgrades + 1
-            p34 = math.clamp(v50, 0, v51)
-        end
-        if p34 == nil then
-            v45 = (p33 == "Health" or p33 == "Swing_Duration") and 100 or (p33 == "Health_Regen" and 1 or (p33 == "Spear_Count" and 2 or 0))
-            v44 = p33
+local u1 = UDim2.new
+return {
+    ["Category"] = function(u2, _, p3, _, p4, p5) --[[Function name: Category, line 4]]
+        local v6 = u2.Modules.Topbar
+        if p3.Name:find("Close") == nil then
+            if p4.Category ~= p3.Name and (v6.New_Type == "2D" and u2.Transition == nil) then
+                p4.Update(u2, p5, p3.Name)
+                u2.Transition = true
+                task.delay(0.75, function() --[[Anonymous function at line 15]]
+                    --[[
+                    Upvalues:
+                        [1] = u2
+                    --]]
+                    u2.Transition = nil
+                end)
+            end
         else
-            v45 = v41.Upgrade_Values[p33][p34]
-            v44 = p33
+            p4.Close(u2)
         end
-    end
-    if v45 == nil then
-        print(p33 .. " has no base stat!")
-    else
-        local v52 = v41.Skill_Values[v44]
-        local v53
-        if v52 == nil then
-            v53 = v45
-        else
-            v53 = v45
-            for v54, v55 in pairs(v52) do
-                if table.find(v42.Skills.Unlocked, v54) ~= nil or v54 == p35 then
-                    if v44 == "ODM_Damage" or v44 == "TS_Damage" then
-                        local v56 = v53 + v45 * (v55 / 100)
-                        v53 = math.floor(v56)
+    end,
+    ["Mission"] = function(p7, _, p8, _, p9, p10) --[[Function name: Mission, line 19]]
+        if p8.Name == "Lobbies_Closing" then
+            p9.Switch(p7, p10, "Lobbies", false)
+        elseif p8.Name:find("Close") == nil then
+            if p8.Parent.Name == "Maps" then
+                p9.Icon(p7, p8, p10, true)
+                return
+            end
+            if p8.Parent.Name == "Difficulty" then
+                p9.Difficulty(p7, p8, p10)
+                return
+            end
+            if p8.Parent.Name == "Buttons" and p9.Map.Type ~= nil then
+                local v11 = string.gsub
+                local v12 = p8.Name
+                local v13 = "_" .. p9.Map.Type
+                p9["Create_" .. v11(v12, tostring(v13), "")](p7, p10)
+                return
+            end
+            if p8.Parent.Name:find("_Buttons") ~= nil then
+                p9["Info_" .. p8.Name](p7, p10)
+                return
+            end
+            local v14 = p8.Name == "Join" and "Lobbies" or p8.Name
+            if v14 ~= nil then
+                p9.Switch(p7, p10, v14, true)
+            end
+        elseif p9.Current_Frame == nil then
+            p9.Fade(p7, false)
+            return
+        end
+    end,
+    ["Objective"] = function(p15, _, p16, _, p17, p18) --[[Function name: Objective, line 51]]
+        p17.Objective(p15, p16, p18)
+    end,
+    ["Join"] = function(p19, _, _, _, p20, p21) --[[Function name: Join, line 55]]
+        if p20.Selected_Map.Name == nil then
+            p20.Join(p19, p21)
+        end
+    end,
+    ["Kick"] = function(p22, _, _, _, _, p23) --[[Function name: Kick, line 61]]
+        p22:Invoke("S_Missions", "Kick", (p23:GetAttribute("Username")))
+    end,
+    ["Party"] = function(p24, _, _, _, p25, _) --[[Function name: Party, line 67]]
+        local v26 = p24.Modules.Players
+        p25.Fade(p24, false)
+        v26.Fade(p24, true, "Invite")
+    end,
+    ["Start"] = function(p27, _, _, _, _, _) --[[Function name: Start, line 75]]
+        p27:Invoke("S_Missions", "Start")
+    end,
+    ["Quest"] = function(p28, _, p29, _, p30, p31) --[[Function name: Quest, line 79]]
+        local v32 = nil
+        for v33, v34 in pairs(p30.Category_Indexes) do
+            if v34 == p29.Name then
+                v32 = v33
+                break
+            end
+        end
+        p30.Update(p28, p31, v32)
+    end,
+    ["Leaderboard"] = function(p35, _, p36, _, p37, p38) --[[Function name: Leaderboard, line 93]]
+        local v39 = string.gsub(p36.Name, "LB_", "")
+        local v40 = p36.Parent.Name == "Leaderboards" and v39 and v39 or p37.Leaderboard
+        if p36.Parent.Name == "Leaderboards" then
+            v39 = p37.Option or v39
+        end
+        p37.Update(p35, p38, v40, v39)
+    end,
+    ["Regiment"] = function(p41, _, p42, _, p43, p44) --[[Function name: Regiment, line 102]]
+        if p43.Index.Object ~= p42 then
+            for v45, v46 in pairs(p43.Cache) do
+                local v47 = p42.Name
+                local v48 = v46.Id
+                if v47 == tostring(v48) then
+                    p43.Display(p41, p44, v45, v46, p42, true)
+                    return
+                end
+            end
+        end
+    end,
+    ["State"] = function(p49, _, _, _, p50, p51) --[[Function name: State, line 114]]
+        p50.State(p49, p51)
+    end,
+    ["Regiment_Interact"] = function(p52, _, p53, _, p54, p55) --[[Function name: Regiment_Interact, line 118]]
+        p54[p53.Name](p52, p55)
+    end,
+    ["Warn"] = function(p56, _, p57, _, p58, p59) --[[Function name: Warn, line 122]]
+        if p57.Name == "Yes" then
+            p58.Continue(p56, p59)
+        end
+        p58.Fade(p56, false)
+    end,
+    ["Notify"] = function(p60, _, _, _, p61, _) --[[Function name: Notify, line 130]]
+        p61.Fade(p60, false)
+    end,
+    ["Setting"] = function(p62, _, p63, _, p64, p65) --[[Function name: Setting, line 134]]
+        p64.Update(p62, p65, nil, p63.Name)
+    end,
+    ["Toggle"] = function(p66, _, p67, _, p68, _) --[[Function name: Toggle, line 138]]
+        p68.Toggle(p66, p67)
+    end,
+    ["Friend"] = function(p69, _, p70, _, p71, _) --[[Function name: Friend, line 142]]
+        p71.Friend(p69, p70)
+    end,
+    ["Claim"] = function(p72, _, p73, _, p74, _) --[[Function name: Claim, line 146]]
+        p74.Claim(p72, p73)
+    end,
+    ["Tier"] = function(p75, _, p76, _, p77, _) --[[Function name: Tier, line 150]]
+        p77.Tier(p75, p76)
+    end,
+    ["Paid"] = function(p78, _, _, _, p79, _) --[[Function name: Paid, line 154]]
+        p79.Paid(p78)
+    end,
+    ["Continue"] = function(p80, _, p81, _, p82, _) --[[Function name: Continue, line 158]]
+        p82.Continue(p80, p81)
+    end,
+    ["Claim_All"] = function(p83, _, _, _, p84, p85) --[[Function name: Claim_All, line 162]]
+        p84.Claim_All(p83, p85)
+    end,
+    ["Buy_Tiers"] = function(p86, _, _, _, _, _) --[[Function name: Buy_Tiers, line 166]]
+        p86.Modules.Tiers.Fade(p86, true)
+    end,
+    ["Buying"] = function(p87, _, p88, _, p89, _) --[[Function name: Buying, line 174]]
+        p89.Buying(p87, p88)
+    end,
+    ["Tab_Category"] = function(p90, _, p91, _, p92, _) --[[Function name: Tab_Category, line 178]]
+        p92.Category(p90, p91)
+    end,
+    ["Main_Menu"] = function(p93, _, _, _, p94, _) --[[Function name: Main_Menu, line 182]]
+        local v95 = p93.Modules
+        local v96 = p93.Cache
+        local v97 = v95.Teleport
+        local v98 = v96.Player
+        v97.Start(p93, p94, v98, "Menu")
+    end,
+    ["Players"] = function(p99, _, p100, _, p101, _) --[[Function name: Players, line 192]]
+        if p101.Type ~= nil then
+            local v102 = p99.Modules
+            local v103 = v102.Market
+            local v104 = v102.Notify
+            local v105 = v102.Update
+            if p100.Parent.Name == "Players" then
+                if p101.Type == "Gift" then
+                    local _, v106 = v105.Get_Data(p99, true)
+                    if v106 == nil or v106.Progression.Level < 30 and v106.Progression.Prestige <= 0 then
+                        v104.Fade(p99, true, "You are not LV. 30+!")
+                        return
+                    elseif v103.Gift(p99, true, p100.Name) == true then
+                        p101.Fade(p99, false)
                     else
-                        v53 = v53 + v55
+                        v104.Fade(p99, true, "Player not LV. 30+!")
                     end
                 end
-            end
-        end
-        local v57 = v41.Family_Values[v44]
-        if v57 ~= nil then
-            local v58 = v57[v42.Avatar.Family]
-            if v58 ~= nil then
-                if u1.Convert_Stats[v44] == nil then
-                    v53 = v53 + v58
-                else
-                    local v59 = v53 + v45 * (v58 / 100)
-                    v53 = math.floor(v59)
+                if p101.Type == "Invite" then
+                    local v107 = p99:Invoke("S_Party", "Invite", p100.Name)
+                    if v107 ~= nil then
+                        v104.Fade(p99, true, v107)
+                        return
+                    end
                 end
+            else
+                p101.Fade(p99, false)
             end
         end
-        if p33 == "Skill_Cooldown_Reduction" and table.find(v42.Talents, "13") ~= nil then
-            v53 = v53 + 10
+    end,
+    ["Invitation"] = function(p108, _, p109, _, p110, p111) --[[Function name: Invitation, line 230]]
+        p110.State(p108, p111, p109)
+    end,
+    ["Cancel"] = function(p112, _, _, _, p113, _) --[[Function name: Cancel, line 234]]
+        p113.Gift(p112, false)
+    end,
+    ["Display"] = function(p114, _, p115, _, p116, p117) --[[Function name: Display, line 238]]
+        p116.Display(p114, p117, p115)
+    end,
+    ["Inventory_Interact"] = function(p118, _, p119, _, p120, _) --[[Function name: Inventory_Interact, line 242]]
+        if p118.Modules.Delete.State == false then
+            p120[p119.Name](p118, p119)
         end
-        local v60 = u1.Original_Stats[p33]
-        local v61
-        if v60 == nil then
-            v60 = p33
-            v61 = 1
+    end,
+    ["Equipment"] = function(p121, _, p122, _, p123, p124) --[[Function name: Equipment, line 252]]
+        local v125 = p121.Modules.Artifact
+        local v126 = p121.Modules.Perk
+        if p123.Category ~= p122.Name and (v125.Category == nil and v126.Category == nil) then
+            p123[p122.Name](p121, p124, true)
+        end
+    end,
+    ["Upgrade"] = function(p127, _, p128, _, p129, p130) --[[Function name: Upgrade, line 260]]
+        if p129.Upgrade_Category ~= p128.Name then
+            local v131 = p129.Upgrade_Category
+            p129.Upgrade_Category = p128.Name
+            p129.Upgrades(p127, p130, nil, v131)
+        end
+    end,
+    ["Weapon"] = function(p132, _, p133, _, p134, p135) --[[Function name: Weapon, line 268]]
+        if p134.Current_Weapon ~= p133.Name then
+            p134.Weapon(p132, p135, p133.Name)
+        end
+    end,
+    ["Increase"] = function(p136, _, _, _, p137, p138) --[[Function name: Increase, line 274]]
+        p137.Increase(p136, p138)
+    end,
+    ["Skill"] = function(p139, _, p140, _, _, _) --[[Function name: Skill, line 278]]
+        p139.Modules.Skill.Fade(p139, true, p140)
+    end,
+    ["Unlock"] = function(p141, _, p142, _, p143, _) --[[Function name: Unlock, line 286]]
+        p143.State(p141, p142)
+    end,
+    ["Resonate"] = function(p144, _, _, _, p145, p146) --[[Function name: Resonate, line 290]]
+        p145.Unlock(p144, p146)
+    end,
+    ["Perk"] = function(p147, _, p148, _, p149, p150) --[[Function name: Perk, line 294]]
+        local v151 = p147.Modules
+        local v152 = v151.Details
+        local v153 = v151.Craft
+        if p149.State == "In" and v151.Perk.Category == nil then
+            if p148.Name == "Craft" then
+                v153.Fade(p147, p150, true)
+                return
+            end
+            if p148.Name == "Details" then
+                v152.Fade(p147, true, "Perks")
+            end
+        end
+    end,
+    ["Slot"] = function(p154, _, p155, _, p156, p157) --[[Function name: Slot, line 309]]
+        if p154.Modules.Delete.State == false then
+            p156.Update(p154, p157, nil, p155.Name, true)
+        end
+    end,
+    ["Perk_Update"] = function(p158, _, p159, _, p160, p161) --[[Function name: Perk_Update, line 317]]
+        local v162 = p158.Services
+        local v163 = p158.Modules
+        local v164 = v163.Delete
+        if v163.Enhance.Open == false then
+            local v165 = v162.W
+            local v166 = v165.CurrentCamera
+            local v167 = p159.Parent:GetAttribute("ID")
+            local v168 = p159.Parent:GetAttribute("Rarity")
+            if v164.State == true then
+                v164.Check_Item(p158, p159, v167)
+            end
+            p160.Explode(p158, v165, v166, v167, v168, 0, p161, p159.Parent, true)
+        end
+    end,
+    ["Perk_Selection"] = function(p169, _, p170, _, p171, _) --[[Function name: Perk_Selection, line 335]]
+        p171.Perk_Selection(p169, p170.Parent)
+    end,
+    ["Enhancement"] = function(p172, _, p173, _, p174, p175) --[[Function name: Enhancement, line 339]]
+        p174.Loadout(p172, p175, p173.Parent.Parent)
+    end,
+    ["Auto_Add"] = function(p176, _, p177, _, p178, p179) --[[Function name: Auto_Add, line 343]]
+        local v180 = p176.Modules.Auto_Add
+        v180.Current_Module = p178
+        if p177.Name:find("Dropdown") == nil then
+            v180.Auto_Add(p176)
         else
-            v61 = v41.Alternate_Stats[v60].Ratio
+            v180.Type = "Perks"
+            v180.Auto_Add_Options(p176, p177, p179)
         end
-        local v62 = v42.Perks.Equipped
-        local v63 = 0
-        local v64 = nil
-        local v65 = nil
-        local v66 = 0
-        for _, v67 in pairs(v62) do
-            local v68 = v42.Perks.Storage[v67]
-            if v68 ~= nil then
-                local v69 = v68.Name
-                for _, v70 in pairs(v40) do
-                    local v71 = v70[v69]
-                    if v71 ~= nil then
-                        local v72 = v71.Reduce
-                        local v73 = v71.Stats
-                        if v72 ~= nil then
-                            local v74 = v72[v60]
-                            if v74 ~= nil then
-                                local v75 = v74.Base
-                                local v76 = v74.Increment
-                                v63 = v63 + (v75 + v68.Level * v76) * v61
-                            end
-                        end
-                        if v73 ~= nil then
-                            for v77, v78 in pairs(v71.Stats) do
-                                if (v60 == v77 or p33 == v77 and v43 == "Spears" or (v77 == "All" or v77 == "TS_All") and (u1.All_Stats[v60] == true or v60 == "Blast_Radius") or v77 == "All_2" and v60 == "Shifter_Damage") and (v77 ~= "TS_All" or v43 == "Spears") then
-                                    local v79 = (v77 == "TS_All" or p33 == v77 and v43 == "Spears") and 1 or v61
-                                    local v80 = v78.Max
-                                    local v81 = v78.Multiplier
-                                    local v82 = v78.Base
-                                    local v83 = v78.Increment
-                                    if v80 == true then
-                                        local v84 = (v82 + v68.Level * v83) * v79
-                                        if v64 == nil or v84 < v64 then
-                                            v64 = v84
-                                        end
-                                    elseif v81 == true then
-                                        local v85 = (v82 + v68.Level * v83) * v79
-                                        v65 = v65 == nil and v85 and v85 or v65 * v85
-                                    elseif v82 == nil and v83 == nil then
-                                        for v86, _ in pairs(v78) do
-                                            v66 = v66 + u1.Get_Stat_Total(p30, p31, v42, v86, nil, p35, true) * v79
-                                            task.desynchronize()
-                                        end
-                                    else
-                                        v66 = v66 + (v82 + v68.Level * v83) * v79
-                                    end
-                                end
-                            end
-                        end
-                        break
-                    end
-                end
+    end,
+    ["Enhancing"] = function(p181, _, _, _, p182, _) --[[Function name: Enhancing, line 358]]
+        p182.Enhancement(p181)
+    end,
+    ["Infoing"] = function(p183, _, p184, _, p185, _) --[[Function name: Infoing, line 362]]
+        local v186 = p183.Modules
+        local v187 = v186.Crates
+        local v188 = v186.Descriptions
+        local v189 = v186.Notification
+        local v190 = v186.Rates
+        local v191 = p184:GetAttribute("Tag")
+        if v191 ~= nil and p185.State == "In" then
+            if v187[v191] ~= nil then
+                v190.Fade(p183, true, "Crate", v191)
+                return
             end
+            local v192 = v188.Items[v191]:gsub("(%d+%.?%d*)", "<font color=\"rgb(218,176,97)\">%1</font>")
+            v189.Fade(p183, true, v192)
         end
-        local v87 = v42.Artifacts.Equipped
-        local v88 = 0
-        for _, v89 in pairs(v87) do
-            local v90 = v42.Artifacts.Storage[v89.ID]
-            if v90 ~= nil then
-                for _, v91 in pairs(v90.Stats) do
-                    if v60 == v41.Rollable[v91.Index].Stat then
-                        if u1.Convert_Stats[v60] == nil then
-                            v88 = v88 + v91.Value / 10 * v61
-                        else
-                            local v92 = v88 + v45 * (v91.Value / 1000) * v61
-                            v88 = math.floor(v92)
-                        end
-                    end
-                end
-                if v90.Name == "Lantern" and (v60 == "ODM_Damage" or v60 == "TS_Damage") then
-                    local v93 = v88 + v45 * 0.1 * v61
-                    v88 = math.floor(v93)
-                elseif v90.Name == "Scars" and v60 == "Shifter_Damage" then
-                    local v94 = v88 + v45 * 0.15 * v61
-                    v88 = math.floor(v94)
-                end
+    end,
+    ["Invite_Prompt"] = function(p193, _, _, _, p194, _) --[[Function name: Invite_Prompt, line 383]]
+        p194.Top(p193, false)
+        p194.Invites(p193, true)
+    end,
+    ["Lobby"] = function(p195, p196) --[[Function name: Lobby, line 387]]
+        p195.Modules.Lobby.Switch(p195, p196)
+    end,
+    ["Response"] = function(p197, _, p198, _, p199, _) --[[Function name: Response, line 395]]
+        p199.Response(p197, p198)
+    end,
+    ["Lobby_Close"] = function(p200, p201, p202, _, p203, _) --[[Function name: Lobby_Close, line 399]]
+        local v204 = p200.Services
+        local v205 = p200.Modules
+        local v206 = p200.Cache
+        local v207 = v204.TS
+        local v208 = v204.W
+        local u209 = v205.Dialogue
+        local v210 = v205.Topbar
+        local u211 = v205.Zones
+        local v212 = v206.Interface
+        local v213 = v208.CurrentCamera
+        local v214 = string.gsub(p202.Name, "_Close", "")
+        if v214 == "Injuries" and (v210.Category == "Gear_Up" and v210.New_Type == "2D") then
+            if v205.Injuries.State == "In" then
+                p201.Fade(p200, p203, { "Injuries" }, "Gear_Up")
+                return
             end
-        end
-        if p37 == "Artifacts" then
-            task.synchronize()
-            return v88
-        end
-        local v95 = v53 + v88
-        local v96
-        if u1.Convert_Stats[p33] == nil then
-            v96 = v95 + v66
-        else
-            local v97 = v95 + v45 * (v66 / 100)
-            v96 = math.floor(v97)
-        end
-        if v65 ~= nil then
-            v96 = v96 * v65
-        end
-        if v63 > 0 then
-            local v98 = v63 / 100 * v96
-            local v99 = math.floor(v98)
-            if p36 == true then
-                task.synchronize()
-                return v99
+        elseif v210.Category == v214 then
+            v210.Fade(p200, v212.Topbar, p201, "Out")
+            v210.Update(p200, v212.Topbar, "Gear_Up")
+            u209.Tween = true
+            u209.Focus = nil
+            p202.Visible = false
+            local v215 = v207:Create(v213, u209.Info, {
+                ["CFrame"] = u209.cFrame
+            })
+            v215:Play()
+            for _, v216 in pairs(u209.Events) do
+                v216:Disconnect()
             end
-            v96 = v96 - v99
-        end
-        if v64 == nil then
-            v64 = v96
-        end
-        if p37 == "Perks" then
-            task.synchronize()
-            return v64 - v95
-        end
-        v45 = v64
-    end
-    if p33 == "Strike" and v43 == "Spears" then
-        v45 = v45 / 2
-    end
-    local v100 = string.format
-    local v101 = tonumber(v100("%.1f", v45))
-    if table.find(u1.Round, p33) ~= nil then
-        v101 = math.floor(v101)
-    end
-    task.synchronize()
-    return v101
-end
-function u1.Get_Perk_Total(p102, p103, p104, p105, p106) --[[Anonymous function at line 366]]
-    --[[
-    Upvalues:
-        [1] = u1
-        [2] = u9
-    --]]
-    if p106 == nil then
-        return
-    end
-    task.desynchronize()
-    local v107 = 0
-    local v108 = 0
-    local v109 = p102.Modules
-    local v110 = v109.Perk
-    local v111 = v109.Values
-    local v112 = u1.Get_Perk_Rarity(p102, p106.Name)
-    local v113 = v111.Perk_Level_XP[v112]
-    local v114 = u9(p102, p103, p104)
-    if v114 ~= nil then
-        local v115 = 0
-        for v116 = 0, #v113 do
-            if p106.Level < v116 and v116 > 0 then
-                local v117 = v113[math.clamp(v116, 1, 10)]
-                if p106.Level == v116 then
-                    v117 = v117 - p106.XP
-                end
-                v115 = v115 + v117
-            end
-        end
-        for _, v118 in pairs(p105) do
-            local v119 = v114.Perks.Storage[v118]
-            if v119 ~= nil then
-                local v120 = v110.Get_Rarity_And_Type(p102, v119.Name)
-                if v120 ~= nil then
-                    v107 = v107 + v111.Perk_XP[v120]
-                    if v119.Level > 0 then
-                        local v121 = v111.Perk_Level_XP[v120]
-                        for v122 = 1, v119.Level do
-                            local v123 = v107 + v121[math.clamp(v122, 1, 10)] * 0.75
-                            v107 = math.floor(v123)
-                        end
-                    end
-                end
-            end
-        end
-        v107 = math.clamp(v107, 0, v115)
-        local v124 = p106.Level
-        local v125 = p106.XP + v107
-        if v124 < #v113 then
-            for v126 = v124, #v113 do
-                if v126 >= #v113 then
-                    break
-                end
-                local v127 = v126 + 1
-                local v128 = v113[math.clamp(v127, 1, 10)]
-                if v128 > v125 then
-                    break
-                end
-                v108 = v108 + 1
-                v125 = v125 - v128
-            end
-        end
-    end
-    local v129 = v107 * 20
-    task.synchronize()
-    return v112, v107, v129, v108
-end
-function u1.Get_Craft_Chance(p130, p131, p132, p133, p134) --[[Anonymous function at line 454]]
-    --[[
-    Upvalues:
-        [1] = u9
-    --]]
-    task.desynchronize()
-    local v135 = 0
-    local v136 = 0
-    local v137 = p130.Modules
-    local v138 = v137.Perk
-    local v139 = v137.Values
-    local v140 = v139.Craft_Chances[p134]
-    local v141 = v139.Craft_Costs
-    local v142 = u9(p130, p131, p132)
-    if v142 ~= nil then
-        for _, v143 in pairs(p133) do
-            local v144 = v142.Perks.Storage[v143]
-            if v144 ~= nil then
-                local v145 = v138.Get_Rarity_And_Type(p130, v144.Name)
-                if v145 ~= nil then
-                    local v146 = 1 + v144.Level / 10 * 0.75
-                    v135 = v135 + v140[v145] * v146
-                    v136 = v136 + v141[v145] * v146
-                end
-            end
-        end
-    end
-    local v147 = string.format
-    local v148 = tonumber(v147("%.1f", v135))
-    local v149 = v141[p134] / 100 * v148
-    local v150 = math.floor(v149)
-    task.synchronize()
-    return v148, v150
-end
-function u1.Get_Perk_Rarity(p151, p152) --[[Anonymous function at line 494]]
-    local v153 = p151.Modules.Perks
-    for v154, v155 in pairs(v153) do
-        for v156, _ in pairs(v155) do
-            if p152 == v156 then
-                return v154
-            end
-        end
-    end
-end
-function u1.XP(p157, p158) --[[Anonymous function at line 508]]
-    local v159 = 1 - p158 * 0.0023
-    local v160 = 0
-    for v161 = 1, p157 do
-        local v162 = (v161 + 9) / 10
-        local v163 = (v160 + math.floor(v162) * 100) * v159
-        v160 = math.floor(v163)
-    end
-    return v160
-end
-function u1.Own_Gamepass(p164, u165, p166) --[[Anonymous function at line 520]]
-    --[[
-    Upvalues:
-        [1] = u1
-    --]]
-    local u167 = p164.Services.MPS
-    local v168 = u165:FindFirstChild("Gamepasses")
-    local u169 = u1.IDs[p166]
-    local u170 = false
-    if v168 == nil then
-        pcall(function() --[[Anonymous function at line 542]]
-            --[[
-            Upvalues:
-                [1] = u170
-                [2] = u167
-                [3] = u165
-                [4] = u169
-            --]]
-            u170 = u167:UserOwnsGamePassAsync(u165.UserId, u169)
-        end)
-    else
-        local v171 = v168:FindFirstChild(p166)
-        if v171 == nil then
-            pcall(function() --[[Anonymous function at line 538]]
+            u209.Events = {}
+            local v217 = u209.Events
+            local v218 = v215.Completed
+            table.insert(v217, v218:Connect(function() --[[Anonymous function at line 431]]
                 --[[
                 Upvalues:
-                    [1] = u170
-                    [2] = u167
-                    [3] = u165
-                    [4] = u169
+                    [1] = u209
+                    [2] = u211
                 --]]
-                u170 = u167:UserOwnsGamePassAsync(u165.UserId, u169)
-            end)
-        else
-            u170 = v171.Value
+                local v219 = u209.NPC
+                if v219 ~= nil then
+                    local v220 = u211.Interacts[v219.Name]
+                    if v220 ~= nil then
+                        v220.Enabled = true
+                    end
+                end
+                local v221 = u209
+                local v222 = u209
+                u209.NPC = nil
+                v221.Tween = false
+                v222.cFrame = nil
+            end))
         end
+    end,
+    ["Crafting"] = function(p223, _, p224, _, p225, p226) --[[Function name: Crafting, line 444]]
+        if p225.Item ~= p224 then
+            p225.Display(p223, p226, p224, true)
+        end
+    end,
+    ["Forging"] = function(p227, _, _, _, p228, _) --[[Function name: Forging, line 450]]
+        p228.Forge(p227)
+    end,
+    ["Heal"] = function(p229, _, p230, _, p231, _) --[[Function name: Heal, line 454]]
+        p231.Heal(p229, p230)
+    end,
+    ["Prestige"] = function(p232, _, _, _, _, _) --[[Function name: Prestige, line 458]]
+        p232.Modules.Warning.Fade(p232, true, "Prestige", "Are you sure you want to prestige?")
+    end,
+    ["Injuries"] = function(p233, p234, _, _, p235, _) --[[Function name: Injuries, line 466]]
+        --[[
+        Upvalues:
+            [1] = u1
+        --]]
+        local v236 = p233.Modules
+        local v237 = p233.Cache
+        local v238 = v236.Topbar
+        local v239 = v237.Interface.Injuries
+        if v238.New_Type == "2D" and p235.State == "In" then
+            p234.Fade(p233, p235, { "Gear_Up" }, "Injuries")
+            local v240 = v239:FindFirstChild("Close")
+            if v240 == nil then
+                v240 = v239:FindFirstChild(v239.Name .. "_Close")
+            else
+                local v241 = v239.Name .. "_Close"
+                v240.Name = tostring(v241)
+                p234.Hover(p233, v240, v239, p235, "Lobby_Close", true, v240.Close)
+            end
+            if v240 ~= nil then
+                local v242 = u1(0.97, 0, 0.148, 0)
+                v240.Visible = true
+                v240.Position = v242
+            end
+        end
+    end,
+    ["Modify"] = function(p243, _, p244, _, p245, _) --[[Function name: Modify, line 493]]
+        p245.Modify(p243, p244)
+    end,
+    ["Layout"] = function(p246, _, p247, _, p248, _) --[[Function name: Layout, line 497]]
+        p248["Layout_" .. p247.Name](p246)
+    end,
+    ["Achievement"] = function(p249, _, p250, _, p251, p252) --[[Function name: Achievement, line 501]]
+        local _, v253 = p249.Modules.Update.Get_Data(p249, true)
+        if v253 ~= nil then
+            p251.Category = p250.Name
+            p251.Update(p249, p252, v253, true)
+        end
+    end,
+    ["Artifact_Update"] = function(p254, _, p255, _, p256, p257) --[[Function name: Artifact_Update, line 511]]
+        local v258 = p254.Services
+        local v259 = p254.Modules
+        local v260 = v258.W
+        local v261 = v259.Delete
+        local v262 = v260.CurrentCamera
+        local v263 = p255.Parent:GetAttribute("ID")
+        local v264 = p255.Parent:GetAttribute("Rarity")
+        if p256.Tag ~= nil then
+            p256.Artifact_Switch(p254, nil, true)
+            p256.Tag = nil
+        end
+        if v261.State == true then
+            v261.Check_Item(p254, p255, v263)
+        end
+        p256.Explode(p254, v260, v262, v263, v264, 0, p257, p255.Parent, true)
+    end,
+    ["Artifact"] = function(p265, _, _, _, _, _) --[[Function name: Artifact, line 529]]
+        local v266 = p265.Modules
+        if v266.Artifact.Category == nil then
+            v266.Details.Fade(p265, true, "Artifacts")
+        end
+    end,
+    ["Lock"] = function(p267, _, p268, _, p269, _) --[[Function name: Lock, line 539]]
+        if p267.Modules.Delete.State == false then
+            p269.Lock(p267, p268, p268.Parent)
+        end
+    end,
+    ["Delete"] = function(p270, _, p271, _, _, p272) --[[Function name: Delete, line 547]]
+        local v273 = p270.Modules
+        local v274 = v273.Delete
+        local v275 = v273.Enhance
+        if v274.Type ~= nil and v275.Open == false then
+            v274[p271.Name](p270, p271, p272)
+        end
+    end,
+    ["Mastery"] = function(p276, p277, p278, _, p279, p280) --[[Function name: Mastery, line 557]]
+        if p279.Category ~= p278.Name then
+            local v281 = p280.Mastery_Buttons[p279.Category]
+            p279.Category = p278.Name
+            p276.Modules.Tweens.Tween(p276, p277, v281, p279, v281.Main.Interact, nil, "Out")
+            p279[p278.Name](p276, p280)
+        end
+    end,
+    ["Chest"] = function(p282, _, p283, _, _, _) --[[Function name: Chest, line 565]]
+        local v284 = p282.Modules.Missions.Map
+        local v285 = string.split
+        local v286 = p283.Parent.Name
+        local _, _, v287 = unpack(v285(v286, "_"))
+        p282.Modules.Rates.Fade(p282, true, "Items", {
+            ["Chest"] = v287,
+            ["Difficulty"] = v284.Difficulty,
+            ["Map"] = v284.Name
+        })
+    end,
+    ["Option"] = function(p288, _, p289, _, p290, _) --[[Function name: Option, line 573]]
+        p290.Option(p288, p289)
+    end,
+    ["Storage"] = function(p291, _, p292, _, p293, p294) --[[Function name: Storage, line 577]]
+        p293.Storage(p291, p292, p294)
+    end,
+    ["Gamepass"] = function(p295, _, _, _, _, _) --[[Function name: Gamepass, line 581]]
+        p295.Modules.Shared.Prompt_Gamepass(p295, p295.Cache.Player, "Memory_Bag")
     end
-    return u170
-end
-return u1
+}
