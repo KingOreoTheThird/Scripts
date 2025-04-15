@@ -2,19 +2,14 @@ while not game:IsLoaded() do
     task.wait(0.1)
 end
 
-local scripts = {
-    ArmoredRaid = "Armor",
-    AttackRaid = "Attack",
-    Missions = "whatsuphomies",
-    AutoSpin = "spinny"
-}
-
-for flag, scriptName in pairs(scripts) do
-    if _G[flag] then
-        task.wait(0.5)
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/" .. scriptName))()
-        break
-    end
+if _G.ArmoredRaid then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Armor"))()
+elseif _G.AttackRaid then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Attack"))()
+elseif _G.Missions then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/whatsuphomies"))()
+elseif _G.AutoSpin then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/spinny"))()
 end
 
 repeat task.wait(0.1) until game:IsLoaded()
