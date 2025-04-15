@@ -3,13 +3,45 @@ while not game:IsLoaded() do
 end
 
 if ArmoredRaid then
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Armor"))()
+    local armorSuccess, armorScript = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Armor"))
+    end)
+    if armorSuccess and type(armorScript) == "function" then
+        coroutine.wrap(function()
+            task.wait(0.5)
+            pcall(armorScript)
+        end)()
+    end
 elseif AttackRaid then
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Attack"))()
+    local attackSuccess, attackScript = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Attack"))
+    end)
+    if attackSuccess and type(attackScript) == "function" then
+        coroutine.wrap(function()
+            task.wait(0.5)
+            pcall(attackScript)
+        end)()
+    end
 elseif Missions then
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/whatsuphomies"))()
-else
-    error("FUCK YOU GNG TURN SOMETHING ON")
+    local missionsSuccess, missionsScript = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/whatsuphomies"))
+    end)
+    if missionsSuccess and type(missionsScript) == "function" then
+        coroutine.wrap(function()
+            task.wait(0.5)
+            pcall(missionsScript)
+        end)()
+    end
+elseif AutoSpin then
+    local spinnySuccess, spinnyScript = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/spinny"))
+    end)
+    if spinnySuccess and type(spinnyScript) == "function" then
+        coroutine.wrap(function()
+            task.wait(0.5)
+            pcall(spinnyScript)
+        end)()
+    end
 end
 
 repeat task.wait(0.1) until game:IsLoaded()
@@ -17,21 +49,15 @@ repeat task.wait(0.1) until game:IsLoaded()
 task.wait(RetryDelay)
 
 local args = {
-    [1] = "Functions",
-    [2] = "Retry",
-    [3] = "Add"
+    "Functions",
+    "Retry",
+    "Add"
 }
 
-local success, result = pcall(function()
-    local remotes = game:GetService("ReplicatedStorage"):WaitForChild("Assets")
+pcall(function()
+    local remotes = game:GetService("ReplicatedStorage")
+        :WaitForChild("Assets")
         :WaitForChild("Remotes")
         :WaitForChild("GET")
     return remotes:InvokeServer(unpack(args))
 end)
-
-if success then
-    print("e")
-else
-    print("poop")
-    warn("touch")
-end
