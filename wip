@@ -2,31 +2,25 @@ while not game:IsLoaded() do
     task.wait(0.1)
 end
 
-local flags = {
+local scripts = {
     ArmoredRaid = "Armor",
     AttackRaid = "Attack",
-    Missions = "Missions",
-    AutoSpin = "AutoSpin"
+    Missions = "whatsuphomies",
+    AutoSpin = "spinny"
 }
 
-for flag, script in pairs(flags) do
+for flag, scriptName in pairs(scripts) do
     if _G[flag] then
-        coroutine.wrap(function()
-            task.wait(0.5)
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/" .. script))()
-        end)()
+        task.wait(0.5)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/" .. scriptName))()
         break
     end
 end
 
 repeat task.wait(0.1) until game:IsLoaded()
-
 task.wait(_G.RetryDelay)
 
 pcall(function()
-    local remotes = game:GetService("ReplicatedStorage")
-        :WaitForChild("Assets")
-        :WaitForChild("Remotes")
-        :WaitForChild("GET")
+    local remotes = game:GetService("ReplicatedStorage"):WaitForChild("Assets"):WaitForChild("Remotes"):WaitForChild("GET")
     remotes:InvokeServer("Functions", "Retry", "Add")
 end)
