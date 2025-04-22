@@ -2,7 +2,7 @@ while not game:IsLoaded() do
     task.wait(0.1)
 end
 
-if _G.ArmoredRaid then
+if _G.Stall then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Armor"))()
 elseif _G.AttackRaid then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Attack"))()
