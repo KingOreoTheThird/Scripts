@@ -1,43 +1,4 @@
-local Players = game:GetService("Players")
-local TeleportService = game:GetService("TeleportService")
-local CoreGui = game:GetService("CoreGui")
-local PlaceId = 14916516914
 
-local function AttemptRejoin(retryCount)
-    retryCount = retryCount or 0
-    if retryCount < 5 then
-        print("Rejoining attempt:", retryCount + 1)
-        task.wait(5)
-        local success, errorMessage = pcall(function()
-            TeleportService:Teleport(PlaceId)
-        end)
-        if not success then
-            print("Rejoin failed:", errorMessage)
-            AttemptRejoin(retryCount + 1)
-        end
-    else
-        print("Failed to rejoin after multiple attempts.")
-    end
-end
-
-repeat task.wait() until CoreGui:FindFirstChild("RobloxPromptGui")
-
-local promptOverlay = CoreGui.RobloxPromptGui:FindFirstChild("promptOverlay")
-if promptOverlay then
-    promptOverlay.ChildAdded:Connect(function(child)
-        if child.Name == "ErrorPrompt" then
-            print("Detected disconnection or kick! Attempting to rejoin...")
-            AttemptRejoin(1)
-        end
-    end)
-end
-
-Players.PlayerRemoving:Connect(function(player)
-    if player == Players.LocalPlayer then
-        print("Detected player removal. Attempting to rejoin...")
-        AttemptRejoin(1)
-    end
-end)
 
 while not game:IsLoaded() do
     task.wait(0.1)
@@ -53,7 +14,6 @@ elseif _G.AutoSpin then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/spinny"))()
 end
 
-repeat task.wait(0.1) until game:IsLoaded()
 task.wait(_G.RetryDelay)
 
 pcall(function()
