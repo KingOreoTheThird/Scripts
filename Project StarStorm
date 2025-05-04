@@ -1,135 +1,2075 @@
-Introduction
-Hello, I made this cool module that allows you to make holes in parts but with voxels :wink:. It is basically a voxelizer that can handle lots of voxels in your destruction game, or if you just need voxels for an explosion.
+local u1 = CFrame.new
+local u2 = UDim2.new
+local u3 = Vector2.new
+local u4 = Instance.new
+local u5 = {
+    ["Customising"] = false,
+    ["Categories"] = {
+        ["Appearance"] = { "Skin_Tone", "Width", "Height" },
+        ["Hair"] = {
+            "Primary",
+            "Secondary",
+            "Accessory_1",
+            "Accessory_2"
+        },
+        ["Face"] = { "Eyes", "Nose", "Mouth" },
+        ["Clothing"] = { "Shirt", "Pants" },
+        ["Family"] = { "Buy_Spins" }
+    },
+    ["Category_Tags"] = {
+        ["Skin_Tone"] = "Skin Tone",
+        ["Width"] = "Width",
+        ["Height"] = "Height",
+        ["Primary"] = "Primary Hair",
+        ["Secondary"] = "Secondary Hair",
+        ["Accessory_1"] = "Accessory 1",
+        ["Accessory_2"] = "Accessory 2",
+        ["Eyes"] = "Eyes",
+        ["Mouth"] = "Mouth",
+        ["Nose"] = "Nose",
+        ["Shirt"] = "Shirt",
+        ["Pants"] = "Pants",
+        ["Buy_Spins"] = "Buy Spins"
+    },
+    ["Rarity_Colours"] = {
+        ["Common"] = Color3.fromRGB(125, 125, 125),
+        ["Rare"] = Color3.fromRGB(32, 177, 255),
+        ["Epic"] = Color3.fromRGB(110, 52, 255),
+        ["Legendary"] = Color3.fromRGB(255, 183, 38),
+        ["Secret"] = Color3.fromRGB(255, 0, 0)
+    },
+    ["Products"] = {
+        1663879179,
+        1663880607,
+        1663879354,
+        1663879570,
+        1663880899,
+        1663879759
+    },
+    ["Indexes"] = {},
+    ["Current_Category"] = nil,
+    ["Current_Sub_Index"] = nil,
+    ["Clone"] = nil,
+    ["Offset"] = u1(0, 0, 0),
+    ["Base_Offset"] = u1(0, 1, 6.5),
+    ["Set_Colour"] = nil,
+    ["Read"] = false,
+    ["Spinning"] = false,
+    ["Buttons"] = false,
+    ["Spins_Open"] = false,
+    ["Storage_Open"] = false,
+    ["Selected_Storage_Slot"] = nil,
+    ["Click_Events"] = {},
+    ["Stored_Data"] = nil
+}
+local v6 = {
+    [0] = {
+        ["Secret"] = "0.025",
+        ["Legendary"] = "0.06",
+        ["Epic"] = "0.35",
+        ["Rare"] = "19.6",
+        ["Common"] = "79.965"
+    },
+    [1] = {
+        ["Secret"] = "0.025",
+        ["Legendary"] = "0.065",
+        ["Epic"] = "0.35",
+        ["Rare"] = "19.6",
+        ["Common"] = "79.96"
+    },
+    [2] = {
+        ["Secret"] = "0.025",
+        ["Legendary"] = "0.07",
+        ["Epic"] = "0.35",
+        ["Rare"] = "19.6",
+        ["Common"] = "79.955"
+    },
+    [3] = {
+        ["Secret"] = "0.025",
+        ["Legendary"] = "0.075",
+        ["Epic"] = "0.35",
+        ["Rare"] = "19.6",
+        ["Common"] = "79.95"
+    },
+    [4] = {
+        ["Secret"] = "0.025",
+        ["Legendary"] = "0.08",
+        ["Epic"] = "0.35",
+        ["Rare"] = "19.6",
+        ["Common"] = "79.945"
+    }
+}
+u5.Chances = v6
+local v7 = {
+    [0] = {
+        ["Secret"] = "0.05",
+        ["Legendary"] = "0.12",
+        ["Epic"] = "0.35",
+        ["Rare"] = "19.6",
+        ["Common"] = "79.88"
+    },
+    [1] = {
+        ["Secret"] = "0.05",
+        ["Legendary"] = "0.125",
+        ["Epic"] = "0.35",
+        ["Rare"] = "19.6",
+        ["Common"] = "79.875"
+    },
+    [2] = {
+        ["Secret"] = "0.05",
+        ["Legendary"] = "0.13",
+        ["Epic"] = "0.35",
+        ["Rare"] = "19.6",
+        ["Common"] = "79.87"
+    },
+    [3] = {
+        ["Secret"] = "0.05",
+        ["Legendary"] = "0.135",
+        ["Epic"] = "0.35",
+        ["Rare"] = "19.6",
+        ["Common"] = "79.865"
+    },
+    [4] = {
+        ["Secret"] = "0.05",
+        ["Legendary"] = "0.14",
+        ["Epic"] = "0.35",
+        ["Rare"] = "19.6",
+        ["Common"] = "79.86"
+    }
+}
+u5.Boosted_Chances = v7
+function u5.Main(p8) --[[Anonymous function at line 122]]
+    --[[
+    Upvalues:
+        [1] = u5
+        [2] = u4
+        [3] = u1
+        [4] = u2
+    --]]
+    local v9 = p8.Prefix
+    local v10 = p8.Services
+    local v11 = p8.Modules
+    local v12 = p8.Cache
+    local v13 = p8.Events
+    local u14 = p8.Offset
+    local v15 = v10.RS
+    local v16 = v10.W
+    local v17 = v11.Char
+    local v18 = v11.Effects
+    local v19 = v11.Runtime
+    local v20 = v11.Update
+    local v21 = v12.Player
+    local _ = v12.Mouse
+    local v22 = v12.Interface
+    local _, v23 = v20.Get_Data(p8, true)
+    local u24 = v16.CurrentCamera
+    local v25 = p8:Get("Asset", { "Rigs", "R15" })
+    local v26 = p8:Get("Asset", { "Cameras", "Customisation" })
+    local v27 = v22.Customisation
+    u5.Customising = true
+    task.wait(p8.Loading_Delay + 0.15)
+    local u28 = u5.Clone
+    if u28 == nil then
+        u28 = v25:Clone()
+        u28.Parent = v16
+        local v29 = u28.Head:Clone()
+        for _, v30 in pairs(v29:GetChildren()) do
+            if v30:IsA("SpecialMesh") == false then
+                v30:Destroy()
+            end
+        end
+        v29.Name = "R15_Head"
+        v29.Massless = true
+        v29.CanCollide = false
+        v29.CanTouch = false
+        v29.CanQuery = false
+        v29.Transparency = 1
+        v29.Parent = v16
+        local v31 = Instance.new("Weld")
+        local v32 = u28.Head
+        v31.Name = "W"
+        v31.Part0 = v32
+        v31.Part1 = v29
+        v31.Parent = v29
+        local v33 = Instance.new("BodyGyro")
+        local v34 = CFrame.Angles(0, 3.141592653589793, 0)
+        v33.Name = "BG"
+        v33.CFrame = v34
+        v33.MaxTorque = Vector3.new(3000, 3000, 3000)
+        v33.P = 1500
+        v33.D = 250
+        v33.Parent = u28.PrimaryPart
+        local v35 = u4("Animation")
+        local v36 = v9 .. (v23.Weapon == "Spears" and 76905182812475 or 14518537431)
+        v35.AnimationId = tostring(v36)
+        u28.Humanoid:LoadAnimation(v35):Play()
+        u5.Stored_Data = v23
+        v17.Gear(p8, u28, v23, true)
+        u5.Initiate(p8, v21, v23, u28, v29, true)
+        u5.Clone = u28
+    end
+    u5.Category(p8, "Appearance", v27)
+    u5.Offset = u5.Base_Offset
+    local v37, _, v38 = u28.HumanoidRootPart.CFrame:ToEulerAnglesYXZ()
+    local v39 = u1(u28.HumanoidRootPart.Position) * CFrame.Angles(v37, 0, v38) * u5.Offset
+    v19.Tweening = true
+    v19.cFrame = v39
+    u24.CFrame = v26.CFrame
+    local v40 = v18.Tween(p8, u24, "Camera_Customisation_In", {
+        ["CFrame"] = v39
+    }, 1.25)
+    if v13.Customisation_Camera ~= nil then
+        v13.Customisation_Camera:Disconnect()
+        v13.Customisation_Camera = nil
+    end
+    task.wait(0.4)
+    u5.Fade(p8, v18, v27, "In")
+    v18.Hover(p8, v27.Back, v27, u5, "Return")
+    v18.Hover(p8, v27.Right.Main.Holder.Set, v27, u5, "Colour")
+    for _, v41 in pairs(v27.Categories:GetChildren()) do
+        if v41:IsA("Frame") == true then
+            if v41.Name == u5.Current_Category then
+                local v42 = v18.Tween
+                local v43 = v41.Name .. "_In"
+                v42(p8, v41, tostring(v43), {
+                    ["BackgroundColor3"] = Color3.fromRGB(75, 75, 75),
+                    ["Size"] = u2(0.40249999999999997, 0, 0.14604999999999999, 0)
+                })
+                local v44 = v18.Tween
+                local v45 = v41.Icon
+                local v46 = v41.Name .. "_Icon_In"
+                v44(p8, v45, tostring(v46), {
+                    ["ImageColor3"] = Color3.fromRGB(255, 255, 255)
+                })
+            else
+                local v47 = v18.Tween
+                local v48 = v41.Name .. "_Out"
+                v47(p8, v41, tostring(v48), {
+                    ["BackgroundColor3"] = Color3.fromRGB(25, 25, 25),
+                    ["Size"] = UDim2.new(0.35, 0, 0.127, 0)
+                })
+                local v49 = v18.Tween
+                local v50 = v41.Icon
+                local v51 = v41.Name .. "_Icon_Out"
+                v49(p8, v50, tostring(v51), {
+                    ["ImageColor3"] = Color3.fromRGB(75, 75, 75)
+                })
+            end
+            v18.Hover(p8, v41, v27, u5, "Category")
+        end
+    end
+    v40.Completed:Wait()
+    v13.Customisation_Camera = v15.RenderStepped:Connect(function() --[[Anonymous function at line 231]]
+        --[[
+        Upvalues:
+            [1] = u28
+            [2] = u1
+            [3] = u5
+            [4] = u14
+            [5] = u24
+        --]]
+        local v52, _, v53 = u28.HumanoidRootPart.CFrame:ToEulerAnglesYXZ()
+        local v54 = u1(0, 0, u5.Offset.Z / 25 * u14.Current)
+        local v55 = u1(u28.HumanoidRootPart.Position) * CFrame.Angles(v52, 0, v53) * u5.Offset * v54
+        u24.CFrame = u24.CFrame:Lerp(v55, 0.2)
+    end)
+end
+function u5.Initiate(p56, p57, p58, p59, p60, p61, p62) --[[Anonymous function at line 242]]
+    --[[
+    Upvalues:
+        [1] = u5
+    --]]
+    local v63 = p56.Modules
+    local v64 = v63.Char
+    local v65 = v63.Cosmetic
+    local v66 = nil
+    for _, v67 in pairs(v64.Indexes) do
+        local v68 = v67[1]
+        local v69 = v67[2]
+        local v70 = p58.Avatar[v68][v69]
+        if p61 == nil or u5.Indexes[v69] == nil then
+            local v71 = v69:find("Accessory") ~= nil and "Accessory" or v69
+            local v72
+            if p62 == nil then
+                v72 = p56:Get("Asset", { p57.Name, v71 })
+            else
+                v72 = p62:FindFirstChild(v71)
+            end
+            local v73 = v70.Index
+            local v74 = v70.R
+            local v75 = v70.G
+            local v76 = v70.B
+            local v77 = v72:GetChildren()
+            if (v73 == nil or v73 == 0) and (#v77 > 0 and p58.Avatar.Finalised == nil) then
+                v73 = v77[math.random(1, #v77)].Name
+            end
+            local v78
+            if v73 == nil then
+                v78 = nil
+            else
+                v78 = v72:FindFirstChild(v73)
+                if v78 ~= nil then
+                    v78 = v78:Clone()
+                end
+                if v71 == "Shirt" or (v71 == "Pants" or v71 == "Cloak") then
+                    if v78 ~= nil then
+                        for _, v79 in pairs(v78:GetDescendants()) do
+                            if v79:GetAttribute("Change") == true then
+                                v79.Color = Color3.fromRGB(v74, v75, v76)
+                            end
+                        end
+                        v64.Rig(p56, p59, v78, p59, true, nil, true)
+                    end
+                elseif v71 == "Height" or v71 == "Width" then
+                    p59.Humanoid["Body" .. v71 .. "Scale"].Value = v78.Value
+                elseif v71 == "Skin_Tone" then
+                    for _, v80 in pairs(p59:GetChildren()) do
+                        if v80:IsA("BasePart") == true then
+                            v80.Color = v78.Value
+                        end
+                    end
+                    v66 = v78.Value
+                elseif v71 == "Primary" or v71 == "Secondary" then
+                    if v70.ID ~= nil then
+                        local v81 = "Custom_" .. v70.ID
+                        local v82 = v72:FindFirstChild((tostring(v81)))
+                        if v82 == nil then
+                            v78 = v72[v77[math.random(1, #v77)].Name]:Clone()
+                        else
+                            v78 = v82:Clone()
+                        end
+                    end
+                    if v78 ~= nil then
+                        v78.Handle.Color = Color3.fromRGB(v74, v75, v76)
+                        v64.Add_Accessory(p59, v78)
+                    end
+                elseif v71 == "Eyes" or (v71 == "Mouth" or v71 == "Nose") then
+                    if v78 == nil then
+                        v73 = v77[math.random(1, #v77)].Name
+                        v78 = v72[v73]:Clone()
+                    end
+                    v78.Parent = p60
+                    if v71 == "Eyes" then
+                        local v83 = {}
+                        local v84 = v72.Parent.Name
+                        local v85 = v71 .. "_Inner"
+                        __set_list(v83, 1, {v84, (tostring(v85))})
+                        local v86 = p56:Get("Asset", v83)[v73]:Clone()
+                        v86.Color3 = Color3.fromRGB(v74 + 200, v75 + 200, v76 + 200)
+                        local v87 = v73 .. "_" .. v71
+                        v86.Name = tostring(v87)
+                        v86.Parent = p60
+                        local v88 = p56:Get("Asset", { v72.Parent.Name, (tostring("Eyebrows")) })[v73]:Clone()
+                        v88.Color3 = Color3.fromRGB(0, 0, 0)
+                        local v89 = v73 .. "_" .. v71 .. "_Eyebrows"
+                        v88.Name = tostring(v89)
+                        v88.Parent = p60
+                        local v90 = {}
+                        local v91 = v72.Parent.Name
+                        local v92 = v71 .. "_Whitepart"
+                        __set_list(v90, 1, {v91, (tostring(v92))})
+                        local v93 = p56:Get("Asset", v90)[v73]:Clone()
+                        local v94 = v73 .. "_" .. v71 .. "_Whitepart"
+                        v93.Name = tostring(v94)
+                        v93.Parent = p60
+                    end
+                elseif v71 == "Accessory" then
+                    v65.Accessory(p56, p59, v72, v73, true, v78)
+                end
+            end
+            if p61 == true then
+                local v95 = v78 == nil and 0 or v78.Name
+                u5.Indexes[v69] = {
+                    ["Index"] = v95,
+                    ["R"] = v70.R,
+                    ["G"] = v70.G,
+                    ["B"] = v70.B,
+                    ["Object"] = v78
+                }
+            end
+        end
+    end
+    if p58.Artifacts ~= nil then
+        for _, v96 in pairs(p58.Artifacts.Equipped) do
+            if v96.ID ~= "" and v96.Vanity == true then
+                local v97 = p58.Artifacts.Storage[v96.ID]
+                if v97 ~= nil then
+                    v65.Artifacts(p56, p59, "Add", v97.Name, true)
+                end
+            end
+        end
+    end
+    return v66
+end
+function u5.Category(p98, p99, p100, p101) --[[Anonymous function at line 399]]
+    --[[
+    Upvalues:
+        [1] = u5
+    --]]
+    local v102 = p98.Prefix
+    local v103 = p98.Modules
+    local v104 = p98.Cache
+    local _ = p98.Events
+    local v105 = v103.Effects
+    local v106 = v103.Images
+    local _ = v104.Tweens
+    u5.Current_Category = p99
+    if p101 == true then
+        p100.Sub_Categories.GroupTransparency = 1
+        v105.Tween(p98, p100.Sub_Categories, "Customisation_Sub_Categories_Effect", {
+            ["GroupTransparency"] = 0
+        }, 0.5)
+    end
+    local v107 = #u5.Categories[p99]
+    for v108 = 1, 4 do
+        local v109 = v108 <= v107
+        p100.Sub_Categories[v108].Visible = v109
+        if v109 == true then
+            local v110 = u5.Category_Tags[u5.Categories[p99][v108]]
+            p100.Sub_Categories[v108].Info.Category.Text = string.upper(v110)
+            local v111 = string.gsub(v110, " ", "_")
+            local v112 = string.gsub(v111, "_Hair", "")
+            local v113 = p100.Sub_Categories[v108].Icon
+            local v114 = v102 .. v106.Categories[v112]
+            v113.Image = tostring(v114)
+        end
+    end
+    u5.Sub_Category(p98, 1, p100)
+end
+function u5.Sub_Category(p115, p116, p117, p118) --[[Anonymous function at line 441]]
+    --[[
+    Upvalues:
+        [1] = u5
+        [2] = u2
+    --]]
+    local v119 = p115.Modules.Effects
+    for _, v120 in pairs(p117.Sub_Categories:GetChildren()) do
+        if v120:IsA("Frame") == true then
+            local v121 = v120.Name
+            if tonumber(v121) == p116 and (p118 == true or u5.Current_Category ~= "Family") then
+                local v122 = v119.Tween
+                local v123 = v120.Name .. "_In"
+                v122(p115, v120, tostring(v123), {
+                    ["BackgroundColor3"] = Color3.fromRGB(75, 75, 75),
+                    ["Size"] = u2(0.18514999999999998, 0, 0.14604999999999999, 0),
+                    ["Position"] = u2(0.241, 0, v120.Position.Y.Scale, 0)
+                })
+                local v124 = v119.Tween
+                local v125 = v120.Info
+                local v126 = v120.Name .. "_Info_In"
+                v124(p115, v125, tostring(v126), {
+                    ["ImageColor3"] = Color3.fromRGB(75, 75, 75)
+                })
+                local v127 = v119.Tween
+                local v128 = v120.Icon
+                local v129 = v120.Name .. "_Icon_In"
+                v127(p115, v128, tostring(v129), {
+                    ["ImageColor3"] = Color3.fromRGB(255, 255, 255)
+                })
+            else
+                local v130 = v119.Tween
+                local v131 = v120.Name .. "_Out"
+                v130(p115, v120, tostring(v131), {
+                    ["BackgroundColor3"] = Color3.fromRGB(25, 25, 25),
+                    ["Size"] = u2(0.161, 0, 0.127, 0),
+                    ["Position"] = u2(0.161, 0, v120.Position.Y.Scale, 0)
+                })
+                local v132 = v119.Tween
+                local v133 = v120.Info
+                local v134 = v120.Name .. "_Info_Out"
+                v132(p115, v133, tostring(v134), {
+                    ["ImageColor3"] = Color3.fromRGB(25, 25, 25)
+                })
+                local v135 = v119.Tween
+                local v136 = v120.Icon
+                local v137 = v120.Name .. "_Icon_Out"
+                v135(p115, v136, tostring(v137), {
+                    ["ImageColor3"] = Color3.fromRGB(75, 75, 75)
+                })
+            end
+            v119.Hover(p115, v120, p117, u5, "Sub_Category", true)
+        end
+    end
+    u5.Current_Sub_Index = p116
+    u5.Update(p115, p117, p118)
+end
+function u5.Switch(p138, u139, u140, p141) --[[Anonymous function at line 468]]
+    --[[
+    Upvalues:
+        [1] = u2
+        [2] = u3
+        [3] = u5
+    --]]
+    local v142 = p138.Modules
+    local v143 = p138.Events
+    local v144 = v142.Effects
+    for _, v145 in pairs(u139:GetDescendants()) do
+        if v145:IsA("ImageButton") == true or v145:IsA("TextButton") == true then
+            v145.Selectable = false
+        end
+    end
+    local v146 = v144.Tween
+    local v147 = "Customisation_" .. u139.Name .. "_Out"
+    v146(p138, u139, tostring(v147), {
+        ["Position"] = u2(0.99, 0, p141, 0)
+    }, 1)
+    local v148 = v144.Tween
+    local v149 = u139.Gradient
+    local v150 = "Customisation_" .. u139.Name .. "_Gradient_Out"
+    local v151 = v148(p138, v149, tostring(v150), {
+        ["Offset"] = u3(0, -1)
+    }, 1.05)
+    local v152 = v144.Tween
+    local v153 = "Customisation_" .. u140.Name .. "_In"
+    v152(p138, u140, tostring(v153), {
+        ["Position"] = u2(0.99, 0, 0.5, 0)
+    }, 1.25)
+    local v154 = v144.Tween
+    local v155 = u140.Gradient
+    local v156 = "Customisation_" .. u140.Name .. "_Gradient_In"
+    v154(p138, v155, tostring(v156), {
+        ["Offset"] = u3(0, 1)
+    }, 1.3)
+    u140.Visible = true
+    for _, v157 in pairs(u140:GetDescendants()) do
+        if v157:IsA("ImageButton") == true or v157:IsA("TextButton") == true then
+            v157.Selectable = true
+        end
+    end
+    if v143[u139.Name .. "_Hide"] == nil then
+        v143[u139.Name .. "_Hide"] = v151.Completed:Connect(function() --[[Anonymous function at line 494]]
+            --[[
+            Upvalues:
+                [1] = u5
+                [2] = u140
+                [3] = u139
+            --]]
+            if u5.Current_Category == "Family" and u140.Name == "Family" or u5.Current_Category ~= "Family" and u140.Name == "Right" then
+                u139.Visible = false
+            end
+        end)
+    end
+end
+function u5.Product(p158, p159, _) --[[Anonymous function at line 502]]
+    --[[
+    Upvalues:
+        [1] = u5
+    --]]
+    local v160 = p158.Services
+    local v161 = p158.Cache
+    local v162 = v160.MPS
+    local v163 = v161.Player
+    local v164 = p159.Name
+    local v165 = #p159.Name
+    local v166 = #p159.Name
+    local v167 = string.sub(v164, v165, v166)
+    local v168 = tonumber(v167)
+    v162:PromptProductPurchase(v163, u5.Products[v168])
+end
+function u5.Update(u169, u170, p171) --[[Anonymous function at line 516]]
+    --[[
+    Upvalues:
+        [1] = u5
+        [2] = u2
+        [3] = u1
+    --]]
+    local v172 = u169.Prefix
+    local v173 = u169.Services
+    local u174 = u169.Modules
+    local v175 = u169.Cache
+    local u176 = v173.W
+    local u177 = u174.Char
+    local u178 = u174.Effects
+    local u179 = u174.Images
+    local u180 = v175.Player
+    local v181 = v175.Tweens
+    local u182 = u5.Categories[u5.Current_Category][u5.Current_Sub_Index]
+    if u5.Current_Category == "Family" then
+        u5.Offset = u5.Base_Offset
+        u5.Switch(u169, u170.Right, u170.Family, 0.45)
+        u5.Family(u169, u170.Family)
+        if p171 == true then
+            u178.Fade(u169, { "Customisation" }, "Market")
+            return
+        end
+    else
+        u5.Storage(u169, u170.Family, false)
+        if u170.Right.Position.Y.Scale ~= 0.5 then
+            u5.Switch(u169, u170.Family, u170.Right, 0.55)
+        end
+        local u183 = u182:find("Accessory") ~= nil and "Accessory" or u182
+        local u184 = u169:Get("Asset", { u180.Name, u183 })
+        local v185 = u169:Get("Asset", { "Effects", "Item" })
+        for _, v186 in pairs(u170.Right.Main.Holder.Items:GetChildren()) do
+            if v186:IsA("Frame") == true then
+                v186:Destroy()
+            end
+        end
+        local function u196(p187, _) --[[Anonymous function at line 559]]
+            --[[
+            Upvalues:
+                [1] = u178
+                [2] = u169
+                [3] = u2
+            --]]
+            local v188 = u178.Tween
+            local v189 = u169
+            local v190 = p187.Main
+            local v191 = p187.Name .. "_Out"
+            v188(v189, v190, tostring(v191), {
+                ["BackgroundTransparency"] = 0.2,
+                ["Size"] = u2(0.85, 0, 0.85, 0)
+            }, 0.2, nil, nil, nil, nil, nil, true)
+            local v192 = u178.Tween
+            local v193 = u169
+            local v194 = p187.Main.Interact
+            local v195 = p187.Name .. "_Interact_Unselected"
+            v192(v193, v194, tostring(v195), {
+                ["BackgroundTransparency"] = 1
+            }, 0.2, nil, nil, nil, nil, nil, true)
+        end
+        if v181.Customisation_Items_Holder_In ~= nil then
+            v181.Customisation_Items_Holder_In:Cancel()
+        end
+        u170.Right.Main.Holder.GroupTransparency = 1
+        local v197 = (u182 == "Eyes" or (u182 == "Primary" or (u182 == "Secondary" or u182 == "Shirt"))) and true or u182 == "Pants"
+        if v197 == false then
+            u170.Right.Main.Holder.Items.Size = u2(0.97, 0, 0.965, 0)
+            local v198 = u170.Right.Main.Holder.Items.Grid
+            local v199 = u170.Right.Main.Holder.Items.Grid
+            local v200 = u2(0.017, 0, 0.023, 0)
+            local v201 = u2(0.228, 0, 0.16, 0)
+            v198.CellPadding = v200
+            v199.CellSize = v201
+        else
+            u170.Right.Main.Holder.Items.Size = u2(0.97, 0, 0.643, 0)
+            local v202 = u170.Right.Main.Holder.Items.Grid
+            local v203 = u170.Right.Main.Holder.Items.Grid
+            local v204 = u2(0.017, 0, 0.023, 0)
+            local v205 = u2(0.228, 0, 0.24, 0)
+            v202.CellPadding = v204
+            v203.CellSize = v205
+        end
+        local v206 = u170.Right.Main.Holder.Colour
+        local v207 = u170.Right.Main.Holder.Brightness
+        local v208 = u170.Right.Main.Holder.Saturation
+        local v209 = u170.Right.Main.Holder.Set
+        local v210 = u170.Right.Main.Holder.Line
+        v206.Visible = v197
+        v207.Visible = v197
+        v208.Visible = v197
+        v209.Visible = v197
+        v210.Visible = v197
+        u5.Offset = u1(0, u182 == "Eyes" and 1.4 or (u182 == "Nose" and 1.2 or (u182 == "Mouth" and 1.05 or ((u182 == "Primary" or (u182 == "Secondary" or (u182 == "Accessory_1" or u182 == "Accessory_2"))) and 1.75 or (u182 == "Shirt" and 0.75 or (u182 == "Pants" and -1 or 1))))), (u182 == "Eyes" or (u182 == "Nose" or u182 == "Mouth")) and 2.5 or ((u182 == "Primary" or (u182 == "Secondary" or (u182 == "Accessory_1" or u182 == "Accessory_2"))) and 3 or ((u182 == "Shirt" or u182 == "Pants") and 4.5 or 6.5)))
+        local v211 = u184:GetChildren()
+        if #v211 > 0 then
+            table.sort(v211, function(p212, p213) --[[Anonymous function at line 589]]
+                if p212.Name:find("Custom_") == nil and p213.Name:find("Custom_") == nil then
+                    return p212.Name:lower() < p213.Name:lower()
+                end
+                local v214 = p212.Handle:GetAttribute("ID")
+                local v215 = p213.Handle:GetAttribute("ID")
+                if v214 ~= nil and v215 ~= nil then
+                    return tonumber(v214) < tonumber(v215)
+                end
+            end)
+            for _, u216 in pairs(v211) do
+                local u217 = v185:Clone()
+                local v218 = u183 .. " - " .. u216.Name
+                u217.Name = tostring(v218)
+                local u219 = u179[u183][u216.Name]
+                if u183 == "Primary" or u183 == "Secondary" then
+                    local v220 = u216.Handle:GetAttribute("ID")
+                    local v221 = u217.Main.Icon
+                    local v222 = "rbxthumb://type=Asset&id=" .. v220 .. "&w=150&h=150"
+                    v221.Image = tostring(v222)
+                    u217.Main.Icon.ImageColor3 = Color3.fromRGB(150, 150, 150)
+                elseif u219 == 0 then
+                    if u183 == "Accessory" then
+                        u217.Main.Icon.Visible = false
+                    else
+                        local v223 = u217.Main.Label
+                        local v224 = u217.Main.Label
+                        local v225 = u216.Value
+                        v223.Visible = true
+                        v224.Text = v225
+                    end
+                else
+                    local v226 = u217.Main.Icon
+                    local v227 = v172 .. u219
+                    v226.Image = tostring(v227)
+                end
+                u217.Parent = u170.Right.Main.Holder.Items
+                u217.MouseEnter:Connect(function() --[[Anonymous function at line 630]]
+                    --[[
+                    Upvalues:
+                        [1] = u5
+                        [2] = u182
+                        [3] = u216
+                        [4] = u178
+                        [5] = u169
+                        [6] = u217
+                        [7] = u2
+                    --]]
+                    if u5.Indexes[u182].Index ~= u216.Name then
+                        local v228 = u178.Tween
+                        local v229 = u169
+                        local v230 = u217.Main
+                        local v231 = u217.Name .. "_In"
+                        v228(v229, v230, tostring(v231), {
+                            ["BackgroundTransparency"] = 0,
+                            ["Size"] = u2(0.925, 0, 0.925, 0)
+                        }, 0.2, nil, nil, nil, nil, nil, true)
+                    end
+                end)
+                u217.MouseLeave:Connect(function() --[[Anonymous function at line 636]]
+                    --[[
+                    Upvalues:
+                        [1] = u5
+                        [2] = u182
+                        [3] = u216
+                        [4] = u196
+                        [5] = u217
+                        [6] = u219
+                    --]]
+                    if u5.Indexes[u182].Index ~= u216.Name then
+                        u196(u217, u219)
+                    end
+                end)
+                u217.Main.Interact.MouseButton1Click:Connect(function() --[[Anonymous function at line 642]]
+                    --[[
+                    Upvalues:
+                        [1] = u178
+                        [2] = u169
+                        [3] = u217
+                        [4] = u5
+                        [5] = u182
+                        [6] = u216
+                        [7] = u170
+                        [8] = u183
+                        [9] = u179
+                        [10] = u196
+                        [11] = u177
+                        [12] = u180
+                        [13] = u176
+                        [14] = u174
+                        [15] = u184
+                    --]]
+                    u178.Interact(u169, u217.Main.Interact, true)
+                    local v232 = u5.Indexes[u182]
+                    if v232.Index ~= u216.Name then
+                        local v233 = v232.R
+                        local v234 = v232.G
+                        local v235 = v232.B
+                        local v236 = u170.Right.Main.Holder.Items:FindFirstChild(u183 .. " - " .. v232.Index)
+                        local v237 = u179[u183]
+                        local v238 = v232.Index
+                        local v239 = v237[tostring(v238)]
+                        if v236 ~= nil then
+                            u196(v236, v239)
+                        end
+                        local u240 = u216:Clone()
+                        local u241 = v232.Object
+                        if u183 == "Shirt" or (u183 == "Pants" or u183 == "Cloak") then
+                            for _, v242 in pairs(u240:GetDescendants()) do
+                                if v242:GetAttribute("Change") == true then
+                                    v242.Color = Color3.fromRGB(v233, v234, v235)
+                                end
+                            end
+                            u177.Rig(u169, u5.Clone, u240, u5.Clone, true, nil, true)
+                            if u241 ~= nil then
+                                u241:Destroy()
+                            end
+                        elseif u183 == "Height" or u183 == "Width" then
+                            u5.Clone.Humanoid["Body" .. u183 .. "Scale"].Value = u240.Value
+                            for _, v243 in pairs({ "Shirt", "Pants", "Cloak" }) do
+                                local v244 = u5.Indexes[v243]
+                                local v245 = u169:Get("Asset", { u180.Name, v243 })
+                                if v244.Object ~= nil then
+                                    v244.Object:Destroy()
+                                end
+                                local v246 = v245:FindFirstChild(v244.Index)
+                                if v246 ~= nil then
+                                    local v247 = v246:Clone()
+                                    for _, v248 in pairs(v247:GetDescendants()) do
+                                        if v248:GetAttribute("Change") == true then
+                                            v248.Color = Color3.fromRGB(v244.R, v244.G, v244.B)
+                                        end
+                                    end
+                                    u177.Rig(u169, u5.Clone, v247, u5.Clone, true, nil, true)
+                                    v244.Object = v247
+                                end
+                            end
+                            local v249 = u5.Clone:FindFirstChild("Rig_" .. u5.Clone.Name)
+                            if v249 ~= nil then
+                                v249:Destroy()
+                                u177.Gear(u169, u5.Clone, u5.Stored_Data, true)
+                            end
+                            if u241 ~= nil then
+                                u241:Destroy()
+                            end
+                        elseif u183 == "Skin_Tone" then
+                            for _, v250 in pairs(u5.Clone:GetChildren()) do
+                                if v250:IsA("BasePart") == true then
+                                    u178.Tween(u169, v250, v250.Name, {
+                                        ["Color"] = u240.Value
+                                    }, 0.2, nil, nil, nil, nil, nil, true)
+                                end
+                            end
+                            if u241 ~= nil then
+                                u241:Destroy()
+                            end
+                        elseif u183 == "Primary" or u183 == "Secondary" then
+                            u240.Handle.Transparency = 1
+                            u240.Handle.Color = Color3.fromRGB(v233, v234, v235)
+                            u177.Add_Accessory(u5.Clone, u240)
+                            if u241 == nil then
+                                if u240.Name ~= "1" then
+                                    u178.Tween(u169, u240.Handle, u240.Name, {
+                                        ["Transparency"] = 0
+                                    }, 0.1, nil, nil, nil, nil, nil, true)
+                                end
+                            else
+                                u178.Tween(u169, u241.Handle, u241.Name, {
+                                    ["Transparency"] = 1
+                                }, 0.1, nil, nil, nil, nil, nil, true).Completed:Connect(function() --[[Anonymous function at line 731]]
+                                    --[[
+                                    Upvalues:
+                                        [1] = u241
+                                        [2] = u240
+                                        [3] = u178
+                                        [4] = u169
+                                    --]]
+                                    u241:Destroy()
+                                    if u240.Name ~= "1" then
+                                        u178.Tween(u169, u240.Handle, u240.Name, {
+                                            ["Transparency"] = 0
+                                        }, 0.1, nil, nil, nil, nil, nil, true)
+                                    end
+                                end)
+                            end
+                        elseif u183 == "Eyes" or (u183 == "Mouth" or u183 == "Nose") then
+                            local v251 = u176.R15_Head
+                            u240.Transparency = 1
+                            u240.Parent = v251
+                            local u252, u253, u254
+                            if u183 == "Eyes" then
+                                local v255 = u169
+                                local v256 = {}
+                                local v257 = u180.Name
+                                local v258 = u183 .. "_Inner"
+                                __set_list(v256, 1, {v257, (tostring(v258))})
+                                u252 = v255:Get("Asset", v256)[u240.Name]:Clone()
+                                u252.Color3 = Color3.fromRGB(v233 + 200, v234 + 200, v235 + 200)
+                                local v259 = u240.Name .. "_" .. u183
+                                u252.Name = tostring(v259)
+                                u252.Transparency = 1
+                                u252.Parent = v251
+                                u253 = u169:Get("Asset", { u180.Name, "Eyebrows" })[u240.Name]:Clone()
+                                u253.Color3 = Color3.fromRGB(0, 0, 0)
+                                local v260 = u240.Name .. "_" .. u183 .. "_Eyebrows"
+                                u253.Name = tostring(v260)
+                                u253.Transparency = 1
+                                u253.Parent = v251
+                                local v261 = u169
+                                local v262 = {}
+                                local v263 = u180.Name
+                                local v264 = u183 .. "_Whitepart"
+                                __set_list(v262, 1, {v263, (tostring(v264))})
+                                u254 = v261:Get("Asset", v262)[u240.Name]:Clone()
+                                local v265 = u240.Name .. "_" .. u183 .. "_Whitepart"
+                                u254.Name = tostring(v265)
+                                u254.Parent = v251
+                            else
+                                u252 = nil
+                                u254 = nil
+                                u253 = nil
+                            end
+                            if u241 == nil then
+                                u178.Tween(u169, u240, u240.Name, {
+                                    ["Transparency"] = 0
+                                }, 0.1, nil, nil, nil, nil, nil, true)
+                                if u252 ~= nil then
+                                    u178.Tween(u169, u252, u252.Name, {
+                                        ["Transparency"] = 0
+                                    }, 0.1, nil, nil, nil, nil, nil, true)
+                                end
+                                if u254 ~= nil then
+                                    u178.Tween(u169, u254, u254.Name, {
+                                        ["Transparency"] = 0
+                                    }, 0.1, nil, nil, nil, nil, nil, true)
+                                end
+                                if u253 ~= nil then
+                                    u178.Tween(u169, u253, u253.Name, {
+                                        ["Transparency"] = 0
+                                    }, 0.1, nil, nil, nil, nil, nil, true)
+                                end
+                            else
+                                local u266 = v251:FindFirstChild(u241.Name .. "_" .. u183)
+                                local u267 = v251:FindFirstChild(u241.Name .. "_" .. u183 .. "_Whitepart")
+                                local u268 = v251:FindFirstChild(u241.Name .. "_" .. u183 .. "_Eyebrows")
+                                local v269 = u178.Tween(u169, u241, u241.Name, {
+                                    ["Transparency"] = 1
+                                }, 0.1, nil, nil, nil, nil, nil, true)
+                                if u266 ~= nil then
+                                    u178.Tween(u169, u266, u266.Name, {
+                                        ["Transparency"] = 1
+                                    }, 0.1, nil, nil, nil, nil, nil, true)
+                                end
+                                if u267 ~= nil then
+                                    u178.Tween(u169, u267, u267.Name, {
+                                        ["Transparency"] = 1
+                                    }, 0.1, nil, nil, nil, nil, nil, true)
+                                end
+                                if u268 ~= nil then
+                                    u178.Tween(u169, u268, u268.Name, {
+                                        ["Transparency"] = 1
+                                    }, 0.1, nil, nil, nil, nil, nil, true)
+                                end
+                                v269.Completed:Connect(function() --[[Anonymous function at line 801]]
+                                    --[[
+                                    Upvalues:
+                                        [1] = u241
+                                        [2] = u266
+                                        [3] = u267
+                                        [4] = u268
+                                        [5] = u178
+                                        [6] = u169
+                                        [7] = u240
+                                        [8] = u252
+                                        [9] = u254
+                                        [10] = u253
+                                    --]]
+                                    u241:Destroy()
+                                    if u266 ~= nil then
+                                        u266:Destroy()
+                                    end
+                                    if u267 ~= nil then
+                                        u267:Destroy()
+                                    end
+                                    if u268 ~= nil then
+                                        u268:Destroy()
+                                    end
+                                    u178.Tween(u169, u240, u240.Name, {
+                                        ["Transparency"] = 0
+                                    }, 0.1, nil, nil, nil, nil, nil, true)
+                                    if u252 ~= nil then
+                                        u178.Tween(u169, u252, u252.Name, {
+                                            ["Transparency"] = 0
+                                        }, 0.1, nil, nil, nil, nil, nil, true)
+                                    end
+                                    if u254 ~= nil then
+                                        u178.Tween(u169, u254, u254.Name, {
+                                            ["Transparency"] = 0
+                                        }, 0.1, nil, nil, nil, nil, nil, true)
+                                    end
+                                    if u253 ~= nil then
+                                        u178.Tween(u169, u253, u253.Name, {
+                                            ["Transparency"] = 0
+                                        }, 0.1, nil, nil, nil, nil, nil, true)
+                                    end
+                                end)
+                            end
+                        elseif u183 == "Accessory" then
+                            local u270 = {}
+                            for _, v271 in pairs(u240:GetChildren()) do
+                                if v271:IsA("BasePart") == true then
+                                    u270[v271] = v271.Transparency
+                                    v271.Transparency = 1
+                                end
+                            end
+                            u240.Parent = u5.Clone
+                            if u241 ~= nil then
+                                for _, v272 in pairs(u241:GetChildren()) do
+                                    if v272:IsA("BasePart") == true then
+                                        u178.Tween(u169, v272, v272.Name, {
+                                            ["Transparency"] = 1
+                                        }, 0.1, nil, nil, nil, nil, nil, true)
+                                    end
+                                end
+                            end
+                            u174.Cosmetic.Accessory(u169, u5.Clone, u184, u240.Name, true, u240)
+                            task.delay(0.1, function() --[[Anonymous function at line 862]]
+                                --[[
+                                Upvalues:
+                                    [1] = u241
+                                    [2] = u270
+                                    [3] = u178
+                                    [4] = u169
+                                --]]
+                                if u241 ~= nil then
+                                    u241:Destroy()
+                                end
+                                for v273, v274 in pairs(u270) do
+                                    u178.Tween(u169, v273, v273.Name, {
+                                        ["Transparency"] = v274
+                                    }, 0.1, nil, nil, nil, nil, nil, true)
+                                end
+                            end)
+                        end
+                        local v275 = u5.Indexes[u182]
+                        u5.Indexes[u182] = {
+                            ["Index"] = u240.Name,
+                            ["R"] = v275.R,
+                            ["G"] = v275.G,
+                            ["B"] = v275.B,
+                            ["Object"] = u240
+                        }
+                        local v276 = u178.Tween
+                        local v277 = u169
+                        local v278 = u217.Main.Interact
+                        local v279 = u217.Name .. "_Interact_Selected"
+                        v276(v277, v278, tostring(v279), {
+                            ["BackgroundTransparency"] = 0
+                        }, 0.2, nil, nil, nil, nil, nil, true)
+                    end
+                end)
+                if u5.Indexes[u182].Index == u216.Name then
+                    local v280 = u217.Main
+                    local v281 = u217.Main.Icon
+                    local v282 = u217.Main.Label
+                    local v283 = u217.Main.Interact
+                    v280.Size = u2(0.925, 0, 0.925, 0)
+                    v281.ImageTransparency = 0
+                    v282.TextTransparency = 0
+                    v283.BackgroundTransparency = 0
+                end
+            end
+        end
+        u178.Tween(u169, u170.Right.Main.Holder, "Customisation_Items_Holder_In", {
+            ["GroupTransparency"] = 0
+        }, 0.25)
+    end
+end
+function u5.Roll(p284, p285) --[[Anonymous function at line 889]]
+    --[[
+    Upvalues:
+        [1] = u5
+    --]]
+    local v286 = p284.Modules
+    local _ = p284.Cache
+    local _ = v286.Effects
+    local v287 = v286.Families
+    local v288 = v286.Notify
+    local v289 = v286.Warning
+    local v290, v291 = v286.Update.Get_Data(p284, true)
+    if u5.Spinning == false then
+        if v290.Spins == 0 then
+            v288.Fade(p284, true, "No spins left!")
+            return
+        end
+        local v292 = ""
+        for v293, v294 in pairs(v287) do
+            if v294[v291.Avatar.Family] ~= nil then
+                v292 = v293
+                break
+            end
+        end
+        if v292 == "Legendary" or (v292 == "Epic" or v292 == "Secret") then
+            v289.Fade(p284, true, "Rolling", "Are you sure you want to reroll your \'" .. string.upper(v291.Avatar.Family) .. "\' family?")
+            return
+        end
+        u5.Rolling(p284, p285)
+    end
+end
+function u5.Rolling(p295, u296) --[[Anonymous function at line 921]]
+    --[[
+    Upvalues:
+        [1] = u5
+    --]]
+    local v297 = p295.Modules
+    local v298 = p295.Cache
+    local v299 = v297.Effects
+    local v300 = v297.Families
+    local v301 = v297.Format
+    local v302 = v297.Update
+    local v303 = v298.Interface
+    local v304, v305 = v302.Get_Data(p295, true)
+    u5.Spinning = true
+    local v306, v307, v308, v309 = p295:Invoke("Family", "Roll")
+    if v306 ~= nil and (v307 ~= nil and (v308 ~= nil and v309 ~= nil)) then
+        task.defer(function() --[[Anonymous function at line 935]]
+            --[[
+            Upvalues:
+                [1] = u5
+                [2] = u296
+            --]]
+            while u5.Spinning == true do
+                for v310 = 0, 3 do
+                    if u5.Spinning == true then
+                        u296.Buttons_2.Roll.Title.Text = string.rep(".", v310)
+                    end
+                    task.wait(0.25)
+                end
+            end
+        end)
+        local v311 = u296.Family.Title
+        local v312 = v311:Clone()
+        v311.Visible = false
+        v312.Parent = u296.Family
+        v305.Avatar.Pity = v308
+        local v313 = u296.Pity
+        local v314 = "EPIC+ PITY: " .. v308 .. "/400"
+        v313.Text = tostring(v314)
+        v299.Tween(p295, v312, tostring("Label_Spin"), {
+            ["TextTransparency"] = 1
+        }, 0.15, nil, nil, nil, nil, nil, true).Completed:Wait()
+        v312:Destroy()
+        for v315, v316 in pairs(v309) do
+            local v317 = v311:Clone()
+            v317.Visible = true
+            v317.TextTransparency = 1
+            v317.Text = string.upper(v316)
+            for v318, v319 in pairs(v300) do
+                if v319[v316] ~= nil then
+                    v317.Gradient.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, u5.Rarity_Colours[v318]), ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)) })
+                    break
+                end
+            end
+            v317.Parent = u296.Family
+            v299.Tween(p295, v317, tostring("Label_Spin"), {
+                ["TextTransparency"] = 0
+            }, 0.15, nil, nil, nil, nil, nil, true).Completed:Wait()
+            if v315 < #v309 then
+                v299.Sound(p295, "Rolling", v303, 0.25)
+                task.wait(0.25)
+                v299.Tween(p295, v317, tostring("Label_Spin"), {
+                    ["TextTransparency"] = 1
+                }, 0.05, nil, nil, nil, nil, nil, true).Completed:Wait()
+            end
+            v317:Destroy()
+        end
+        v305.Avatar.Family = v307
+        v304.Spins = v306
+        u5.Family_Details(p295, u296, true, true)
+        v311.Visible = true
+    end
+    u5.Spinning = false
+    local v320 = v302.Get_Data(p295)
+    if v320 ~= nil then
+        local v321 = u296.Buttons_2.Roll.Title
+        local v322 = "ROLL (" .. v301.Convert(v320.Spins) .. ")"
+        v321.Text = tostring(v322)
+    end
+end
+function u5.Store(p323, p324) --[[Anonymous function at line 1021]]
+    --[[
+    Upvalues:
+        [1] = u5
+    --]]
+    if u5.Spinning == false then
+        local v325 = p323.Modules
+        local v326 = p323.Cache
+        local v327 = v325.Effects
+        local v328 = v325.Notify
+        local v329 = v325.Shared
+        local v330 = v325.Update
+        local v331 = v326.Player
+        local _, v332 = v330.Get_Data(p323, true)
+        local v333 = v332.Inventory.Families
+        local v334 = v329.Own_Gamepass(p323, v331, "Family_Bag")
+        local v335 = 1
+        if v334 == true then
+            v335 = v335 + 10
+        end
+        local v336 = v335 + v332.Extra_Slots.Family
+        if v336 <= #v333 then
+            local v337 = v328.Fade
+            local v338 = "Reached maximum families (" .. v336 .. ")!"
+            v337(p323, true, (tostring(v338)))
+            if v334 == false then
+                v329.Prompt_Gamepass(p323, v331, "Family_Bag")
+                return
+            end
+        else
+            local v339, v340, v341 = p323:Invoke("Family", "Store")
+            if v339 == true then
+                table.insert(v333, v340)
+                v332.Avatar.Family = v341
+                local v342 = v328.Fade
+                local v343 = "Stored \'" .. string.upper(v340) .. "\' family!"
+                v342(p323, true, tostring(v343), true)
+                u5.Update_Storage(p323, p324.Parent.Storage, true)
+                v327.Tween(p323, p324.Family.Title, "Label_Fade", {
+                    ["TextTransparency"] = 1
+                }, 0.15, nil, nil, nil, nil, nil, true).Completed:Wait()
+                u5.Family_Details(p323, p324, true)
+                v327.Tween(p323, p324.Family.Title, "Label_Fade", {
+                    ["TextTransparency"] = 0
+                }, 0.15, nil, nil, nil, nil, nil, true)
+            end
+        end
+    end
+end
+function u5.Update_Storage(u344, p345, p346) --[[Anonymous function at line 1074]]
+    --[[
+    Upvalues:
+        [1] = u5
+    --]]
+    local v347 = u344.Modules
+    local v348 = u344.Cache
+    local u349 = v347.Effects
+    local v350 = v347.Families
+    local v351 = v347.Shared
+    local v352 = v347.Update
+    local v353 = v348.Player
+    local v354, v355 = v352.Get_Data(u344, true)
+    local v356 = u344:Get("Asset", { "Objects", "Family" })
+    if v354 ~= nil and v355 ~= nil then
+        local v357 = p345.Main
+        local v358 = v355.Inventory.Families
+        local v359 = {}
+        for _, v360 in pairs(v358) do
+            table.insert(v359, v360)
+        end
+        local v361 = 1
+        if v351.Own_Gamepass(u344, v353, "Family_Bag") == true then
+            v361 = v361 + 10
+        end
+        local v362 = v361 + v355.Extra_Slots.Family
+        local v363 = v357.Title
+        local v364 = "FAMILIES (" .. #v359 .. "/" .. v362 .. ")"
+        v363.Text = tostring(v364)
+        if #v359 == 0 then
+            for _, v365 in pairs(u5.Click_Events) do
+                v365:Disconnect()
+            end
+            u5.Click_Events = {}
+            for _, v366 in pairs(v357.Families:GetChildren()) do
+                if v366:IsA("CanvasGroup") == true then
+                    v366:Destroy()
+                end
+            end
+            v357.Families.Empty.Visible = true
+            u349.Tween(u344, v357.Families.Empty, "Storage_Empty_In", {
+                ["TextTransparency"] = 0
+            }, 0.25, nil, nil, nil, nil, nil, true)
+            return
+        end
+        local v367 = v357.Families.Empty
+        local v368 = v357.Families.Empty
+        v367.Visible = false
+        v368.TextTransparency = 1
+        if p346 == nil then
+            for _, v369 in pairs(v357.Families:GetChildren()) do
+                if v369:IsA("CanvasGroup") == true then
+                    if u5.Selected_Storage_Slot == v369 then
+                        u5.Storage_State(u344, u349, v369, v357, "Out")
+                    end
+                    v369:Destroy()
+                end
+            end
+        else
+            for _, v370 in pairs(v357.Families:GetChildren()) do
+                if v370:IsA("CanvasGroup") == true then
+                    local v371 = string.split
+                    local v372 = v370.Name
+                    local _, v373 = unpack(v371(v372, "_"))
+                    local v374 = false
+                    for v375, v376 in pairs(v359) do
+                        if v376 == v373 then
+                            table.remove(v359, v375)
+                            v374 = true
+                            break
+                        end
+                    end
+                    if v374 == false then
+                        if u5.Selected_Storage_Slot == v370 then
+                            u5.Storage_State(u344, u349, v370, v357, "Out")
+                        end
+                        v370:Destroy()
+                    end
+                end
+            end
+        end
+        for v377, v378 in pairs(v359) do
+            local u379 = v356:Clone()
+            local v380 = u379:FindFirstChild("Inner")
+            for v381, v382 in pairs(v350) do
+                if v382[v378] ~= nil then
+                    local v383 = v380.Title
+                    local v384 = string.upper(v378) .. " (" .. ((v378 == "Fritz" or v378 == "Helos") and "Mythical" or v381) .. ")"
+                    v383.Text = tostring(v384)
+                    v380.Title.Gradient.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, u5.Rarity_Colours[v381]), ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)) })
+                end
+            end
+            local v385 = #v357.Families:GetChildren() - 3 .. "_" .. v378
+            u379.Name = tostring(v385)
+            u379.Parent = v357.Families
+            u349.Hover(u344, u379, v357, u5, "Storage", true, v380.Interact, true)
+            task.delay((v377 - 1) * 0.125, function() --[[Anonymous function at line 1182]]
+                --[[
+                Upvalues:
+                    [1] = u349
+                    [2] = u344
+                    [3] = u379
+                --]]
+                u349.Tween(u344, u379, "Storage_Family_In", {
+                    ["GroupTransparency"] = 0.4
+                }, 0.25, nil, nil, nil, nil, nil, true)
+            end)
+        end
+    end
+end
+function u5.Storage(u386, p387, p388) --[[Anonymous function at line 1190]]
+    --[[
+    Upvalues:
+        [1] = u5
+        [2] = u2
+        [3] = u3
+    --]]
+    local v389 = u386.Modules
+    local v390 = u386.Events
+    local v391 = v389.Effects
+    local u392 = p387.Parent.Storage
+    local v393 = not u5.Storage_Open
+    if p388 ~= nil then
+        v393 = p388
+    end
+    u5.Storage_Open = v393
+    local v394 = u5.Storage_Open == true and 0.55 or 0.6
+    local v395 = u5.Storage_Open == true and -1 or 1
+    local v396 = u5.Storage_Open == true and "In" or "Out"
+    local v397 = v391.Tween
+    local v398 = "Customisation_" .. u392.Name .. "_" .. v396
+    v397(u386, u392, tostring(v398), {
+        ["Position"] = u2(0.5, 0, v394, 0)
+    }, 1)
+    local v399 = v391.Tween
+    local v400 = u392.Gradient
+    local v401 = "Customisation_" .. u392.Name .. "_Gradient_" .. v396
+    local v402 = v399(u386, v400, tostring(v401), {
+        ["Offset"] = u3(0, v395)
+    }, 1.05)
+    if u5.Storage_Open == true then
+        u392.Visible = true
+        task.delay(0.4, function() --[[Anonymous function at line 1216]]
+            --[[
+            Upvalues:
+                [1] = u5
+                [2] = u386
+                [3] = u392
+            --]]
+            u5.Update_Storage(u386, u392)
+        end)
+    elseif u5.Storage_Open == false and v390[u392.Name .. "_Hide"] == nil then
+        v390[u392.Name .. "_Hide"] = v402.Completed:Connect(function() --[[Anonymous function at line 1221]]
+            --[[
+            Upvalues:
+                [1] = u5
+                [2] = u392
+            --]]
+            if u5.Storage_Open == false then
+                u392.Visible = false
+            end
+        end)
+    end
+    if u5.Selected_Storage_Slot ~= nil then
+        u5.Storage_State(u386, v391, u5.Selected_Storage_Slot, u392.Main, "Out")
+    end
+end
+function u5.Storage_State(p403, p404, p405, p406, p407) --[[Anonymous function at line 1233]]
+    --[[
+    Upvalues:
+        [1] = u5
+        [2] = u2
+    --]]
+    local v408 = p403.Modules
+    local v409 = p403.Events
+    local v410 = v408.Tweens
+    local v411 = u5.Selected_Storage_Slot
+    if v411 == p405 or p407 == "Out" then
+        p405 = nil
+    end
+    u5.Selected_Storage_Slot = p405
+    if v411 ~= nil and (v411 ~= p405 or p405 == nil) then
+        local v412 = v411:FindFirstChild("Inner")
+        if v412 ~= nil then
+            v410.Tween(p403, p404, v411, u5, v412.Interact, true, "Out", true)
+        end
+    end
+    local u413 = p406.Parent.Buttons
+    local v414 = u5.Selected_Storage_Slot == nil and "Out" or "In"
+    local v415 = v414 == "In" and 0 or 1
+    local v416 = v414 == "In" and 0.99 or 0.95
+    local v417 = p404.Tween
+    local v418 = "Storage_Buttons_" .. v414
+    local v419 = v417(p403, u413, tostring(v418), {
+        ["GroupTransparency"] = v415,
+        ["Position"] = u2(0.5, 0, v416, 0)
+    }, 0.25)
+    if v414 == "In" then
+        u413.Visible = true
+        for _, v420 in pairs(u413:GetChildren()) do
+            p404.Hover(p403, v420, u413, u5, "Storage_Button")
+        end
+    elseif v414 == "Out" and v409["Storage_" .. u413.Name .. "_Hide"] == nil then
+        v409["Storage_" .. u413.Name .. "_Hide"] = v419.Completed:Connect(function() --[[Anonymous function at line 1271]]
+            --[[
+            Upvalues:
+                [1] = u5
+                [2] = u413
+            --]]
+            if u5.Selected_Storage_Slot == nil then
+                u413.Visible = false
+            end
+        end)
+    end
+end
+function u5.Deletion(p421, p422) --[[Anonymous function at line 1279]]
+    --[[
+    Upvalues:
+        [1] = u5
+    --]]
+    if u5.Selected_Storage_Slot ~= nil then
+        local v423 = p421.Modules
+        local _ = v423.Effects
+        local _ = v423.Families
+        local v424 = v423.Notify
+        local v425 = v423.Update
+        local _ = v423.Warning
+        local v426, v427 = v425.Get_Data(p421, true)
+        if v426 ~= nil and v427 ~= nil then
+            local v428 = string.split
+            local v429 = u5.Selected_Storage_Slot.Name
+            local _, v430 = unpack(v428(v429, "_"))
+            if p421:Invoke("Family", "Delete", v430) == true then
+                local v431 = v427.Inventory.Families
+                for v432, v433 in pairs(v431) do
+                    if v433 == v430 then
+                        table.remove(v431, v432)
+                        break
+                    end
+                end
+                local v434 = v424.Fade
+                local v435 = "Deleted " .. string.upper(v430) .. " family!"
+                v434(p421, true, tostring(v435), true)
+                u5.Update_Storage(p421, p422, true)
+            end
+        end
+    end
+end
+function u5.Delete(p436, _, p437) --[[Anonymous function at line 1311]]
+    --[[
+    Upvalues:
+        [1] = u5
+    --]]
+    if u5.Selected_Storage_Slot ~= nil then
+        local v438 = p436.Modules
+        local v439 = v438.Families
+        local v440 = v438.Update
+        local v441 = v438.Warning
+        local v442, v443 = v440.Get_Data(p436, true)
+        if v442 ~= nil and v443 ~= nil then
+            local v444 = string.split
+            local v445 = u5.Selected_Storage_Slot.Name
+            local _, v446 = unpack(v444(v445, "_"))
+            local v447 = ""
+            for v448, v449 in pairs(v439) do
+                if v449[v446] ~= nil then
+                    v447 = v448
+                    break
+                end
+            end
+            if v447 == "Legendary" or (v447 == "Epic" or v447 == "Secret") then
+                v441.Fade(p436, true, "Deletion", "Are you sure you want to delete your \'" .. string.upper(v446) .. "\' family?")
+                return
+            end
+            u5.Deletion(p436, p437.Parent)
+        end
+    end
+end
+function u5.Swap(p450, p451, p452) --[[Anonymous function at line 1342]]
+    --[[
+    Upvalues:
+        [1] = u5
+    --]]
+    if u5.Selected_Storage_Slot ~= nil and u5.Spinning == false then
+        local v453 = p450.Modules
+        local v454 = v453.Notify
+        local v455, v456 = v453.Update.Get_Data(p450, true)
+        if v455 ~= nil and v456 ~= nil then
+            local v457 = v456.Inventory.Families
+            local v458 = string.split
+            local v459 = u5.Selected_Storage_Slot.Name
+            local _, v460 = unpack(v458(v459, "_"))
+            if v456.Avatar.Family == v460 then
+                v454.Fade(p450, true, "Already equipped!")
+                return
+            end
+            local v461, v462, v463 = p450:Invoke("Family", "Swap", v460)
+            if v461 == true then
+                local v464 = p452.Parent.Parent.Family
+                table.insert(v457, v462)
+                for v465, v466 in pairs(v457) do
+                    if v466 == v463 then
+                        table.remove(v457, v465)
+                        break
+                    end
+                end
+                v456.Avatar.Family = v463
+                local v467 = v454.Fade
+                local v468 = "Equipped \'" .. string.upper(v463) .. "\' family!"
+                v467(p450, true, tostring(v468), true)
+                u5.Update_Storage(p450, v464.Parent.Storage, true)
+                p451.Tween(p450, v464.Family.Title, "Label_Fade", {
+                    ["TextTransparency"] = 1
+                }, 0.15, nil, nil, nil, nil, nil, true).Completed:Wait()
+                u5.Family_Details(p450, v464, true)
+                p451.Tween(p450, v464.Family.Title, "Label_Fade", {
+                    ["TextTransparency"] = 0
+                }, 0.15, nil, nil, nil, nil, nil, true)
+            end
+        end
+    end
+end
+function u5.Family(p469, u470) --[[Anonymous function at line 1393]]
+    --[[
+    Upvalues:
+        [1] = u5
+    --]]
+    local v471 = p469.Services
+    local v472 = p469.Modules
+    local _ = p469.Cache
+    local v473 = p469.Events
+    local u474 = v471.W
+    local v475 = v472.Effects
+    local v476 = v472.Format
+    local v477, u478 = v472.Update.Get_Data(p469, true)
+    local v479 = u470.Rarities
+    for _, v480 in pairs(v479:GetChildren()) do
+        if v480:IsA("Frame") == true then
+            if v480.Name:find("Category") == nil then
+                v480:Destroy()
+            else
+                v475.Hover(p469, v480, v479, u5, "Rarity", nil, v480.Main.Arrow)
+            end
+        end
+    end
+    v475.Hover(p469, u470.Buttons_2.Roll, u470, u5, "Customise")
+    v475.Hover(p469, u470.Buttons_2.Store, u470, u5, "Customise")
+    v475.Hover(p469, u470.Buttons_2.Storage, u470, u5, "Customise")
+    u5.Family_Details(p469, u470)
+    local v481 = u470.Pity
+    local v482 = "EPIC+ PITY: " .. u478.Avatar.Pity .. "/400"
+    v481.Text = tostring(v482)
+    local v483 = u470.Buttons_2.Roll.Title
+    local v484 = "ROLL (" .. v476.Convert(v477.Spins) .. ")"
+    v483.Text = tostring(v484)
+    if v473.Rates == nil then
+        local u485 = {
+            ["Common"] = 1,
+            ["Rare"] = 2,
+            ["Epic"] = 3,
+            ["Legendary"] = 4,
+            ["Secret"] = 5
+        }
+        local function u496() --[[Anonymous function at line 1428]]
+            --[[
+            Upvalues:
+                [1] = u474
+                [2] = u5
+                [3] = u478
+                [4] = u485
+                [5] = u470
+            --]]
+            local v486 = u474:GetAttribute("Rate")
+            for v487, v492 in pairs(u5.Chances[u478.Progression.Prestige]) do
+                local v489 = u485[v487]
+                local v490 = u470.Rarities[v489 .. " - " .. v487 .. " - Category"]
+                if v486 == true then
+                    local v491 = u5.Boosted_Chances[u478.Progression.Prestige][v487] .. "% <s>" .. v492 .. "</s>"
+                    local v492 = tostring(v491)
+                end
+                local v493 = v487 == "Secret" and "Mythical" or v487
+                local v494 = v490.Main.Title
+                local v495 = v493 .. " - " .. v492 .. "%"
+                v494.Text = tostring(v495)
+            end
+        end
+        v473.Rate = u474:GetAttributeChangedSignal("Rate"):Connect(function() --[[Anonymous function at line 1448]]
+            --[[
+            Upvalues:
+                [1] = u496
+            --]]
+            u496()
+        end)
+        u496()
+    end
+end
+function u5.Family_Details(u497, p498, p499, p500) --[[Anonymous function at line 1456]]
+    --[[
+    Upvalues:
+        [1] = u2
+        [2] = u5
+    --]]
+    local v501 = u497.Services
+    local v502 = u497.Modules
+    local v503 = u497.Cache
+    local u504 = v501.TextSa
+    local v505 = v502.Effects
+    local v506 = v502.Families
+    local v507 = v502.Skills
+    local v508, v509 = v502.Update.Get_Data(u497, true)
+    local v510 = v509.Avatar.Family
+    local u511 = p498.Middle.Perks
+    local function v513() --[[Anonymous function at line 1469]]
+        --[[
+        Upvalues:
+            [1] = u511
+        --]]
+        for _, v512 in pairs(u511.Display:GetChildren()) do
+            if v512:IsA("UIListLayout") == false and v512:IsA("UIPadding") == false then
+                v512:Destroy()
+            end
+        end
+    end
+    local function v521(p514, p515, p516, p517, p518) --[[Anonymous function at line 1477]]
+        --[[
+        Upvalues:
+            [1] = u497
+            [2] = u504
+            [3] = u511
+            [4] = u2
+        --]]
+        local v519 = u497:Get("Asset", { "Objects", p514 }):Clone()
+        if p518 == nil then
+            v519.Size = u2(1, 0, u504:GetTextSize(p515, u511.AbsoluteSize.Y / 13.5, Enum.Font.Fantasy, u511.AbsoluteSize).Y / u511.AbsoluteSize.Y, 0)
+        end
+        if p516 == nil then
+            local v520 = v519:FindFirstChildOfClass("UIGradient")
+            if v520 ~= nil then
+                v520:Destroy()
+            end
+        end
+        if p517 == nil then
+            v519.TextColor3 = Color3.fromRGB(255, 255, 255)
+        else
+            p515 = p515:gsub("(%d+%.?%d*)", "<font color=\"rgb(218,176,97)\">%1</font>")
+            v519.TextColor3 = p517 == "Buff" and Color3.fromRGB(127, 255, 80) or Color3.fromRGB(255, 80, 80)
+        end
+        v519.Text = p515
+        v519.Parent = u511.Display
+    end
+    if p499 == true then
+        p498.Middle.Perks.GroupTransparency = 1
+        v505.Tween(u497, p498.Middle.Perks, "Customisation_Family_Perks", {
+            ["GroupTransparency"] = 0
+        }, 0.5)
+    end
+    for v522, v523 in pairs(v506) do
+        local v524 = v523[v510]
+        if v524 ~= nil then
+            local v525 = p498.Family.Title
+            local v526 = string.upper(v510) .. " (" .. ((v510 == "Fritz" or v510 == "Helos") and "Mythical" or v522) .. ")"
+            v525.Text = tostring(v526)
+            p498.Family.Title.Gradient.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, u5.Rarity_Colours[v522]), ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)) })
+            local v527 = v524.Skills
+            local v528 = v524.Passives
+            v513()
+            if v527 == nil and v528 == nil then
+                v521("Object", "This family has no buffs / debuffs", nil, nil)
+            else
+                if v527 ~= nil then
+                    v521("Title", "SKILLS", true, nil, true)
+                    for _, v529 in pairs(v527) do
+                        local v530 = "\226\128\162 " .. v507[v529].Tag
+                        v521("Object", tostring(v530), true, "Buff")
+                    end
+                    v521("Gap", "", nil)
+                end
+                if v528 ~= nil then
+                    v521("Title", "PASSIVES", true, nil, true)
+                    for _, v531 in pairs(v528) do
+                        local v532 = v531:find("+") ~= nil
+                        local v533 = v531:find("-") ~= nil
+                        local v534 = string.gsub(v531, "+", "")
+                        if v509.Weapon == "Spears" then
+                            v534 = string.gsub(v534, "ODM", "TS")
+                        end
+                        v521("Object", v534, true, v532 == true and "Buff" or (v533 == true and "Debuff" or nil))
+                    end
+                end
+            end
+            u511.Display.CanvasSize = UDim2.new(0, 0, 0, u511.Display.Layout.AbsoluteContentSize.Y * 1.06)
+            if p500 == true then
+                if (v522 == "Secret" or v522 == "Legendary") and v508.Settings.Trading.Voice_Over == "On" then
+                    v505.Sound(u497, v522, v503.Interface)
+                else
+                    v505.Sound(u497, "Rolled", v503.Interface)
+                end
+            end
+            break
+        end
+    end
+end
+function u5.Rarity(p535, p536, p537, p538) --[[Anonymous function at line 1574]]
+    local v539 = p535.Modules
+    local v540 = p535:Get("Asset", { "Effects", "Family" })
+    local v541 = string.split
+    local v542, v543 = unpack(v541(p536, " - "))
+    local v544 = v539.Families[v543]
+    if p538:GetAttribute(v543) == nil then
+        p538:SetAttribute(v543, true)
+        p537.Rotation = -90
+        for v545, _ in pairs(v544) do
+            if v545 ~= "Shiki" then
+                local v546 = v540:Clone()
+                local v547 = v546.Label
+                local v548 = v542 .. " - " .. v543 .. " - Family"
+                v546.Name = tostring(v548)
+                v547.Text = v545
+                v546.Parent = p538
+            end
+        end
+    else
+        p538:SetAttribute(v543, nil)
+        p537.Rotation = 0
+        for _, v549 in pairs(p538:GetChildren()) do
+            if v549.Name:find(v543) ~= nil and v549.Name:find("Family") ~= nil then
+                v549:Destroy()
+            end
+        end
+    end
+end
+function u5.Get_Colour(p550, p551) --[[Anonymous function at line 1605]]
+    local v552 = p551[1]
+    local _ = p551[#p551]
+    local _ = v552.Value
+    for v553 = 1, #p551 - 1 do
+        if p551[v553].Time <= p550 and p550 <= p551[v553 + 1].Time then
+            local v554 = p551[v553]
+            local v555 = p551[v553 + 1]
+            local v556 = (p550 - v554.Time) / (v555.Time - v554.Time)
+            return v554.Value:Lerp(v555.Value, v556)
+        end
+    end
+end
+function u5.Colour(_, p557, p558, p559) --[[Anonymous function at line 1625]]
+    --[[
+    Upvalues:
+        [1] = u5
+    --]]
+    local v560 = p557.Parent
+    local v561 = p558.Parent
+    local v562 = p559.Parent
+    local v563 = v560.AbsolutePosition.X
+    local v564 = v563 + v560.AbsoluteSize.X - v563
+    local v565 = (p557.AbsolutePosition.X - v563) / v564
+    local v566 = v561.AbsolutePosition.X
+    local v567 = v566 + v561.AbsoluteSize.X - v566
+    local v568 = (p558.AbsolutePosition.X - v566) / v567
+    local v569 = v562.AbsolutePosition.X
+    local v570 = v569 + v562.AbsoluteSize.X - v569
+    local v571 = (p559.AbsolutePosition.X - v569) / v570
+    local v572 = u5.Get_Colour(v568, p558.Real_Gradient.Color.Keypoints)
+    local v573 = u5.Get_Colour(v565, v560.Gradient.Color.Keypoints)
+    local v574 = v573.R * 255
+    local v575 = math.floor(v574)
+    local v576 = v573.G * 255
+    local v577 = math.floor(v576)
+    local v578 = v573.B * 255
+    local v579 = math.floor(v578)
+    v561.Gradient.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(v575, v577, v579)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)) })
+    v562.Gradient.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(v575, v577, v579)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)) })
+    local v580 = u5.Get_Colour(v571, v562.Gradient.Color.Keypoints)
+    local v581 = v580.R * 255
+    local v582 = v575 + math.floor(v581)
+    local v583 = math.clamp(v582, 0, 255)
+    local v584 = v580.G * 255
+    local v585 = v577 + math.floor(v584)
+    local v586 = math.clamp(v585, 0, 255)
+    local v587 = v580.B * 255
+    local v588 = v579 + math.floor(v587)
+    local v589 = math.clamp(v588, 0, 255)
+    u5.Set_Colour = {
+        ["R"] = v583 * v572.R,
+        ["G"] = v586 * v572.G,
+        ["B"] = v589 * v572.B
+    }
+end
+function u5.Fade(u590, u591, u592, u593) --[[Anonymous function at line 1682]]
+    --[[
+    Upvalues:
+        [1] = u3
+        [2] = u2
+    --]]
+    local _ = u590.Cache.Tweens
+    local u594 = u593 == "In" and 0.5 or 0.45
+    local u595 = u593 == "In" and 1 or -1
+    local u596 = u593 == "In" and 0 or -0.25
+    local u597 = u593 == "In" and 0 or -0.2
+    local u598 = u593 == "In" and 1 or -1
+    local u599 = u593 == "In" and 0.095 or 0.135
+    local u600 = u593 == "In" and 0.983 or 1.133
+    local u601 = u593 == "In" and 0.94 or 0.975
+    local function u612(p602, p603) --[[Anonymous function at line 1699]]
+        --[[
+        Upvalues:
+            [1] = u591
+            [2] = u590
+            [3] = u592
+            [4] = u593
+            [5] = u3
+            [6] = u596
+            [7] = u597
+        --]]
+        local v604 = u591.Tween
+        local v605 = u590
+        local v606 = u592.Large_Arc.Stroke.Gradient
+        local v607 = "Customisation_Large_Arc_Stroke_Gradient_" .. u593
+        v604(v605, v606, tostring(v607), {
+            ["Offset"] = u3(u596, 0)
+        }, p602)
+        local v608 = u591.Tween
+        local v609 = u590
+        local v610 = u592.Small_Arc.Stroke.Gradient
+        local v611 = "Customisation_Small_Arc_Stroke_Gradient_" .. u593
+        v608(v609, v610, tostring(v611), {
+            ["Offset"] = u3(u597, 0)
+        }, p603)
+    end
+    local function u627(p613, p614) --[[Anonymous function at line 1704]]
+        --[[
+        Upvalues:
+            [1] = u591
+            [2] = u590
+            [3] = u592
+            [4] = u593
+            [5] = u3
+            [6] = u598
+            [7] = u2
+            [8] = u599
+        --]]
+        local v615 = u591.Tween
+        local v616 = u590
+        local v617 = u592.Categories.Gradient
+        local v618 = "Customisation_Categories_Gradient_" .. u593
+        v615(v616, v617, tostring(v618), {
+            ["Offset"] = u3(0, u598)
+        }, p613)
+        local v619 = u591.Tween
+        local v620 = u590
+        local v621 = u592.Sub_Categories
+        local v622 = "Customisation_Sub_Categories_" .. u593
+        v619(v620, v621, tostring(v622), {
+            ["Position"] = u2(u599, 0, 0.5, 0)
+        }, p614)
+        local v623 = u591.Tween
+        local v624 = u590
+        local v625 = u592.Sub_Categories.Gradient
+        local v626 = "Customisation_Sub_Categories_Gradient_" .. u593
+        v623(v624, v625, tostring(v626), {
+            ["Offset"] = u3(u598 * -1, 0)
+        }, p614 + 0.05)
+    end
+    local function u633(p628) --[[Anonymous function at line 1710]]
+        --[[
+        Upvalues:
+            [1] = u591
+            [2] = u590
+            [3] = u592
+            [4] = u593
+            [5] = u2
+            [6] = u600
+        --]]
+        local v629 = u591.Tween
+        local v630 = u590
+        local v631 = u592.Back
+        local v632 = "Customisation_Back_" .. u593
+        v629(v630, v631, tostring(v632), {
+            ["Position"] = u2(0.014, 0, u600, 0)
+        }, p628, "Back", "Out")
+    end
+    local function u643(p634) --[[Anonymous function at line 1714]]
+        --[[
+        Upvalues:
+            [1] = u591
+            [2] = u590
+            [3] = u592
+            [4] = u593
+            [5] = u2
+            [6] = u601
+            [7] = u3
+            [8] = u595
+        --]]
+        local v635 = u591.Tween
+        local v636 = u590
+        local v637 = u592.Wheel
+        local v638 = "Customisation_Wheel_" .. u593
+        v635(v636, v637, tostring(v638), {
+            ["Position"] = u2(0.5, 0, u601, 0)
+        }, p634)
+        local v639 = u591.Tween
+        local v640 = u590
+        local v641 = u592.Wheel.Gradient
+        local v642 = "Customisation_Wheel_Gradient_" .. u593
+        v639(v640, v641, tostring(v642), {
+            ["Offset"] = u3(0, u595 * -1)
+        }, p634 + 0.05)
+    end
+    local function u653(p644) --[[Anonymous function at line 1719]]
+        --[[
+        Upvalues:
+            [1] = u591
+            [2] = u590
+            [3] = u592
+            [4] = u593
+            [5] = u2
+            [6] = u594
+            [7] = u3
+            [8] = u595
+        --]]
+        local v645 = u591.Tween
+        local v646 = u590
+        local v647 = u592.Right
+        local v648 = "Customisation_Right_" .. u593
+        v645(v646, v647, tostring(v648), {
+            ["Position"] = u2(0.99, 0, u594, 0)
+        }, p644)
+        local v649 = u591.Tween
+        local v650 = u590
+        local v651 = u592.Right.Gradient
+        local v652 = "Customisation_Right_Gradient_" .. u593
+        v649(v650, v651, tostring(v652), {
+            ["Offset"] = u3(0, u595)
+        }, p644 + 0.05)
+    end
+    task.defer(function() --[[Anonymous function at line 1724]]
+        --[[
+        Upvalues:
+            [1] = u593
+            [2] = u612
+            [3] = u633
+            [4] = u643
+            [5] = u627
+            [6] = u653
+        --]]
+        if u593 == "In" then
+            u612(0.75, 1)
+            task.wait(0.15)
+            u633(1)
+            u643(0.75)
+            task.wait(0.15)
+            u627(0.65, 1.25)
+            task.wait(0.2)
+            u653(1.25)
+        else
+            u653(1)
+            task.wait(0.1)
+            u643(0.9)
+            task.wait(0.15)
+            u627(1, 0.75)
+            task.wait(0.1)
+            u633(0.75)
+            task.wait(0.2)
+            u612(0.5, 0.25)
+        end
+    end)
+end
+function u5.Back(p654, p655) --[[Anonymous function at line 1762]]
+    --[[
+    Upvalues:
+        [1] = u5
+        [2] = u4
+        [3] = u2
+    --]]
+    local v656 = p654.Modules
+    local v657 = p654.Cache
+    local v658 = p654.Events
+    local v659 = v656.Effects
+    local v660 = v656.Lighting
+    local v661 = v656.Title_Screen
+    local v662 = v656.Runtime
+    local v663 = v656.Update
+    local v664 = v657.Player
+    local v665, v666 = v663.Get_Data(p654, true)
+    local v667 = p654:Get("Asset", { "Cameras", "Intro" })
+    if u5.Customising == true and (u5.Spinning == false and v665 ~= nil) then
+        local v668 = u5
+        local v669 = u5
+        local v670 = u5.Base_Offset
+        v668.Customising = false
+        v669.Offset = v670
+        u5.Fade(p654, v659, p655, "Out")
+        v666.Avatar = p654:Invoke("Functions", "Customise", u5.Indexes)
+        u5.Storage(p654, p655.Family, false)
+        task.wait(0.5)
+        v661.Closing = false
+        v659.Fade(p654, { "Customisation" }, "Closeout")
+        local v671 = v661.Character
+        if v671 ~= nil then
+            for _, v672 in pairs(v671:GetChildren()) do
+                if v672:IsA("Accessory") == true or (v672:IsA("Shirt") == true or (v672:IsA("Pants") == true or v672:IsA("Model") == true and v672.Name:find("Rig_") == nil)) then
+                    v672:Destroy()
+                end
+            end
+            v671.Head.Transparency = 0
+            local v673 = u5.Initiate(p654, v664, v666, v671, v671.Head)
+            local v674 = u4("HumanoidDescription")
+            for _, v675 in pairs(v671.Humanoid:GetChildren()) do
+                if v675.Name:find("Scale") ~= nil then
+                    v674[v675.Name:find("Type") ~= nil and v675.Name or string.gsub(v675.Name, "Body", "")] = v675.Value
+                end
+            end
+            v674.HeadColor = v673
+            v674.LeftArmColor = v673
+            v674.LeftLegColor = v673
+            v674.RightArmColor = v673
+            v674.RightLegColor = v673
+            v674.TorsoColor = v673
+            v671.Humanoid:ApplyDescription(v674)
+            v674:Destroy()
+        end
+        task.wait(2)
+        if v658.Customisation_Camera ~= nil then
+            v658.Customisation_Camera:Disconnect()
+            v658.Customisation_Camera = nil
+        end
+        v662.cFrame = v667.CFrame
+        v662.Tweening = false
+        v660.Update(p654, "Title_Screen")
+        v659.Fade(p654, { "Closeout" }, "Title_Screen")
+        task.wait(0.25)
+        v659.Tween(p654, p655.Parent.Title_Screen.Logo, "Title_Screen_Main_Logo_In", {
+            ["ImageTransparency"] = 0
+        }, 0.5, nil, "Out")
+        v661.Logo_Effects(p654, true)
+        p655.Parent.Title_Screen.Buttons.Play.Visible = true
+        v659.Tween(p654, p655.Parent.Title_Screen.Buttons, "Title_Screen_Buttons_In", {
+            ["Position"] = u2(0.5, 0, 0.505, 0)
+        }, 0.4, "Back", "Out")
+    end
+end
+return u5
 
-This module uses octree division and also greedy meshing and ObjectCache for ultimate performance. It works for hundreds of holes in your game before you even start lagging a bit. It also provides some useful functions that will help you with your needs, such as it can cleanup voxels in the world if you are doing a map reset. It stores a lot of the parts before hand, then moves them in when needed which provides the trick of instancing new parts, while it’s not.
 
-image image image
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-Example
-Here is an example of a AK-47 and a AK-47 Shotgun (yes), that can create holes in parts. As you can see, you can adjust the voxel size for different types of weapons.
+-- Arguments for invoking the remote
+local args = { "Family", "Roll" }
 
-I have adjusted the voxel size to be pretty small here.
+local success = false
+local attempts = 0
 
-Roblox Voxels 2
-Roblox Voxels 2
-The script itself isn’t too complicated. Thought it does have many features! You can adjust multiple things such as voxel size, debris amount, ignore lists and more. Currently, it does not support square hitboxes, or wedges.
+while not success do
+    -- Call the remote function
+    local rollSuccess, rolledFamily = ReplicatedStorage
+        :WaitForChild("Assets")
+        :WaitForChild("Remotes")
+        :WaitForChild("GET")
+        :InvokeServer(unpack(args))
 
-The module comes in the name of “VoxManager”, which will handle most of the creation for you. If you need a lot of customizing, you can call Voxelizer.subtractHitbox yourself in the Voxelizer module located under the main script.
+    attempts = attempts + 1
 
-Any feedback would be appreciated, and I will try to add more to this. Right now, I feel it is pretty easy to add your own new stuff to it, such as breaking sounds and changing debris sizes and other things.
+    -- Check if the rolled family is "Smith"
+    if rollSuccess and rolledFamily == "Smith" then
+        success = true
+        print("SUCCESS! Got 'Smith' after " .. attempts .. " rolls.")
+    else
+        print("Rolled: " .. tostring(rolledFamily) .. " | Attempt #" .. attempts)
+    end
 
-Downloads:
-Module: https://create.roblox.com/store/asset/90280745196148/VoxManager 104
-Example Place: VoxelExamplePlace.rbxl (66.8 KB)
-
-API
- VoxManager:voxelize(hitbox, minimumVoxelSize, finalVoxelSize, randomColor, debris, debrisAmount, ignore)
-Info:
-Pass in a sphereical part, and anything it’s touching it will destroy and become voxels.
-
-Parameters:
-
-Hitbox - A part of type Enum.PartType.Ball
-MinimumVoxelSize - A number, the minimum voxel size. 2 is recommended.
-FinalVoxelSize - A number, when the calculations are done, voxels will try to go to this size. Recommend this should be the same as MinimumVoxelSize .
-RandomColor - A boolean, debug coloring, shows the divisions on the part.
-Debris - A boolean, whether there should be debris.
-DebrisAmount - A number, the amount of debris per subtraction.
-Ignore - A table of parts to ignore in the hitbox calculation.
-
-
- VoxManager:voxelizePosition(position, radius, minimumVoxelSize, finalVoxelSize, randomColor, debris, debrisAmount, ignore)
-Info:
-Pass in a position and radius, and anything in that area will be destroyed and become voxels.
-
-Parameters:
-
-Position - A Vector3, where the subtraction will take place.
-Radius - A number, the radius of the subtraction hitbox.
-MinimumVoxelSize - A number, the minimum voxel size. 2 is recommended.
-FinalVoxelSize - A number, when the calculations are done, voxels will try to go to this size. Recommend this should be the same as MinimumVoxelSize .
-RandomColor - A boolean, debug coloring, shows the divisions on the part.
-Debris - A boolean, whether there should be debris.
-DebrisAmount - A number, the amount of debris per subtraction.
-Ignore - A table of parts to ignore in the hitbox calculation.
-
-
- VoxManager:cleanup()
-Info:
-Cleans up all voxels in the world.
-
-
- VoxManager:setDebrisSize(multiplier)
-Info:
-Sets the debris size, relative to the destroyed part hole. Recommend 0 - 1.
-
-Parameters
-
-Multiplier - A number, the size relative to the destroyed part.
-
-Are you thinking of ever using this?
- Yes
- No
- I’ll definitely use it later for other projects.
-48
-voters
-
-
-Show results
-14
-
-
-created
-Feb 27
-last reply
-19d
-26
-replies
-1.4k
-views
-11
-users
-31
-likes
-5
-links
-962
-
-Tbc
-TheBigC10
-Programmer
-Feb 27
-Looks dope! I dunno if you know but:
-
-image
-image
-686×524 55.7 KB
-1 Reply
-
-
-
-SussyZets
-Feb 27
-Looks promising!
-Also, I’m not sure if it’s worth it, but have you considered using ObjectCache instead of PartCache?
-
-1
-
-
-Broken Spawn
-TimeFrenzied
-
-3
-Feb 27
-Well, I did need a replacement to VoxBreaker.
-
-You should consider using ObjectCache.
-
-We should be able to have debris amount based on the part that got destroyed.
-
-I assume you’re using GetPartsInPart. (I am unable to check currently) This is less performant, and I recommend using GetPartsBoundsInRadius instead. If you aren’t, you should just let us pass in the GetPartsBoundsInRadius arguments ourself instead of needing to create a part on the spot.
-
-2 Replies
-
-
-11 days later
+    -- Add a short delay to prevent overload
+    task.wait(0.5)
+end
