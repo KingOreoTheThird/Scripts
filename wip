@@ -6,7 +6,7 @@ end
 
 if _G.Stall then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Armor"))()
-elseif _G.AttackRaid then
+elseif _G.FemaleRaid then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/Attack"))()
 elseif _G.Missions then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/KingOreoTheThird/Scripts/refs/heads/main/whatsuphomies"))()
