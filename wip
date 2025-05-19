@@ -1,4 +1,7 @@
-
+while true do
+task.wait(32)
+print("migger")
+end
 
 while not game:IsLoaded() do
     task.wait(0.1)
